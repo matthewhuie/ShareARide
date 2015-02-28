@@ -118,6 +118,7 @@ public class MapsActivity extends FragmentActivity
       } catch (IOException ioe) { }
       String thisPlace = (places.isEmpty() ? null : places.get (0).getAddressLine (0));
 
+      // Prints current location to TextView
       ((TextView) findViewById (R.id.my_location)).setText ("Current location: " + thisPlace);
       mMap.moveCamera(CameraUpdateFactory.newLatLngZoom (new LatLng (latitude, longitude), 13));
     }
