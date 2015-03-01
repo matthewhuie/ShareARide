@@ -26,12 +26,11 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Driver"
-            android:id="@+id/driverBtn"
-            android:layout_below="@+id/imageView"
+            android:text="Passenger"
+            android:id="@+id/passengerBtn"
+            android:layout_below="@+id/imageView2"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="43dp"
-            android:onClick="sendMessage"/>
+            android:layout_marginTop="53dp" />
 
         <ImageView
             android:layout_width="wrap_content"
@@ -41,14 +40,17 @@
             android:layout_centerHorizontal="true"
             android:src="@drawable/ic_launcher" />
 
+
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Passenger"
-            android:id="@+id/passengerBtn"
-            android:layout_below="@+id/imageView2"
+            android:text="Driver"
+            android:id="@+id/driverBtn"
+            android:layout_below="@+id/imageView"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="53dp" />
+            android:layout_marginTop="43dp"
+            android:onClick="sendMessage"/>
+
 
     </RelativeLayout>
 
