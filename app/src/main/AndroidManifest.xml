@@ -38,6 +38,10 @@
             android:name=".DriverPassenger"
             android:label="@string/title_activity_driver_passenger" >
         </activity>
+        <activity
+            android:name=".driver_request"
+            android:label="@string/title_activity_driver_request" >
+        </activity>
     </application>
 
 </manifest>
