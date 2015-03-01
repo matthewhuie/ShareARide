@@ -28,6 +28,11 @@
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps" >
+
+        </activity>
+        <activity
+            android:name=".DriverPassenger"
+            android:label="@string/title_activity_driver_passenger" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -35,12 +40,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".DriverPassenger"
-            android:label="@string/title_activity_driver_passenger" >
-        </activity>
-        <activity
             android:name=".driver_request"
             android:label="@string/title_activity_driver_request" >
+        </activity>
+        <activity
+            android:name=".PssngerRequested"
+            android:label="@string/title_activity_pssnger_requested" >
         </activity>
     </application>
 

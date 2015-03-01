@@ -1,33 +1,26 @@
 package edu.cmu.andrew.sharearide;
 
-import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 
-public class DriverPassenger extends ActionBarActivity {
+public class PssngerRequested extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_driver_passenger);
+        
+        setContentView(R.layout.activity_pssnger_requested);
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_driver_passenger, menu);
+        getMenuInflater().inflate(R.menu.menu_pssnger_requested, menu);
         return true;
-    }
-
-    public void sendMessage(View view){
-        Intent intent = new Intent(this,driver_request.class);
-        startActivity(intent);
-
     }
 
     @Override
