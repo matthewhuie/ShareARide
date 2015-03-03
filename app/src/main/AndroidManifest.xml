@@ -40,11 +40,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".driver_request"
+            android:name=".DriverRequest"
             android:label="@string/title_activity_driver_request" >
         </activity>
         <activity
-            android:name=".PssngerRequested"
+            android:name=".PassengerRequested"
             android:label="@string/title_activity_pssnger_requested" >
         </activity>
     </application>
