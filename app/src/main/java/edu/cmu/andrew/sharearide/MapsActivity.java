@@ -6,7 +6,8 @@ import android.location.Location;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.widget.TextView;
-
+import android.widget.TimePicker;
+import java.util.Calendar;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -17,13 +18,17 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.List;
 
 public class MapsActivity extends FragmentActivity
     implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
   private final boolean DEBUG = true;
-
+    private TimePicker timePicker1;
+    private TextView time;
+    private Calendar calendar;
+    private String format = "";
   private GoogleMap mMap; // Might be null if Google Play services APK is not available.
   private GoogleApiClient mGoogleApiClient;
   private Location mLastLocation;
@@ -36,8 +41,30 @@ public class MapsActivity extends FragmentActivity
     setContentView (R.layout.activity_maps);
     buildGoogleApiClient ();
     setUpMapIfNeeded ();
+     // setContentView(R.layout.activity_maps);
+     // timePicker1 = (TimePicker) findViewById(R.id.latestArrvTxt);
+      //calendar = Calendar.getInstance();
+      //int hour = calendar.get(Calendar.HOUR_OF_DAY);
+      //int min = calendar.get(Calendar.MINUTE);
+     // showTime(hour, min);
   }
 
+
+    public void showTime(int hour, int min) {
+        if (hour == 0) {
+            hour += 12;
+            format = "AM";
+        } else if (hour == 12) {
+            format = "PM";
+        } else if (hour > 12) {
+            hour -= 12;
+            format = "PM";
+        } else {
+            format = "AM";
+        }
+        time.setText(new StringBuilder().append(hour).append(" : ").append(min)
+                .append(" ").append(format));
+    }
   @Override
   protected void onResume () {
     super.onResume ();
