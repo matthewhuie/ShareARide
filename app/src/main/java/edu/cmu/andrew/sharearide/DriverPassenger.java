@@ -25,7 +25,7 @@ public class DriverPassenger extends ActionBarActivity {
     }
 
     public void sendMessage(View view){
-        Intent intent = new Intent(this,DriverRequest.class);
+        Intent intent = new Intent(this,MapsActivity.class);
         startActivity(intent);
 
     }
