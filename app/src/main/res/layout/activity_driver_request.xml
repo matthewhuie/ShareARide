@@ -103,7 +103,8 @@
                 android:id="@+id/rqstBtn"
                 android:layout_below="@+id/latestArrvTxt"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="45dp" />
+                android:layout_marginTop="45dp"
+                android:onClick="showRoute" />
         </RelativeLayout>
     </RelativeLayout>
 
