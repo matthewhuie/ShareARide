@@ -3,21 +3,126 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-<fragment android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          android:id="@+id/map"
-          tools:context=".MapsActivity"
-          android:name="com.google.android.gms.maps.SupportMapFragment">
-</fragment>
+    <fragment android:layout_width="match_parent"
+        android:layout_height="364dp"
+        android:id="@+id/map"
+        tools:context=".MapsActivity"
+        android:name="com.google.android.gms.maps.SupportMapFragment">
+    </fragment>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="64dp"
         android:text="New Text"
         android:id="@+id/my_location"
-        android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:gravity="center"
         android:background="@android:color/white"/>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="264dp"
+        android:layout_alignParentBottom="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:id="@+id/requestLayout">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Destination"
+                android:id="@+id/destination"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="79dp"
+                android:layout_alignParentStart="true"
+                android:maxWidth="150dp"
+                android:elegantTextHeight="false"
+                android:capitalize="words"
+                android:autoText="false"
+                android:textSize="30dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginRight="180dp"
+                android:enabled="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Riders"
+                android:id="@+id/riderNum"
+                android:maxWidth="150dp"
+                android:elegantTextHeight="false"
+                android:capitalize="words"
+                android:autoText="false"
+                android:layout_marginTop="91dp"
+                android:textSize="30dp"
+                android:layout_marginRight="180dp"
+                android:enabled="true"
+                android:layout_below="@+id/destination"
+                android:layout_alignParentStart="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Latest Arrival"
+                android:id="@+id/latestArrival"
+                android:maxWidth="400dp"
+                android:elegantTextHeight="false"
+                android:capitalize="words"
+                android:autoText="false"
+                android:layout_marginTop="81dp"
+                android:textSize="30dp"
+                android:layout_marginRight="175dp"
+                android:layout_below="@+id/riderNum"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:enabled="true" />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/destiTxt"
+                android:layout_alignTop="@+id/destination"
+                android:layout_alignParentEnd="true"
+                android:layout_marginRight="10dp"
+                android:width="180dp" />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/riderNumTxt"
+                android:layout_marginRight="10dp"
+                android:width="180dp"
+                android:layout_alignTop="@+id/riderNum"
+                android:layout_alignEnd="@+id/destiTxt" />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/latestArrvTxt"
+                android:layout_marginRight="0dp"
+                android:width="180dp"
+                android:layout_alignBottom="@+id/latestArrival"
+                android:layout_alignEnd="@+id/destiTxt" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Request"
+                android:id="@+id/rqstBtn"
+                android:layout_below="@+id/latestArrvTxt"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="45dp" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+
+
+
 
 </RelativeLayout>
