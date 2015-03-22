@@ -1,10 +1,16 @@
 package edu.cmu.andrew.sharearide;
 
+import android.app.Dialog;
+import android.app.TimePickerDialog;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import java.util.Calendar;
@@ -25,10 +31,8 @@ public class MapsActivity extends FragmentActivity
     implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
   private final boolean DEBUG = true;
-    private TimePicker timePicker1;
-    private TextView time;
-    private Calendar calendar;
-    private String format = "";
+
+
   private GoogleMap mMap; // Might be null if Google Play services APK is not available.
   private GoogleApiClient mGoogleApiClient;
   private Location mLastLocation;
@@ -41,6 +45,7 @@ public class MapsActivity extends FragmentActivity
     setContentView (R.layout.activity_maps);
     buildGoogleApiClient ();
     setUpMapIfNeeded ();
+    setupSpinner();
      // setContentView(R.layout.activity_maps);
      // timePicker1 = (TimePicker) findViewById(R.id.latestArrvTxt);
       //calendar = Calendar.getInstance();
@@ -49,22 +54,19 @@ public class MapsActivity extends FragmentActivity
      // showTime(hour, min);
   }
 
-
-    public void showTime(int hour, int min) {
-        if (hour == 0) {
-            hour += 12;
-            format = "AM";
-        } else if (hour == 12) {
-            format = "PM";
-        } else if (hour > 12) {
-            hour -= 12;
-            format = "PM";
-        } else {
-            format = "AM";
-        }
-        time.setText(new StringBuilder().append(hour).append(" : ").append(min)
-                .append(" ").append(format));
+    public void setupSpinner(){
+        Spinner spinner = (Spinner) findViewById(R.id.riderNumbers);
+// Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.riderNumbers, android.R.layout.simple_spinner_item);
+// Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+// Apply the adapter to the spinner
+        spinner.setAdapter(adapter);
     }
+
+
+
   @Override
   protected void onResume () {
     super.onResume ();
