@@ -89,46 +89,35 @@
                 android:layout_marginRight="10dp"
                 android:width="180dp" />
 
-            <EditText
-                android:layout_width="wrap_content"
+            <Spinner
+                android:id="@+id/riderNumbers"
+                android:layout_width="60dp"
+                android:background="@color/common_action_bar_splitter"
                 android:layout_height="wrap_content"
-                android:id="@+id/riderNumTxt"
                 android:layout_marginRight="10dp"
-                android:width="180dp"
-                android:layout_marginLeft="150dp"
-                android:layout_marginTop="15dp"
+                android:dropDownWidth="60dp"
+                android:layout_marginLeft="10dp"
+                android:transitionGroup="false"
                 android:layout_alignBottom="@+id/riderNum"
-                android:layout_alignEnd="@+id/destiTxt"
-                />
+                android:layout_centerHorizontal="true" />
 
-            <EditText
+            <TimePicker
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/latestArrvTxt"
+                android:id="@+id/timePicker"
+                android:layout_alignTop="@+id/riderNum"
                 android:layout_marginLeft="150dp"
-                android:layout_marginRight="10dp"
-                android:width="180dp"
-                android:layout_marginTop="15dp"
-                android:layout_alignBottom="@+id/latestArrival"
-                android:layout_alignEnd="@+id/destiTxt" />
-
-
-
+                android:timePickerMode="spinner"/>
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="30dp"
-                android:text="Request"
+                android:text="@string/request"
                 android:id="@+id/rqstBtn"
                 android:width="70dp"
-                android:layout_below="@+id/latestArrvTxt"
-                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/latestArrival"
+
                 android:layout_marginTop="15dp" />
+
         </RelativeLayout>
     </RelativeLayout>
-
-
-
-
-
 </RelativeLayout>
