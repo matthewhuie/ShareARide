@@ -4,7 +4,7 @@
     android:layout_height="match_parent">
 
     <fragment android:layout_width="match_parent"
-        android:layout_height="364dp"
+        android:layout_height="match_parent"
         android:id="@+id/map"
         tools:context=".MapsActivity"
         android:name="com.google.android.gms.maps.SupportMapFragment">
@@ -24,7 +24,9 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="264dp"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:background="@android:color/white"
+        android:id="@+id/requestMainLayout">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -87,6 +89,7 @@
                 android:layout_marginLeft="150dp"
                 android:layout_alignBottom="@+id/destination"
                 android:layout_marginRight="10dp"
+                android:singleLine="true"
                 android:width="180dp" />
 
             <Spinner
@@ -115,7 +118,7 @@
                 android:id="@+id/rqstBtn"
                 android:width="70dp"
                 android:layout_below="@+id/latestArrival"
-
+                android:onClick="selectDriver"
                 android:layout_marginTop="15dp" />
 
         </RelativeLayout>
