@@ -1,11 +1,17 @@
 package edu.cmu.andrew.sharearide;
 
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.EditText;
 import android.widget.TimePicker;
 import java.util.Calendar;
 import com.google.android.gms.common.ConnectionResult;
@@ -15,11 +21,22 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 public class MapsActivity extends FragmentActivity
     implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -34,6 +51,8 @@ public class MapsActivity extends FragmentActivity
   private Location mLastLocation;
   private double latitude;
   private double longitude;
+
+  private static final String GEOCODE_BASE_URL = "https://maps.googleapis.com/maps/api/geocode/xml?address=";
 
   @Override
   protected void onCreate (Bundle savedInstanceState) {
@@ -117,8 +136,20 @@ public class MapsActivity extends FragmentActivity
    * <p/>
    * This should only be called once and when we are sure that {@link #mMap} is not null.
    */
-  private void setUpMap () {
+  private void setUpMap() {
     mMap.setMyLocationEnabled (true);
+  }
+
+  private void setUpDestination(double dest_latitude, double dest_longitude, String address) {
+      Log.i("add marker", "method executed");
+      if (mMap != null) {
+          Log.i("map not null", "method executed");
+          System.out.println("************outside" + dest_latitude + dest_longitude);
+          mMap.moveCamera(CameraUpdateFactory.newLatLngZoom (new LatLng (dest_latitude, dest_longitude),13));
+          Marker marker = mMap.addMarker(new MarkerOptions()
+                  .position(new LatLng(dest_latitude, dest_longitude))
+                  .title("Your destination: " + address));
+      }
   }
 
   protected synchronized void buildGoogleApiClient() {
@@ -165,4 +196,103 @@ public class MapsActivity extends FragmentActivity
     //
     // More about this in the next section.
   }
+
+  public void selectDriver(View view){
+
+      String destinationTxt = ((EditText)findViewById(R.id.destiTxt)).getText().toString();
+
+      //cannot make http request in main thread, has to create a asyn helper thread
+      //calculatePriceAndTime(destinationTxt);
+
+      new AsyncGooglePlaceSearch().execute(destinationTxt);
+
+
+
+
+
+      //Intent intent = new Intent(this,DriverSelected.class);
+      //startActivity(intent);
+
+  }
+
+
+    private class AsyncGooglePlaceSearch extends
+            AsyncTask<String, Void, double[]> {
+
+        private double dest_latitude = 0;
+        private double dest_longitude = 0;
+        private String address;
+
+        @Override
+        protected double[] doInBackground(String... urls) {
+            address = urls[0];
+            return calculatePriceAndTime(urls[0]);
+        }
+
+        @Override
+        protected void onPostExecute(double[] estimates) {
+            //ip.placeReady(place);
+            ((TextView) findViewById (R.id.my_location)).setText ("Price and Time: " + estimates[0] + estimates[1]);
+            (findViewById (R.id.requestMainLayout) ).setVisibility(View.INVISIBLE);
+            setUpDestination(dest_latitude, dest_longitude, address);
+        }
+
+        private double[] calculatePriceAndTime(String destinationTxt) {
+
+            double[] estimates = new double[2];
+
+
+            if (destinationTxt != null) {
+
+                getLocation(destinationTxt);
+                estimates[0] =   dest_latitude;
+                estimates[1] =   dest_longitude;
+
+            }
+
+
+            return estimates;
+
+        }
+
+        private void getLocation(String destinationTxt) {
+
+            String url = GEOCODE_BASE_URL + destinationTxt.replaceAll(" ", "+") + "&key=" + getString(R.string.google_maps_key);
+            //String url = "https://maps.googleapis.com/maps/api/geocode/xml?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key="+ R.string.google_maps_key;
+            Document doc = getRemoteXML(url);
+
+            doc.getDocumentElement().normalize();
+
+            NodeList nl = doc.getElementsByTagName("result");
+
+            if (nl.getLength() != 0) {
+                Node n = nl.item(0);
+                Element e = (Element) n;
+                dest_latitude = Double.valueOf(e.getElementsByTagName("lat").item(0).getTextContent());
+                dest_longitude = Double.valueOf(e.getElementsByTagName("lng").item(0).getTextContent());
+
+            }
+
+            System.out.println("************" + dest_latitude + dest_longitude);
+
+        }
+
+
+        private Document getRemoteXML(String url) {
+            //Log.i("******", url);
+            try {
+                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                DocumentBuilder db = dbf.newDocumentBuilder();
+                InputSource is = new InputSource(url);
+                return db.parse(is);
+            } catch (Exception e) {
+                Log.i("Hit the error: ", e.toString());
+                return null;
+            }
+        }
+
+
+    }
+
+
 }
