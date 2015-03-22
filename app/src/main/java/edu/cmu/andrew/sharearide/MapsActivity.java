@@ -13,6 +13,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.EditText;
 import android.widget.TimePicker;
+
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Calendar;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -24,6 +28,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -53,6 +63,7 @@ public class MapsActivity extends FragmentActivity
   private double longitude;
 
   private static final String GEOCODE_BASE_URL = "https://maps.googleapis.com/maps/api/geocode/xml?address=";
+  private static final String UBER_PRICE_BASE_URL = "https://api.uber.com/v1/estimates/price?";
 
   @Override
   protected void onCreate (Bundle savedInstanceState) {
@@ -137,7 +148,7 @@ public class MapsActivity extends FragmentActivity
    * This should only be called once and when we are sure that {@link #mMap} is not null.
    */
   private void setUpMap() {
-    mMap.setMyLocationEnabled (true);
+    mMap.setMyLocationEnabled(true);
   }
 
   private void setUpDestination(double dest_latitude, double dest_longitude, String address) {
@@ -217,36 +228,75 @@ public class MapsActivity extends FragmentActivity
 
 
     private class AsyncGooglePlaceSearch extends
-            AsyncTask<String, Void, double[]> {
+            AsyncTask<String, Void, String[]> {
 
         private double dest_latitude = 0;
         private double dest_longitude = 0;
         private String address;
 
         @Override
-        protected double[] doInBackground(String... urls) {
+        protected String[] doInBackground(String... urls) {
             address = urls[0];
             return calculatePriceAndTime(urls[0]);
         }
 
         @Override
-        protected void onPostExecute(double[] estimates) {
+        protected void onPostExecute(String[] estimates) {
             //ip.placeReady(place);
-            ((TextView) findViewById (R.id.my_location)).setText ("Price and Time: " + estimates[0] + estimates[1]);
+            ((TextView) findViewById (R.id.my_location)).setText ("Lowest Price: " + estimates[0] + "\n" +"Time to Pickup: " + estimates[1]);
             (findViewById (R.id.requestMainLayout) ).setVisibility(View.INVISIBLE);
             setUpDestination(dest_latitude, dest_longitude, address);
         }
 
-        private double[] calculatePriceAndTime(String destinationTxt) {
+        private String[] calculatePriceAndTime(String destinationTxt) {
 
-            double[] estimates = new double[2];
+            String[] estimates = new String[2];
 
 
             if (destinationTxt != null) {
 
+                //First get the destination coordinates and display on Google Map
                 getLocation(destinationTxt);
-                estimates[0] =   dest_latitude;
-                estimates[1] =   dest_longitude;
+
+                //Then calculate price for the whole journey and the time for the uber driver to pick up the passenger
+                String url = UBER_PRICE_BASE_URL + "start_latitude=" + latitude +"&start_longitude=" + longitude + "&end_latitude=" + dest_latitude + "&end_longitude=" + dest_longitude + "&server_token=" + getString(R.string.uber_api_key);
+                Log.i("URL for Uber API", url);
+                //String url = "https://api.uber.com/v1/estimates/price?start_latitude=37.625732&start_longitude=-122.377807&end_latitude=37.785114&end_longitude=-122.406677&server_token=" + getString(R.string.uber_api_key);
+
+                try {
+
+                    HttpClient httpClient = new DefaultHttpClient();
+                    HttpGet priceRequest = new HttpGet(url);
+                    HttpResponse httpResult = httpClient.execute(priceRequest);
+                    String json = EntityUtils.toString(httpResult.getEntity(), "UTF-8");
+                    JSONObject priceObject = new JSONObject(json);
+                    //System.out.println(priceObject.get("prices"));
+                    JSONArray allPrice = priceObject.getJSONArray("prices");
+
+                    String[] estimateForProduct = new String[6];
+                    //Double[] lowEstimateForProduct = new Double[6];
+                    Double lowestEstimateForProduct = 1000.0;
+
+                    for(int i=0; i<allPrice.length(); i++) {
+                        //System.out.println(allPrice.get(i));
+                        JSONObject priceForEachProduct = (JSONObject)allPrice.get(i);
+                        System.out.println(priceForEachProduct.get("estimate"));
+                        estimateForProduct[i] = priceForEachProduct.get("estimate").toString();
+                        lowestEstimateForProduct = Math.min(lowestEstimateForProduct, Double.valueOf(priceForEachProduct.get("low_estimate").toString()));
+
+                    }
+                    //Log.i("price info: ", priceObject.get("estimate").toString());
+                    estimates[0] =   String.valueOf(lowestEstimateForProduct);
+                    estimates[1] =   String.valueOf(dest_longitude);
+
+                } catch (MalformedURLException e) {
+                    Log.i("Hit the malformedURLerror: ", e.toString());
+                } catch (IOException ioe) {
+                    Log.i("Hit the IO error: ", ioe.toString());
+                }
+                catch (org.json.JSONException jsone) {
+                    Log.i("Hit the JSON error: ", jsone.toString());
+                }
 
             }
 
