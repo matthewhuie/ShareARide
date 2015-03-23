@@ -1,5 +1,6 @@
 package edu.cmu.andrew.sharearide;
 
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -33,6 +34,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -50,6 +53,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -69,6 +73,7 @@ public class MapsActivity extends FragmentActivity
 
   private static final String GEOCODE_BASE_URL = "https://maps.googleapis.com/maps/api/geocode/xml?address=";
   private static final String UBER_PRICE_BASE_URL = "https://api.uber.com/v1/estimates/price?";
+  private static final String DIRECTION_BASE_URL = "https://maps.googleapis.com/maps/api/directions/json?";
 
   //for autocomplete
   AutoCompleteTextView atvPlaces;
@@ -310,17 +315,36 @@ public class MapsActivity extends FragmentActivity
     mMap.setMyLocationEnabled(true);
   }
 
-  private void setUpDestination(double dest_latitude, double dest_longitude, String address) {
+  private void setUpDestination(double dest_latitude, double dest_longitude, String pickUpLocation, String destination) {
       Log.i("add marker", "method executed");
       if (mMap != null) {
           Log.i("map not null", "method executed");
-          System.out.println("************outside" + dest_latitude + dest_longitude);
+          System.out.println("In setUpDestionation" + dest_latitude + dest_longitude);
           mMap.moveCamera(CameraUpdateFactory.newLatLngZoom (new LatLng (dest_latitude, dest_longitude),13));
-          Marker marker = mMap.addMarker(new MarkerOptions()
+          //Marker marker_origin = mMap.addMarker(new MarkerOptions()
+            //      .position(new LatLng(latitude, longitude))
+              //    .title("Your pickup location: " + pickUpLocation));
+          Marker marker_destination = mMap.addMarker(new MarkerOptions()
                   .position(new LatLng(dest_latitude, dest_longitude))
-                  .title("Your destination: " + address));
+                  .title("Your destination: " + destination));
       }
   }
+
+  private void setUpDirection(List<LatLng> latlngRoute) {
+      Log.i("add polyline", "method executed");
+      if (mMap != null) {
+          Log.i("map not null", "method executed");
+          for(int i=0; i<latlngRoute.size()-1; i++) {
+              Polyline line = mMap.addPolyline(new PolylineOptions()
+                      .add(latlngRoute.get(i), latlngRoute.get(i + 1))
+                      .width(10)
+                      .color(Color.rgb(1, 169, 212)));
+          }
+      }
+  }
+
+
+
 
   protected synchronized void buildGoogleApiClient() {
     mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -344,7 +368,7 @@ public class MapsActivity extends FragmentActivity
       try {
         places = geoCoder.getFromLocation (latitude, longitude, 1);
       } catch (IOException ioe) { }
-      String thisPlace = (places.isEmpty() ? null : places.get (0).getAddressLine (0));
+      String thisPlace= (places.isEmpty() ? null : places.get (0).getAddressLine (0));
 
       // Prints current location to TextView
       ((TextView) findViewById (R.id.my_location)).setText ("Current location: " + thisPlace);
@@ -368,13 +392,13 @@ public class MapsActivity extends FragmentActivity
   }
 
   public void selectDriver(View view){
-
+      String pickUpLocation = ((TextView)findViewById(R.id.my_location)).getText().toString();
       String destinationTxt = ((EditText)findViewById(R.id.destiTxt)).getText().toString();
 
       //cannot make http request in main thread, has to create a asyn helper thread
       //calculatePriceAndTime(destinationTxt);
 
-      new AsyncGooglePlaceSearch().execute(destinationTxt);
+      new AsyncGooglePlaceSearch().execute(pickUpLocation, destinationTxt);
 
 
 
@@ -391,12 +415,15 @@ public class MapsActivity extends FragmentActivity
 
         private double dest_latitude = 0;
         private double dest_longitude = 0;
-        private String address;
+        private String destination;
+        private String pickUpLocation;
+        private List<LatLng> latlngRoute = new ArrayList<>();
 
         @Override
         protected String[] doInBackground(String... urls) {
-            address = urls[0];
-            return calculatePriceAndTime(urls[0]);
+            pickUpLocation = urls[0];
+            destination = urls[1];
+            return calculatePriceAndTime(pickUpLocation, destination);
         }
 
         @Override
@@ -404,10 +431,11 @@ public class MapsActivity extends FragmentActivity
             //ip.placeReady(place);
             ((TextView) findViewById (R.id.my_location)).setText ("Lowest Price: " + estimates[0] + "\n" +"Time to Destination: " + estimates[1] + "\n" +"Time to Pickup: " + estimates[2]);
             (findViewById (R.id.requestMainLayout) ).setVisibility(View.INVISIBLE);
-            setUpDestination(dest_latitude, dest_longitude, address);
+            setUpDestination(dest_latitude, dest_longitude, pickUpLocation, destination);
+            setUpDirection(latlngRoute);
         }
 
-        private String[] calculatePriceAndTime(String destinationTxt) {
+        private String[] calculatePriceAndTime(String originTxt, String destinationTxt) {
 
             String[] estimates = new String[3];
 
@@ -416,7 +444,7 @@ public class MapsActivity extends FragmentActivity
 
                 //First get the destination coordinates and display on Google Map
                 getLocation(destinationTxt);
-
+                getDirection(originTxt, destinationTxt);
                 //Then calculate price for the whole journey and the time for the uber driver to pick up the passenger
                 String url = UBER_PRICE_BASE_URL + "start_latitude=" + latitude +"&start_longitude=" + longitude + "&end_latitude=" + dest_latitude + "&end_longitude=" + dest_longitude + "&server_token=" + getString(R.string.uber_api_key);
                 Log.i("URL for Uber API", url);
@@ -424,10 +452,7 @@ public class MapsActivity extends FragmentActivity
 
                 try {
 
-                    HttpClient httpClient = new DefaultHttpClient();
-                    HttpGet priceRequest = new HttpGet(url);
-                    HttpResponse httpResult = httpClient.execute(priceRequest);
-                    String json = EntityUtils.toString(httpResult.getEntity(), "UTF-8");
+                    String json = getRemoteJSON(url);
                     JSONObject priceObject = new JSONObject(json);
                     //System.out.println(priceObject.get("prices"));
                     JSONArray allPrice = priceObject.getJSONArray("prices");
@@ -449,7 +474,7 @@ public class MapsActivity extends FragmentActivity
                     }
 
                     int lowestPriceDuration = Integer.valueOf(((JSONObject)allPrice.get(lowestPriceIndex)).get("duration").toString());
-                    String durationMin = String.valueOf(lowestPriceDuration/60);
+                    String durationMin = String.valueOf(lowestPriceDuration / 60);
                     String durationSec = String.valueOf(lowestPriceDuration%60);
 
                     //Log.i("price info: ", priceObject.get("estimate").toString());
@@ -457,10 +482,6 @@ public class MapsActivity extends FragmentActivity
                     estimates[1] =   durationMin + " minutes " + durationSec + " seconds";
                     estimates[2] =   String.valueOf(dest_longitude);
 
-                } catch (MalformedURLException e) {
-                    Log.i("Hit the malformedURLerror: ", e.toString());
-                } catch (IOException ioe) {
-                    Log.i("Hit the IO error: ", ioe.toString());
                 }
                 catch (org.json.JSONException jsone) {
                     Log.i("Hit the JSON error: ", jsone.toString());
@@ -496,6 +517,57 @@ public class MapsActivity extends FragmentActivity
         }
 
 
+        private void getDirection(String originTxt, String destinationTxt) {
+            String url = DIRECTION_BASE_URL +"origin="+ originTxt.replaceAll(" ", "+") + "&destination=" + destinationTxt.replaceAll(" ", "+") +"&key=" + getString(R.string.google_maps_key);
+            Log.i("URL for Direction", url);
+
+            LatLng origin = new LatLng(latitude, longitude);
+            latlngRoute.add(origin);
+
+            try {
+
+                String json = getRemoteJSON(url);
+                JSONObject routeObject = new JSONObject(json);
+                //System.out.println(priceObject.get("prices"));
+                JSONArray routes = routeObject.getJSONArray("routes");
+                //Each element of the routes array contains a single result from the specified origin and destination.
+                JSONObject route = (JSONObject)routes.get(0);
+                JSONArray legs = route.getJSONArray("legs");
+                //For routes that contain no waypoints, the route will consist of a single "leg
+                JSONObject leg = (JSONObject)legs.get(0);
+                JSONArray steps = leg.getJSONArray("steps");
+
+
+                double lat = 0;
+                double lng = 0;
+
+                for(int i=0; i<steps.length(); i++) {
+                    System.out.println(steps.get(i));
+                    JSONObject step = (JSONObject)steps.get(i);
+                    //System.out.println(priceForEachProduct.get("estimate"));
+                    JSONObject start_location =  (JSONObject)step.get("start_location");
+                    lat = Double.valueOf(start_location.get("lat").toString());
+                    lng = Double.valueOf(start_location.get("lng").toString());
+                    LatLng latlngPoint = new LatLng(lat, lng);
+                    Log.i("lat info for each step: ", start_location.get("lat").toString());
+                    latlngRoute.add(latlngPoint);
+                }
+
+                LatLng dest = new LatLng(dest_latitude, dest_longitude);
+                latlngRoute.add(dest);
+
+                //Log.i("price info: ", priceObject.get("estimate").toString());
+
+            }
+            catch (org.json.JSONException jsone) {
+                Log.i("Hit the JSON error: ", jsone.toString());
+            }
+
+
+
+        }
+
+
         private Document getRemoteXML(String url) {
             //Log.i("******", url);
             try {
@@ -507,6 +579,22 @@ public class MapsActivity extends FragmentActivity
                 Log.i("Hit the error: ", e.toString());
                 return null;
             }
+        }
+
+        private String getRemoteJSON(String url) {
+            String json = null;
+            try {
+                HttpClient httpClient = new DefaultHttpClient();
+                HttpGet priceRequest = new HttpGet(url);
+                HttpResponse httpResult = httpClient.execute(priceRequest);
+                json = EntityUtils.toString(httpResult.getEntity(), "UTF-8");
+            } catch (MalformedURLException e) {
+                Log.i("Hit the malformedURLerror: ", e.toString());
+            } catch (IOException ioe) {
+                Log.i("Hit the IO error: ", ioe.toString());
+            }
+
+            return json;
         }
 
 
