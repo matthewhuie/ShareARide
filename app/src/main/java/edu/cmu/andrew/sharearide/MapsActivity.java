@@ -453,7 +453,7 @@ public class MapsActivity extends FragmentActivity
                     String durationSec = String.valueOf(lowestPriceDuration%60);
 
                     //Log.i("price info: ", priceObject.get("estimate").toString());
-                    estimates[0] =   String.valueOf(lowestEstimateForProduct);
+                    estimates[0] =   '$'+String.valueOf(lowestEstimateForProduct);
                     estimates[1] =   durationMin + " minutes " + durationSec + " seconds";
                     estimates[2] =   String.valueOf(dest_longitude);
 
