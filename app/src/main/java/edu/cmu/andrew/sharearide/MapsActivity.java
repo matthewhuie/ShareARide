@@ -169,9 +169,6 @@ public class MapsActivity extends FragmentActivity
             // For storing data from web service
             String data = "";
 
-            // Obtain browser key from https://code.google.com/apis/console
-            String key = "key=AIzaSyCzlb0AafU0DnwEUC_712hPx0zp0phunTQ";
-
             String input="";
 
             try {
@@ -188,7 +185,7 @@ public class MapsActivity extends FragmentActivity
             String sensor = "sensor=false";
 
             // Building the parameters to the web service
-            String parameters = input+"&"+types+"&"+sensor+"&"+key;
+            String parameters = input+"&"+types+"&"+sensor+"&"+getString(R.string.google_maps_key);
 
             // Output format
             String output = "json";
