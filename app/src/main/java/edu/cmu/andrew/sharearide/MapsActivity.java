@@ -104,7 +104,7 @@ public class MapsActivity extends FragmentActivity
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-              //  System.out.println("on text changed" + s);
+                //  System.out.println("on text changed" + s);
                 placesTask = new PlacesTask();
                 placesTask.execute(s.toString());
             }
@@ -402,14 +402,14 @@ public class MapsActivity extends FragmentActivity
         @Override
         protected void onPostExecute(String[] estimates) {
             //ip.placeReady(place);
-            ((TextView) findViewById (R.id.my_location)).setText ("Lowest Price: " + estimates[0] + "\n" +"Time to Pickup: " + estimates[1]);
+            ((TextView) findViewById (R.id.my_location)).setText ("Lowest Price: " + estimates[0] + "\n" +"Time to Destination: " + estimates[1] + "\n" +"Time to Pickup: " + estimates[2]);
             (findViewById (R.id.requestMainLayout) ).setVisibility(View.INVISIBLE);
             setUpDestination(dest_latitude, dest_longitude, address);
         }
 
         private String[] calculatePriceAndTime(String destinationTxt) {
 
-            String[] estimates = new String[2];
+            String[] estimates = new String[3];
 
 
             if (destinationTxt != null) {
@@ -434,19 +434,28 @@ public class MapsActivity extends FragmentActivity
 
                     String[] estimateForProduct = new String[6];
                     //Double[] lowEstimateForProduct = new Double[6];
-                    Double lowestEstimateForProduct = 1000.0;
+                    double lowestEstimateForProduct = 1000.0;
+                    int lowestPriceIndex = 0;
 
                     for(int i=0; i<allPrice.length(); i++) {
                         //System.out.println(allPrice.get(i));
                         JSONObject priceForEachProduct = (JSONObject)allPrice.get(i);
                         System.out.println(priceForEachProduct.get("estimate"));
                         estimateForProduct[i] = priceForEachProduct.get("estimate").toString();
-                        lowestEstimateForProduct = Math.min(lowestEstimateForProduct, Double.valueOf(priceForEachProduct.get("low_estimate").toString()));
-
+                        if(Double.valueOf(priceForEachProduct.get("low_estimate").toString()) < lowestEstimateForProduct) {
+                            lowestEstimateForProduct = Double.valueOf(priceForEachProduct.get("low_estimate").toString());
+                            lowestPriceIndex = i;
+                        }
                     }
+
+                    int lowestPriceDuration = Integer.valueOf(((JSONObject)allPrice.get(lowestPriceIndex)).get("duration").toString());
+                    String durationMin = String.valueOf(lowestPriceDuration/60);
+                    String durationSec = String.valueOf(lowestPriceDuration%60);
+
                     //Log.i("price info: ", priceObject.get("estimate").toString());
                     estimates[0] =   String.valueOf(lowestEstimateForProduct);
-                    estimates[1] =   String.valueOf(dest_longitude);
+                    estimates[1] =   durationMin + " minutes " + durationSec + " seconds";
+                    estimates[2] =   String.valueOf(dest_longitude);
 
                 } catch (MalformedURLException e) {
                     Log.i("Hit the malformedURLerror: ", e.toString());
