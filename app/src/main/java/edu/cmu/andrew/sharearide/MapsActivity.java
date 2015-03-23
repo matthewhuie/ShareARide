@@ -11,8 +11,10 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.SimpleAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.EditText;
 
@@ -79,11 +81,21 @@ public class MapsActivity extends FragmentActivity
     setContentView (R.layout.activity_maps);
     buildGoogleApiClient ();
     setUpMapIfNeeded ();
-
+      setupSpinner();
       //System.out.println("in on create");
     buildAutoComplete();
   }
 
+    public void setupSpinner(){
+        Spinner spinner = (Spinner) findViewById(R.id.riderNumbers);
+// Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.riderNumbers, android.R.layout.simple_spinner_item);
+// Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+// Apply the adapter to the spinner
+        spinner.setAdapter(adapter);
+    }
     private void buildAutoComplete() {
         atvPlaces = (AutoCompleteTextView) findViewById(R.id.destiTxt);
         atvPlaces.setThreshold(1);
