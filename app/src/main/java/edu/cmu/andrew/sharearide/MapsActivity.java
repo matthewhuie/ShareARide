@@ -109,7 +109,7 @@ public class MapsActivity extends FragmentActivity
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                //  System.out.println("on text changed" + s);
+                 System.out.println("on text changed" + s);
                 placesTask = new PlacesTask();
                 placesTask.execute(s.toString());
             }
@@ -154,7 +154,7 @@ public class MapsActivity extends FragmentActivity
             }
 
             data = sb.toString();
-            //System.out.println("json" + sb);
+            System.out.println("json" + sb);
             br.close();
 
         }catch(Exception e){
@@ -178,7 +178,7 @@ public class MapsActivity extends FragmentActivity
 
             try {
                 input = "input=" + URLEncoder.encode(place[0], "utf-8");
-               // System.out.println("do in background input" + input);
+                System.out.println("do in background input" + input);
             } catch (UnsupportedEncodingException e1) {
                 e1.printStackTrace();
             }
@@ -190,7 +190,7 @@ public class MapsActivity extends FragmentActivity
             String sensor = "sensor=false";
 
             // Building the parameters to the web service
-            String parameters = input+"&"+types+"&"+sensor+"&"+getString(R.string.google_maps_key);
+            String parameters = input+"&"+types+"&"+sensor+"&key="+getString(R.string.google_maps_key);
 
             // Output format
             String output = "json";
@@ -235,7 +235,7 @@ public class MapsActivity extends FragmentActivity
 
                 // Getting the parsed data as a List construct
                 places = placeJsonParser.parse(jObject);
-                //System.out.println("places" + places.size());
+                System.out.println("places" + places.size());
             }catch(Exception e){
                 Log.d("Exception",e.toString());
             }
