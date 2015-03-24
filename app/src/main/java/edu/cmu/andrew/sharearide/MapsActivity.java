@@ -393,7 +393,8 @@ public class MapsActivity extends FragmentActivity
   }
 
   public void selectDriver(View view){
-      String pickUpLocation = ((TextView)findViewById(R.id.my_location)).getText().toString();
+      int indexOfLocation = ((TextView)findViewById(R.id.my_location)).getText().toString().indexOf(":") + 2;
+      String pickUpLocation = ((TextView)findViewById(R.id.my_location)).getText().toString().substring(indexOfLocation);
       String destinationTxt = ((EditText)findViewById(R.id.destiTxt)).getText().toString();
 
       //cannot make http request in main thread, has to create a asyn helper thread
