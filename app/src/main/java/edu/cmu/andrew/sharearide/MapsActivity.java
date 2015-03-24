@@ -191,7 +191,7 @@ public class MapsActivity extends FragmentActivity
             String sensor = "sensor=false";
 
             // Building the parameters to the web service
-            String parameters = input+"&"+types+"&"+sensor+"&key="+getString(R.string.google_maps_key);
+            String parameters = input+"&"+types+"&"+sensor+"&key="+getString(R.string.google_maps_places_key);
 
             // Output format
             String output = "json";
