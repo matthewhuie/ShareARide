@@ -74,6 +74,7 @@ public class MapsActivity extends FragmentActivity
   private static final String GEOCODE_BASE_URL = "https://maps.googleapis.com/maps/api/geocode/xml?address=";
   private static final String UBER_PRICE_BASE_URL = "https://api.uber.com/v1/estimates/price?";
   private static final String DIRECTION_BASE_URL = "https://maps.googleapis.com/maps/api/directions/json?";
+  private static final String GOOGLE_AUTOCOMPLETE_URL = "https://maps.googleapis.com/maps/api/place/autocomplete/";
 
   //for autocomplete
   AutoCompleteTextView atvPlaces;
@@ -196,7 +197,7 @@ public class MapsActivity extends FragmentActivity
             String output = "json";
 
             // Building the url to the web service
-            String url = "https://maps.googleapis.com/maps/api/place/autocomplete/"+output+"?"+parameters;
+            String url = GOOGLE_AUTOCOMPLETE_URL +output+"?"+parameters;
 
             try{
                 // Fetching the data from we service
