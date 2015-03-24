@@ -17,6 +17,6 @@ https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend
     <string name="google_maps_key" templateMergeStrategy="preserve">AIzaSyBpQoSJuEAyFcgO6RjhmFEPoYWHvHbS10E</string>
     <string name="google_maps_places_key" templateMergeStrategy="preserve">AIzaSyDNwOGqMIoMgoS7jIgwdWMGzYzqcaeagew</string>
     <string name="uber_api_key" templateMergeStrategy="preserve">G6YSOVjdp_U6JrQdMMHUAnwYx9ic-vBC5QWdH16S</string>
-
+<!--aditi comment-->
 
 </resources>
