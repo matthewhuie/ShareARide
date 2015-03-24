@@ -74,6 +74,7 @@ public class MapsActivity extends FragmentActivity
   private static final String GEOCODE_BASE_URL = "https://maps.googleapis.com/maps/api/geocode/xml?address=";
   private static final String UBER_PRICE_BASE_URL = "https://api.uber.com/v1/estimates/price?";
   private static final String DIRECTION_BASE_URL = "https://maps.googleapis.com/maps/api/directions/json?";
+  private static final String GOOGLE_AUTOCOMPLETE_URL = "https://maps.googleapis.com/maps/api/place/autocomplete/";
 
   //for autocomplete
   AutoCompleteTextView atvPlaces;
@@ -109,7 +110,7 @@ public class MapsActivity extends FragmentActivity
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                //  System.out.println("on text changed" + s);
+                 System.out.println("on text changed" + s);
                 placesTask = new PlacesTask();
                 placesTask.execute(s.toString());
             }
@@ -154,7 +155,7 @@ public class MapsActivity extends FragmentActivity
             }
 
             data = sb.toString();
-            //System.out.println("json" + sb);
+            System.out.println("json" + sb);
             br.close();
 
         }catch(Exception e){
@@ -178,7 +179,7 @@ public class MapsActivity extends FragmentActivity
 
             try {
                 input = "input=" + URLEncoder.encode(place[0], "utf-8");
-               // System.out.println("do in background input" + input);
+                System.out.println("do in background input" + input);
             } catch (UnsupportedEncodingException e1) {
                 e1.printStackTrace();
             }
@@ -190,13 +191,13 @@ public class MapsActivity extends FragmentActivity
             String sensor = "sensor=false";
 
             // Building the parameters to the web service
-            String parameters = input+"&"+types+"&"+sensor+"&"+getString(R.string.google_maps_key);
+            String parameters = input+"&"+types+"&"+sensor+"&key="+getString(R.string.google_maps_key);
 
             // Output format
             String output = "json";
 
             // Building the url to the web service
-            String url = "https://maps.googleapis.com/maps/api/place/autocomplete/"+output+"?"+parameters;
+            String url = GOOGLE_AUTOCOMPLETE_URL +output+"?"+parameters;
 
             try{
                 // Fetching the data from we service
