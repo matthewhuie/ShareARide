@@ -235,7 +235,7 @@ public class MapsActivity extends FragmentActivity
 
                 // Getting the parsed data as a List construct
                 places = placeJsonParser.parse(jObject);
-                //System.out.println("places" + places.size());
+                System.out.println("places" + places.size());
             }catch(Exception e){
                 Log.d("Exception",e.toString());
             }
