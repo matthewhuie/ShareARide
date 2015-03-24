@@ -447,6 +447,7 @@ public class MapsActivity extends FragmentActivity
                 //First get the destination coordinates and display on Google Map
                 getLocation(destinationTxt);
                 getDirection(originTxt, destinationTxt);
+              Log.d ("coordinates", dest_latitude + " " + dest_longitude);
                 //Then calculate price for the whole journey and the time for the uber driver to pick up the passenger
                 String url = UBER_PRICE_BASE_URL + "start_latitude=" + latitude +"&start_longitude=" + longitude + "&end_latitude=" + dest_latitude + "&end_longitude=" + dest_longitude + "&server_token=" + getString(R.string.uber_api_key);
                 Log.i("URL for Uber API", url);
@@ -498,7 +499,7 @@ public class MapsActivity extends FragmentActivity
 
         private void getLocation(String destinationTxt) {
 
-            String url = GEOCODE_BASE_URL + destinationTxt.replaceAll(" ", "+") + "&key=" + getString(R.string.google_maps_key);
+            String url = GEOCODE_BASE_URL + destinationTxt.replaceAll(" ", "+") + "&key=" + getString(R.string.google_maps_places_key);
             //String url = "https://maps.googleapis.com/maps/api/geocode/xml?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key="+ R.string.google_maps_key;
             Document doc = getRemoteXML(url);
 
@@ -520,7 +521,7 @@ public class MapsActivity extends FragmentActivity
 
 
         private void getDirection(String originTxt, String destinationTxt) {
-            String url = DIRECTION_BASE_URL +"origin="+ originTxt.replaceAll(" ", "+") + "&destination=" + destinationTxt.replaceAll(" ", "+") +"&key=" + getString(R.string.google_maps_key);
+            String url = DIRECTION_BASE_URL +"origin="+ originTxt.replaceAll(" ", "+") + "&destination=" + destinationTxt.replaceAll(" ", "+") +"&key=" + getString(R.string.google_maps_places_key);
             Log.i("URL for Direction", url);
 
             LatLng origin = new LatLng(latitude, longitude);
