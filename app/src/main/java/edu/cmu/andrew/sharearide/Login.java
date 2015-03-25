@@ -24,7 +24,7 @@ public class Login extends ActionBarActivity {
         return true;
     }
 
-    public void sendMessage(View view){
+    public void login(View view){
         Intent intent = new Intent(this,PassengerHome.class);
         startActivity(intent);
 
