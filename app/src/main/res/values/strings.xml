@@ -12,6 +12,9 @@
     <string name="pick_time">Pick Time</string>
     <string name="request">Request</string>
     <string name="str_atv_places">Enter Destination Here</string>
+    <string name="login">Login</string>
+    <string name="passenger">Passenger</string>
+    <string name="driver">Driver</string>
 
 
     <string-array name="riderNumbers">

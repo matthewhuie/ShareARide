@@ -12,46 +12,57 @@
         android:layout_alignParentStart="true"
         android:id="@+id/driverPassengerLayout">
 
-        <ImageView
+
+        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/imageView"
+            android:text="@string/login"
+            android:id="@+id/button"
+            android:layout_below="@+id/passRadio"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="54dp"
+            android:onClick="login"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/editText"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="47dp"
-            android:maxWidth="100dp"
-            android:maxHeight="50dp"
-            android:background="@drawable/ic_launcher" />
+            android:layout_marginTop="122dp"/>
 
-        <Button
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:ems="10"
+            android:id="@+id/editText2"
+            android:layout_below="@+id/editText"
+            android:layout_alignParentStart="true"/>
+
+        <RadioGroup
+            android:id="@+id/radioGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+        <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Passenger"
-            android:id="@+id/passengerBtn"
-            android:layout_below="@+id/imageView2"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="53dp"
-            android:onClick="sendMessage"/>
+            android:text="@string/passenger"
+            android:id="@+id/passRadio"
+            android:layout_below="@+id/driverRadio"
+            android:layout_centerHorizontal="true"/>
 
-        <ImageView
+        <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/imageView2"
-            android:layout_centerVertical="true"
+            android:text="@string/driver"
+            android:id="@+id/driverRadio"
+            android:layout_below="@+id/editText2"
             android:layout_centerHorizontal="true"
-            android:src="@drawable/ic_launcher" />
+            android:checked="true"/>
 
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Driver"
-            android:id="@+id/driverBtn"
-            android:layout_below="@+id/imageView"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="43dp"
-            />
-
+        </RadioGroup>
 
     </RelativeLayout>
 
