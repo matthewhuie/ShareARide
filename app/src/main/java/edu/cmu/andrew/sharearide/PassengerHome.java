@@ -482,7 +482,7 @@ public class PassengerHome extends FragmentActivity
                     //Log.i("price info: ", priceObject.get("estimate").toString());
                     estimates[0] =   '$'+String.valueOf(lowestEstimateForProduct);
                     estimates[1] =   durationMin + " minutes " + durationSec + " seconds";
-                    estimates[2] =   String.valueOf(dest_longitude);
+                    estimates[2] =   durationMin + " minutes " + durationSec + " seconds";
 
                 }
                 catch (org.json.JSONException jsone) {
