@@ -24,17 +24,16 @@
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="@string/google_maps_key" />
-
-        <meta-data android:name="com.google.android.gms.version"
+        <meta-data
+            android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".MapsActivity"
+            android:name=".PassengerHome"
             android:label="@string/title_activity_maps" >
-
         </activity>
         <activity
-            android:name=".DriverPassenger"
+            android:name=".Login"
             android:label="@string/title_activity_driver_passenger" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -47,8 +46,8 @@
             android:label="@string/title_activity_driver_request" >
         </activity>
         <activity
-            android:name=".PassengerRequested"
-            android:label="@string/title_activity_pssnger_requested" >
+            android:name=".DriverHome"
+            android:label="@string/title_activity_driver_home" >
         </activity>
     </application>
 

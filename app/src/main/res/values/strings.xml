@@ -16,12 +16,13 @@
     <string name="passenger">Passenger</string>
     <string name="driver">Driver</string>
 
-
     <string-array name="riderNumbers">
         <item>1</item>
         <item>2</item>
         <item>3</item>
         <item>4</item>
-        </string-array>
+    </string-array>
+
+    <string name="title_activity_driver_home">DriverHome</string>
 
 </resources>

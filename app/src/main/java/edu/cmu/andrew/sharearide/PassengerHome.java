@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -62,7 +61,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import edu.cmu.andrew.utilities.PlaceJSONParser;
 
-public class MapsActivity extends FragmentActivity
+public class PassengerHome extends FragmentActivity
     implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
   private GoogleMap mMap; // Might be null if Google Play services APK is not available.
@@ -84,7 +83,7 @@ public class MapsActivity extends FragmentActivity
   @Override
   protected void onCreate (Bundle savedInstanceState) {
     super.onCreate (savedInstanceState);
-    setContentView (R.layout.activity_maps);
+    setContentView (R.layout.activity_passenger_home);
     buildGoogleApiClient ();
     setUpMapIfNeeded ();
       setupSpinner();
