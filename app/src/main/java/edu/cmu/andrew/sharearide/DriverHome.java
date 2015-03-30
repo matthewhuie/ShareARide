@@ -57,12 +57,6 @@ public class DriverHome extends FragmentActivity implements GoogleApiClient.Conn
         super.onStop();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_driver_home, menu);
-        return true;
-    }
 
     private void setUpMapIfNeeded () {
         // Do a null check to confirm that we have not already instantiated the map.
