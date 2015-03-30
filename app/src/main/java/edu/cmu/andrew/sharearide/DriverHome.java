@@ -62,7 +62,7 @@ public class DriverHome extends FragmentActivity implements GoogleApiClient.Conn
         // Do a null check to confirm that we have not already instantiated the map.
         if (mMap == null) {
             // Try to obtain the map from the SupportMapFragment.
-            mMap = ((SupportMapFragment) getSupportFragmentManager ().findFragmentById (R.id.map))
+            mMap = ((SupportMapFragment) getSupportFragmentManager ().findFragmentById (R.id.driver_map))
                     .getMap ();
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
@@ -101,7 +101,7 @@ public class DriverHome extends FragmentActivity implements GoogleApiClient.Conn
             String thisPlace = (places.isEmpty() ? null : places.get (0).getAddressLine (0));
 
             // Prints current location to TextView
-            ((TextView) findViewById (R.id.my_location)).setText ("Current location: " + thisPlace);
+            ((TextView) findViewById (R.id.driver_location)).setText ("Current location: " + thisPlace);
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom (new LatLng (latitude, longitude), 13));
         }
     }
