@@ -15,7 +15,10 @@ import javax.inject.Named;
 /**
  * An endpoint class we are exposing
  */
-@Api (name = "myApi", version = "v1", namespace = @ApiNamespace (ownerDomain = "backend.sharearide.andrew.cmu.edu", ownerName = "backend.sharearide.andrew.cmu.edu", packagePath = ""))
+@Api (name = "myApi", version = "v1", namespace = @ApiNamespace (
+    ownerDomain = "backend.sharearide.andrew.cmu.edu",
+    ownerName = "backend.sharearide.andrew.cmu.edu",
+    packagePath = ""))
 public class MyEndpoint {
 
   /**
