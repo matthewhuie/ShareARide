@@ -34,7 +34,7 @@ public class MyEndpoint {
     return queryUser ("user_type='Driver'");
   }
 
-  @ApiMethod (name = "userLogin")
+  /**@ApiMethod (name = "userLogin")
   public UserBean userLogin (@Named("username") String username,
                            @Named("secret") String secret,
                            @Named("userType") String userType,
@@ -50,7 +50,7 @@ public class MyEndpoint {
     }
 
     return response;
-  }
+  }*/
 
   @ApiMethod (name = "userLogout")
   public UserBean userLogout (@Named("username") String username) {
@@ -74,6 +74,7 @@ public class MyEndpoint {
         ub.setLongitude (rs.getDouble (7));
         ub.setLatitude (rs.getDouble (8));
         ub.setUserType (rs.getString (9));
+        al.add (ub);
       }
       disconnect (conn);
     } catch (Exception e) {
@@ -81,6 +82,8 @@ public class MyEndpoint {
       PrintWriter pw = new PrintWriter (sw);
       e.printStackTrace (pw);
     }
+
+    return al;
   }
 
   private Connection connect () throws ClassNotFoundException, SQLException {
