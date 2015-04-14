@@ -16,13 +16,13 @@ import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Named;
 
-/**
- * An endpoint class we are exposing
- */
 @Api (name = "shareARideApi", version = "v1", namespace = @ApiNamespace (
     ownerDomain = "backend.sharearide.andrew.cmu.edu",
     ownerName = "backend.sharearide.andrew.cmu.edu",
@@ -30,19 +30,20 @@ import javax.inject.Named;
 public class MyEndpoint {
 
   @ApiMethod (name = "getAvailableDrivers")
-  public MyBean getAvailableDrivers () {
+  public List<RSBean> getAvailableDrivers () {
     return query ("SELECT * FROM User WHERE user_type='Driver'",
         new String []{"user_name","longitude","latitude"});
   }
 
   @ApiMethod (name = "userLogin")
-  public MyBean userLogin (@Named("username") String username,
+  public RSBean userLogin (@Named("username") String username,
                            @Named("secret") String secret,
+                           @Named("userType") String userType,
                            @Named("longitude") float longitude,
                            @Named("latitude") float latitude) {
-    MyBean query = query ("SELECT * FROM User WHERE user_name='" + username + "'",
-        new String []{"secret","longitude","latitude"});
-    MyBean response = new MyBean ();
+    RSBean query = query ("SELECT * FROM User WHERE user_name='" + username + "'",
+        new String []{"secret","longitude","latitude"}).get (0);
+    RSBean response = new RSBean ();
     String[] result = query.getData().split (",");
     if (result.length == 0 || ! secret.equals (result[0])) {
       response.setData ("false");
@@ -53,38 +54,50 @@ public class MyEndpoint {
     return response;
   }
 
-  private MyBean query (String query, String... columns) {
-    MyBean response = new MyBean ();
-    String url = null;
-    try {
-      if (SystemProperty.environment.value() == SystemProperty.Environment.Value.Production) {
-        Class.forName ("com.mysql.jdbc.GoogleDriver");
-        url = "jdbc:google:mysql://vivid-art-90101:ridesharing/ridesharing?user=cmu&password=cmu";
-      } else {
-        Class.forName ("com.mysql.jdbc.Driver");
-        url = "jdbc:mysql://173.194.242.26:3306/ridesharing?user=cmu&password=cmu";
-      }
-        Connection conn = DriverManager.getConnection (url);
-      try {
-        Statement statement = conn.createStatement ();
-        ResultSet rs = statement.executeQuery (query);
-        while (rs.next ()) {
-          for (String s : columns) {
-            response.appendData (rs.getString (s));
-          }
-          response.appendData ("|");
-        }
-      } finally {
-        conn.close();
-      }
-    } catch (Exception e) {
-      StringWriter sw = new StringWriter();
-      PrintWriter pw = new PrintWriter (sw);
-      e.printStackTrace (pw);
-      response.setData (sw.toString());
-    }
-
-    return response;
+  @ApiMethod (name = "userLogout")
+  public RSBean userLogout (@Named("username") String username) {
+    return null;
   }
 
+  private List<RSBean> query (String query, String... columns) {
+    ArrayList<RSBean> al = new ArrayList<RSBean> ();
+    try {
+      Connection conn = connect ();
+      Statement statement = conn.createStatement ();
+      ResultSet rs = statement.executeQuery (query);
+      while (rs.next ()) {
+        RSBean response = new RSBean ();
+        for (String s : columns) {
+          response.setData (response.getData () + " " + rs.getString (s));
+        }
+        al.add (response);
+      }
+      disconnect (conn);
+    } catch (Exception e) {
+      StringWriter sw = new StringWriter ();
+      PrintWriter pw = new PrintWriter (sw);
+      e.printStackTrace (pw);
+    }
+
+    return al;
+  }
+
+  private Connection connect () throws ClassNotFoundException, SQLException {
+    String url = null;
+    Connection conn = null;
+    if (SystemProperty.environment.value () == SystemProperty.Environment.Value.Production) {
+      Class.forName ("com.mysql.jdbc.GoogleDriver");
+      url = "jdbc:google:mysql://vivid-art-90101:ridesharing/ridesharing?user=cmu&password=cmu";
+    } else {
+      Class.forName ("com.mysql.jdbc.Driver");
+      url = "jdbc:mysql://173.194.242.26:3306/ridesharing?user=cmu&password=cmu";
+    }
+    conn = DriverManager.getConnection (url);
+
+    return conn;
+  }
+
+  private void disconnect (Connection conn) throws SQLException {
+    conn.close ();
+  }
 }
