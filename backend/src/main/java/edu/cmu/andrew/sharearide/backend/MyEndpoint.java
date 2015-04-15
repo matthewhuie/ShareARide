@@ -1,9 +1,3 @@
-/*
-   For step-by-step instructions on connecting your Android application to this backend module,
-   see "App Engine Java Endpoints Module" template documentation at
-   https://github.com/GoogleCloudPlatform/gradle-appengine-templates/tree/master/HelloEndpoints
-*/
-
 package edu.cmu.andrew.sharearide.backend;
 
 import com.google.api.server.spi.config.Api;
@@ -20,6 +14,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.inject.Named;
 
@@ -29,51 +24,31 @@ import javax.inject.Named;
     packagePath = ""))
 public class MyEndpoint {
 
+  private static final Logger log = Logger.getLogger(MyEndpoint.class.getName());
+
   @ApiMethod (name = "getAvailableDrivers")
   public List<UserBean> getAvailableDrivers () {
     return queryUser ("user_type='Driver'");
   }
 
-  /**@ApiMethod (name = "userLogin")
-  public UserBean userLogin (@Named("username") String username,
-                           @Named("secret") String secret,
-                           @Named("userType") String userType,
-                           @Named("longitude") float longitude,
-                           @Named("latitude") float latitude) {
-    UserBean query = queryUser ("user_name='" + username + "'");
-    UserBean response = new UserBean ();
-    String[] result = query.getData().split (",");
-    if (result.length == 0 || ! secret.equals (result[0])) {
-      response.setData ("false");
-    } else {
-      response.setData ("true");
-    }
-
-    return response;
-  }*/
-
-  @ApiMethod (name = "userLogout")
-  public UserBean userLogout (@Named("username") String username) {
-    return null;
-  }
-
-  public List<UserBean> queryUser (@Named("where") String where) {
-    ArrayList<UserBean> al = new ArrayList<UserBean> ();
-    try (Connection conn = connect ()) {
+  private List<UserBean> queryUser (String where) {
+    ArrayList<UserBean> al = new ArrayList<> ();
+    try {
+      Connection conn = connect ();
       Statement statement = conn.createStatement ();
-      ResultSet rs = statement.executeQuery ("SELECT * FROM User WHERE" + where);
+      ResultSet rs = statement.executeQuery ("SELECT * FROM User WHERE " + where);
       while (rs.next ()) {
         UserBean ub = new UserBean ();
-        ub.setUserID (rs.getInt (0));
-        ub.setUserName (rs.getString (1));
-        ub.setSecret (rs.getString (2));
-        ub.setFirstName (rs.getString (3));
-        ub.setLastName (rs.getString (4));
-        ub.setPhoneNumber (rs.getInt (5));
-        ub.setEmail (rs.getString (6));
-        ub.setLongitude (rs.getDouble (7));
-        ub.setLatitude (rs.getDouble (8));
-        ub.setUserType (rs.getString (9));
+        ub.setUserID (rs.getInt (1));
+        ub.setUserName (rs.getString (2));
+        ub.setSecret (rs.getString (3));
+        ub.setFirstName (rs.getString (4));
+        ub.setLastName (rs.getString (5));
+        ub.setPhoneNumber (rs.getInt (6));
+        ub.setEmail (rs.getString (7));
+        ub.setLongitude (rs.getDouble (8));
+        ub.setLatitude (rs.getDouble (9));
+        ub.setUserType (rs.getString (10));
         al.add (ub);
       }
       disconnect (conn);
@@ -81,6 +56,7 @@ public class MyEndpoint {
       StringWriter sw = new StringWriter ();
       PrintWriter pw = new PrintWriter (sw);
       e.printStackTrace (pw);
+      log.severe (sw.toString ());
     }
 
     return al;
