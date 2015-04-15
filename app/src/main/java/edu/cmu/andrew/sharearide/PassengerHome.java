@@ -1,6 +1,5 @@
 package edu.cmu.andrew.sharearide;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
@@ -65,8 +64,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import edu.cmu.andrew.sharearide.backend.shareARideApi.ShareARideApi;
-import edu.cmu.andrew.sharearide.backend.shareARideApi.model.RSBean;
+import edu.cmu.andrew.sharearide.backend.shareARideApi.model.UserBean;
 
+import edu.cmu.andrew.sharearide.backend.shareARideApi.model.UserBeanCollection;
 import edu.cmu.andrew.utilities.PlaceJSONParser;
 
 public class PassengerHome extends FragmentActivity
@@ -643,7 +643,7 @@ public class PassengerHome extends FragmentActivity
 
             pickUpLocation = urls[0];
 
-            List<RSBean> taxis = queryTaxi();
+            UserBeanCollection taxis = queryTaxi();
             Log.i("Taxi list: ", taxis.toString());
 
             return taxiSearching(taxis);
@@ -656,36 +656,37 @@ public class PassengerHome extends FragmentActivity
             setUpDriverLocation(Double.parseDouble(result[0]), Double.parseDouble(result[1]), result[2]);
         }
 
-        private List<RSBean> queryTaxi() {
+        private UserBeanCollection queryTaxi() {
 
             try {
+                Log.i("In queryTaxi : ", " executed");
                 return myApiService.getAvailableDrivers().execute();
+
             } catch (IOException e) {
-                return new ArrayList<RSBean>();
+                return new UserBeanCollection();
             }
 
-            Log.i("In queryTaxi : ", " executed");
+
         }
 
-        private String[] taxiSearching(List<RSBean> taxis) {
+        private String[] taxiSearching(UserBeanCollection taxis) {
             double taxiLatitude = 0;
             double taxiLongitude = 0;
             double minTaxiLatitude = 0;
             double minTaxiLongitude = 0;
             String taxiPlaceTxt = "";
-            String minDriverID = "";
-            String driverID = "";
+            int minDriverID = 0;
+            int driverID = 0;
             int minDuration = 0;
             int durationVal = 0;
             String minDurTxt = "";
             String durationTxt = "";
 
-            for(RSBean taxi : taxis) {
+            for(UserBean taxi : taxis.getItems()) {
 
-
-                taxiLatitude = taxi.getData();
-                taxiLongitude = taxi.getData();
-                driverID = taxi.getData();
+                taxiLatitude = taxi.getLatitude();
+                taxiLongitude = taxi.getLongitude();
+                driverID = taxi.getUserID();
 
                 LatLng currTaxi = new LatLng(taxiLatitude, taxiLongitude);
 
