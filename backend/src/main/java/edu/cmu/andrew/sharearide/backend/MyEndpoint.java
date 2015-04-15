@@ -62,6 +62,89 @@ public class MyEndpoint {
     return al;
   }
 
+  private List<TripBean> queryTrip (String where) {
+    ArrayList<TripBean> al = new ArrayList<> ();
+    try {
+      Connection conn = connect ();
+      Statement statement = conn.createStatement ();
+      ResultSet rs = statement.executeQuery ("SELECT * FROM User WHERE " + where);
+      while (rs.next ()) {
+        TripBean ub = new TripBean ();
+        ub.setTripId (rs.getInt (1));
+        ub.setDriverUserId (rs.getInt (2));
+        ub.setNumOfRiders (rs.getInt (3));
+        ub.setActive (rs.getBoolean (4));
+        ub.setHasEnded (rs.getBoolean (5));
+        al.add (ub);
+      }
+      disconnect (conn);
+    } catch (Exception e) {
+      StringWriter sw = new StringWriter ();
+      PrintWriter pw = new PrintWriter (sw);
+      e.printStackTrace (pw);
+      log.severe (sw.toString ());
+    }
+
+    return al;
+  }
+
+  private List<RequestBean> queryRequest (String where) {
+    ArrayList<RequestBean> al = new ArrayList<> ();
+    try {
+      Connection conn = connect ();
+      Statement statement = conn.createStatement ();
+      ResultSet rs = statement.executeQuery ("SELECT * FROM User WHERE " + where);
+      while (rs.next ()) {
+        RequestBean ub = new RequestBean ();
+        ub.setRequestId (rs.getInt (1));
+        ub.setPassUserId (rs.getInt (2));
+        ub.setSrcLongitude (rs.getDouble (3));
+        ub.setSrcLatitude (rs.getDouble (4));
+        ub.setDstLongitude (rs.getDouble (5));
+        ub.setDstLatitude (rs.getDouble (6));
+        ub.setFare (rs.getDouble (7));
+        ub.setLatestTime (rs.getTimestamp (8));
+        ub.setPassRating (rs.getInt (9));
+        ub.setDriverRating (rs.getInt (10));
+        ub.setStartTime (rs.getTimestamp (11));
+        ub.setEndTime (rs.getTimestamp (12));
+        ub.setServed (rs.getBoolean (13));
+        al.add (ub);
+      }
+      disconnect (conn);
+    } catch (Exception e) {
+      StringWriter sw = new StringWriter ();
+      PrintWriter pw = new PrintWriter (sw);
+      e.printStackTrace (pw);
+      log.severe (sw.toString ());
+    }
+
+    return al;
+  }
+
+  private List<TripRequestBean> queryTripRequest (String where) {
+    ArrayList<TripRequestBean> al = new ArrayList<> ();
+    try {
+      Connection conn = connect ();
+      Statement statement = conn.createStatement ();
+      ResultSet rs = statement.executeQuery ("SELECT * FROM Trip_Request WHERE " + where);
+      while (rs.next ()) {
+        TripRequestBean ub = new TripRequestBean ();
+        ub.setTripId (rs.getInt (1));
+        ub.setRequestId (rs.getInt (2));
+        al.add (ub);
+      }
+      disconnect (conn);
+    } catch (Exception e) {
+      StringWriter sw = new StringWriter ();
+      PrintWriter pw = new PrintWriter (sw);
+      e.printStackTrace (pw);
+      log.severe (sw.toString ());
+    }
+
+    return al;
+  }
+
   private Connection connect () throws ClassNotFoundException, SQLException {
     String url = null;
     Connection conn = null;

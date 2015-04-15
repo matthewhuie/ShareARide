@@ -1,20 +1,9 @@
 package edu.cmu.andrew.sharearide.backend;
 
-import java.util.ArrayList;
-
 public class TripRequestBean {
 
     private int tripId;
     private ArrayList<RequestBean> requests = new ArrayList<>();
-    private double actualDistance;
-
-    public double getActualDistance() {
-        return actualDistance;
-    }
-
-    public void setActualDistance(double actualDistance) {
-        this.actualDistance = actualDistance;
-    }
 
     public int getTripId() {
         return tripId;
@@ -28,7 +17,12 @@ public class TripRequestBean {
         return requests;
     }
 
-    public void setRequests(ArrayList<RequestBean> requests) {
-        this.requests = requests;
-    }
+  public int getRequestId () {
+    return requestId;
+  }
+
+  public void setRequestId (int requestId) {
+    this.requestId = requestId;
+  }
+
 }
