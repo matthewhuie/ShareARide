@@ -627,18 +627,20 @@ public class PassengerHome extends FragmentActivity
                         // options for running against local devappserver
                         // - 10.0.2.2 is localhost's IP address in Android emulator
                         // - turn off compression when running against local devappserver
-                        .setRootUrl("http://vivid-art-90101.appspot.com/_ah/api/")
-                        .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
-                            @Override
-                            public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest) throws IOException {
-                                abstractGoogleClientRequest.setDisableGZipContent(true);
-                            }
-                        });
+                        .setRootUrl("http://vivid-art-90101.appspot.com/_ah/api/");
+                        //.setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
+                        //    @Override
+                        //    public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest) throws IOException {
+                        //        abstractGoogleClientRequest.setDisableGZipContent(true);
+                        //    }
+                        //}
+            //);
 
 
                 // end options for devappserver
 
                 myApiService = builder.build();
+                Log.i("API Backend Connection: ", myApiService.toString());
             }
 
             pickUpLocation = urls[0];
@@ -660,9 +662,12 @@ public class PassengerHome extends FragmentActivity
 
             try {
                 Log.i("In queryTaxi : ", " executed");
-                return myApiService.getAvailableDrivers().execute();
+                UserBeanCollection usc = myApiService.getAvailableDrivers().execute();
+                Log.i("Query result : ", usc.toString());
+                return usc;
 
             } catch (IOException e) {
+                Log.i("Query result error: ", e.getMessage().toString());
                 return new UserBeanCollection();
             }
 
@@ -681,70 +686,71 @@ public class PassengerHome extends FragmentActivity
             int durationVal = 0;
             String minDurTxt = "";
             String durationTxt = "";
+            if(taxis.getItems() != null) {
+                for (UserBean taxi : taxis.getItems()) {
 
-            for(UserBean taxi : taxis.getItems()) {
+                    taxiLatitude = taxi.getLatitude();
+                    taxiLongitude = taxi.getLongitude();
+                    driverID = taxi.getUserID();
 
-                taxiLatitude = taxi.getLatitude();
-                taxiLongitude = taxi.getLongitude();
-                driverID = taxi.getUserID();
+                    LatLng currTaxi = new LatLng(taxiLatitude, taxiLongitude);
 
-                LatLng currTaxi = new LatLng(taxiLatitude, taxiLongitude);
-
-                String place_url = REV_GEOCODE_BASE_URL + taxiLatitude + "," + taxiLongitude + "&key=" + getString(R.string.google_maps_places_key);
-
-                try {
-
-                    String json = getRemoteJSON(place_url);
-                    JSONObject routeObject = new JSONObject(json);
-                    //System.out.println(priceObject.get("prices"));
-                    JSONArray results = routeObject.getJSONArray("results");
-                    //Each element of the routes array contains a single result from the specified origin and destination.
-                    JSONObject result = (JSONObject)results.get(0);
-                    taxiPlaceTxt = result.get("formatted_address").toString();
-
-
-                }
-                catch (org.json.JSONException jsone) {
-                    Log.i("Hit the JSON error: ", jsone.toString());
-                }
-
-
-                if(!taxiPlaceTxt.equals("")) {
-
-                    String url = DIRECTION_BASE_URL + "origin=" + pickUpLocation.replaceAll(" ", "+") + "&destination=" + taxiPlaceTxt.replaceAll(" ", "+") + "&key=" + getString(R.string.google_maps_places_key);
-
+                    String place_url = REV_GEOCODE_BASE_URL + taxiLatitude + "," + taxiLongitude + "&key=" + getString(R.string.google_maps_places_key);
 
                     try {
 
-                        String json = getRemoteJSON(url);
+                        String json = getRemoteJSON(place_url);
                         JSONObject routeObject = new JSONObject(json);
                         //System.out.println(priceObject.get("prices"));
-                        JSONArray routes = routeObject.getJSONArray("routes");
+                        JSONArray results = routeObject.getJSONArray("results");
                         //Each element of the routes array contains a single result from the specified origin and destination.
-                        JSONObject route = (JSONObject) routes.get(0);
-                        JSONArray legs = route.getJSONArray("legs");
-                        //For routes that contain no waypoints, the route will consist of a single "leg
-                        JSONObject leg = (JSONObject) legs.get(0);
-                        JSONObject duration = (JSONObject) leg.get("duration");
-                        durationVal = Integer.valueOf(duration.get("value").toString());
-                        durationTxt = duration.get("text").toString();
+                        JSONObject result = (JSONObject) results.get(0);
+                        taxiPlaceTxt = result.get("formatted_address").toString();
+
 
                     } catch (org.json.JSONException jsone) {
                         Log.i("Hit the JSON error: ", jsone.toString());
                     }
 
-                }
-                if(durationVal != 0 && durationVal < minDuration) {
-                    minDuration = durationVal;
-                    minDurTxt = durationTxt;
-                    minTaxiLatitude = taxiLatitude;
-                    minTaxiLongitude = taxiLongitude;
-                    minDriverID = driverID;
-                }
 
+                    if (!taxiPlaceTxt.equals("")) {
+
+                        String url = DIRECTION_BASE_URL + "origin=" + pickUpLocation.replaceAll(" ", "+") + "&destination=" + taxiPlaceTxt.replaceAll(" ", "+") + "&key=" + getString(R.string.google_maps_places_key);
+
+
+                        try {
+
+                            String json = getRemoteJSON(url);
+                            JSONObject routeObject = new JSONObject(json);
+                            //System.out.println(priceObject.get("prices"));
+                            JSONArray routes = routeObject.getJSONArray("routes");
+                            //Each element of the routes array contains a single result from the specified origin and destination.
+                            JSONObject route = (JSONObject) routes.get(0);
+                            JSONArray legs = route.getJSONArray("legs");
+                            //For routes that contain no waypoints, the route will consist of a single "leg
+                            JSONObject leg = (JSONObject) legs.get(0);
+                            JSONObject duration = (JSONObject) leg.get("duration");
+                            durationVal = Integer.valueOf(duration.get("value").toString());
+                            durationTxt = duration.get("text").toString();
+
+                        } catch (org.json.JSONException jsone) {
+                            Log.i("Hit the JSON error: ", jsone.toString());
+                        }
+
+                    }
+                    if (durationVal != 0 && durationVal < minDuration) {
+                        minDuration = durationVal;
+                        minDurTxt = durationTxt;
+                        minTaxiLatitude = taxiLatitude;
+                        minTaxiLongitude = taxiLongitude;
+                        minDriverID = driverID;
+                    }
+
+                }
             }
+            return new String[]{String.valueOf(minTaxiLatitude), String.valueOf(minTaxiLongitude), minDurTxt};
 
-            return new String[] {String.valueOf(minTaxiLatitude), String.valueOf(minTaxiLongitude), minDurTxt};
+
 
         }
 
