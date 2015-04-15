@@ -145,6 +145,36 @@ public class MyEndpoint {
     return al;
   }
 
+  public void testAddUser (@Named("s") String s) {
+    UserBean ub = new UserBean ();
+    ub.setUserID (200);
+    ub.setUserName (s);
+    ub.setSecret (s);
+    ub.setFirstName (s);
+    ub.setLastName (s);
+  }
+
+  private void updateUser (UserBean ub) {
+    try {
+      Connection conn = connect ();
+      Statement statement = conn.createStatement ();
+      statement.executeUpdate ("INSERT INTO User (user_id, user_name, secret, first_name, last_name," +
+          "phone_number, email, longitude, latitude, user_type) VALUES (" + ub.getUserID () + ", \"" +
+          ub.getUserName () + "\", \"" + ub.getSecret () + "\", \"" + ub.getFirstName () + "\", \"" +
+          ub.getLastName () + "\", " + ub.getPhoneNumber () + ", \"" + ub.getEmail () + "\", " +
+          ub.getLongitude () + ", " + ub.getLatitude () + ", \"" + ub.getUserType () + "\") " +
+          "ON DUPLICATE KEY UPDATE user_id=VALUES(user_id), user_name=VALUES(user_name), " +
+          "secret=VALUES(secret), first_name=VALUES(first_name), last_name=VALUES(last_name)," +
+          "phone_number=VALUES(phone_number), email=VALUES(email), longitude=VALUES(longitude)," +
+          "latitude=VALUES(latitude), user_type=VALUES(user_type)");
+    } catch (Exception e) {
+      StringWriter sw = new StringWriter ();
+      PrintWriter pw = new PrintWriter (sw);
+      e.printStackTrace (pw);
+      log.severe (sw.toString ());
+    }
+  }
+
   private Connection connect () throws ClassNotFoundException, SQLException {
     String url = null;
     Connection conn = null;
