@@ -35,6 +35,10 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.extensions.android.json.AndroidJsonFactory;
+import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
+import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -59,6 +63,10 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import edu.cmu.andrew.sharearide.backend.shareARideApi.ShareARideApi;
+import edu.cmu.andrew.sharearide.backend.shareARideApi.model.UserBean;
+
+import edu.cmu.andrew.sharearide.backend.shareARideApi.model.UserBeanCollection;
 import edu.cmu.andrew.utilities.PlaceJSONParser;
 
 public class PassengerHome extends FragmentActivity
@@ -66,11 +74,13 @@ public class PassengerHome extends FragmentActivity
 
   private GoogleMap mMap; // Might be null if Google Play services APK is not available.
   private GoogleApiClient mGoogleApiClient;
+  private static ShareARideApi myApiService = null;
   private Location mLastLocation;
   private double latitude;
   private double longitude;
 
   private static final String GEOCODE_BASE_URL = "https://maps.googleapis.com/maps/api/geocode/xml?address=";
+  private static final String REV_GEOCODE_BASE_URL =  "https://maps.googleapis.com/maps/api/geocode/json?latlng=";
   private static final String UBER_PRICE_BASE_URL = "https://api.uber.com/v1/estimates/price?";
   private static final String DIRECTION_BASE_URL = "https://maps.googleapis.com/maps/api/directions/json?";
   private static final String GOOGLE_AUTOCOMPLETE_URL = "https://maps.googleapis.com/maps/api/place/autocomplete/";
@@ -343,7 +353,20 @@ public class PassengerHome extends FragmentActivity
       }
   }
 
-
+    private void setUpDriverLocation(double driver_latitude, double driver_longitude, String minDurTxt) {
+        Log.i("add marker", "method executed");
+        if (mMap != null) {
+            Log.i("map not null", "method executed");
+            System.out.println("In setUpDriverLocation" + driver_latitude + driver_longitude);
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom (new LatLng (driver_latitude, driver_longitude),13));
+            //Marker marker_origin = mMap.addMarker(new MarkerOptions()
+            //      .position(new LatLng(latitude, longitude))
+            //    .title("Your pickup location: " + pickUpLocation));
+            Marker marker_destination = mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(driver_latitude, driver_longitude))
+                    .title("Your driver is" + minDurTxt + " away from you"));
+        }
+    }
 
 
   protected synchronized void buildGoogleApiClient() {
@@ -400,7 +423,7 @@ public class PassengerHome extends FragmentActivity
       //calculatePriceAndTime(destinationTxt);
 
       new AsyncGooglePlaceSearch().execute(pickUpLocation, destinationTxt);
-
+      new EndpointsAsyncTask().execute(pickUpLocation);
 
 
 
@@ -583,24 +606,173 @@ public class PassengerHome extends FragmentActivity
             }
         }
 
-        private String getRemoteJSON(String url) {
-            String json = null;
-            try {
-                HttpClient httpClient = new DefaultHttpClient();
-                HttpGet priceRequest = new HttpGet(url);
-                HttpResponse httpResult = httpClient.execute(priceRequest);
-                json = EntityUtils.toString(httpResult.getEntity(), "UTF-8");
-            } catch (MalformedURLException e) {
-                Log.i("Hit the malformedURLerror: ", e.toString());
-            } catch (IOException ioe) {
-                Log.i("Hit the IO error: ", ioe.toString());
-            }
 
-            return json;
-        }
 
 
     }
+
+
+    class EndpointsAsyncTask extends AsyncTask<String, Void, String[]> {
+
+        private String pickUpLocation;
+
+
+        @Override
+        protected String[] doInBackground(String... urls) {
+
+            if(myApiService == null) {  // Only do this once
+
+                ShareARideApi.Builder builder = new ShareARideApi.Builder(AndroidHttp.newCompatibleTransport(),
+                        new AndroidJsonFactory(), null)
+                        // options for running against local devappserver
+                        // - 10.0.2.2 is localhost's IP address in Android emulator
+                        // - turn off compression when running against local devappserver
+                        .setRootUrl("http://vivid-art-90101.appspot.com/_ah/api/")
+                        .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
+                            @Override
+                            public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest) throws IOException {
+                                abstractGoogleClientRequest.setDisableGZipContent(true);
+                            }
+                        });
+
+
+                // end options for devappserver
+
+                myApiService = builder.build();
+            }
+
+            pickUpLocation = urls[0];
+
+            UserBeanCollection taxis = queryTaxi();
+            Log.i("Taxi list: ", taxis.toString());
+
+            return taxiSearching(taxis);
+
+        }
+
+        @Override
+        protected void onPostExecute(String[] result) {
+            //Toast.makeText(context, result, Toast.LENGTH_LONG).show();
+            setUpDriverLocation(Double.parseDouble(result[0]), Double.parseDouble(result[1]), result[2]);
+        }
+
+        private UserBeanCollection queryTaxi() {
+
+            try {
+                Log.i("In queryTaxi : ", " executed");
+                return myApiService.getAvailableDrivers().execute();
+
+            } catch (IOException e) {
+                return new UserBeanCollection();
+            }
+
+
+        }
+
+        private String[] taxiSearching(UserBeanCollection taxis) {
+            double taxiLatitude = 0;
+            double taxiLongitude = 0;
+            double minTaxiLatitude = 0;
+            double minTaxiLongitude = 0;
+            String taxiPlaceTxt = "";
+            int minDriverID = 0;
+            int driverID = 0;
+            int minDuration = 0;
+            int durationVal = 0;
+            String minDurTxt = "";
+            String durationTxt = "";
+
+            for(UserBean taxi : taxis.getItems()) {
+
+                taxiLatitude = taxi.getLatitude();
+                taxiLongitude = taxi.getLongitude();
+                driverID = taxi.getUserID();
+
+                LatLng currTaxi = new LatLng(taxiLatitude, taxiLongitude);
+
+                String place_url = REV_GEOCODE_BASE_URL + taxiLatitude + "," + taxiLongitude + "&key=" + getString(R.string.google_maps_places_key);
+
+                try {
+
+                    String json = getRemoteJSON(place_url);
+                    JSONObject routeObject = new JSONObject(json);
+                    //System.out.println(priceObject.get("prices"));
+                    JSONArray results = routeObject.getJSONArray("results");
+                    //Each element of the routes array contains a single result from the specified origin and destination.
+                    JSONObject result = (JSONObject)results.get(0);
+                    taxiPlaceTxt = result.get("formatted_address").toString();
+
+
+                }
+                catch (org.json.JSONException jsone) {
+                    Log.i("Hit the JSON error: ", jsone.toString());
+                }
+
+
+                if(!taxiPlaceTxt.equals("")) {
+
+                    String url = DIRECTION_BASE_URL + "origin=" + pickUpLocation.replaceAll(" ", "+") + "&destination=" + taxiPlaceTxt.replaceAll(" ", "+") + "&key=" + getString(R.string.google_maps_places_key);
+
+
+                    try {
+
+                        String json = getRemoteJSON(url);
+                        JSONObject routeObject = new JSONObject(json);
+                        //System.out.println(priceObject.get("prices"));
+                        JSONArray routes = routeObject.getJSONArray("routes");
+                        //Each element of the routes array contains a single result from the specified origin and destination.
+                        JSONObject route = (JSONObject) routes.get(0);
+                        JSONArray legs = route.getJSONArray("legs");
+                        //For routes that contain no waypoints, the route will consist of a single "leg
+                        JSONObject leg = (JSONObject) legs.get(0);
+                        JSONObject duration = (JSONObject) leg.get("duration");
+                        durationVal = Integer.valueOf(duration.get("value").toString());
+                        durationTxt = duration.get("text").toString();
+
+                    } catch (org.json.JSONException jsone) {
+                        Log.i("Hit the JSON error: ", jsone.toString());
+                    }
+
+                }
+                if(durationVal != 0 && durationVal < minDuration) {
+                    minDuration = durationVal;
+                    minDurTxt = durationTxt;
+                    minTaxiLatitude = taxiLatitude;
+                    minTaxiLongitude = taxiLongitude;
+                    minDriverID = driverID;
+                }
+
+            }
+
+            return new String[] {String.valueOf(minTaxiLatitude), String.valueOf(minTaxiLongitude), minDurTxt};
+
+        }
+
+
+
+
+
+    }
+
+
+    private String getRemoteJSON(String url) {
+        String json = null;
+        try {
+            HttpClient httpClient = new DefaultHttpClient();
+            HttpGet priceRequest = new HttpGet(url);
+            HttpResponse httpResult = httpClient.execute(priceRequest);
+            json = EntityUtils.toString(httpResult.getEntity(), "UTF-8");
+        } catch (MalformedURLException e) {
+            Log.i("Hit the malformedURLerror: ", e.toString());
+        } catch (IOException ioe) {
+            Log.i("Hit the IO error: ", ioe.toString());
+        }
+
+        return json;
+    }
+
+
+
 
 
 }
