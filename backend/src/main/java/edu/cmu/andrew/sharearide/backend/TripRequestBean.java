@@ -1,25 +1,25 @@
 package edu.cmu.andrew.sharearide.backend;
 
-import java.util.ArrayList;
-
 public class TripRequestBean {
 
-    private int tripId;
-    private ArrayList<RequestBean> requests = new ArrayList<>();
+  private int tripId;
 
-    public int getTripId() {
-        return tripId;
-    }
+  private int requestId;
 
-    public void setTripId(int tripId) {
-        this.tripId = tripId;
-    }
+  public int getTripId () {
+    return tripId;
+  }
 
-    public ArrayList<RequestBean> getRequests() {
-        return requests;
-    }
+  public void setTripId (int tripId) {
+    this.tripId = tripId;
+  }
 
-    public void setRequests(ArrayList<RequestBean> requests) {
-        this.requests = requests;
-    }
+  public int getRequestId () {
+    return requestId;
+  }
+
+  public void setRequestId (int requestId) {
+    this.requestId = requestId;
+  }
+
 }
