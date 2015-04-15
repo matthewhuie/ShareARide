@@ -30,6 +30,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -364,7 +365,8 @@ public class PassengerHome extends FragmentActivity
             //    .title("Your pickup location: " + pickUpLocation));
             Marker marker_destination = mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(driver_latitude, driver_longitude))
-                    .title("Your driver is" + minDurTxt + " away from you"));
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+                    .title("Your driver is " + minDurTxt + " away from you"));
         }
     }
 
@@ -627,7 +629,7 @@ public class PassengerHome extends FragmentActivity
                         // options for running against local devappserver
                         // - 10.0.2.2 is localhost's IP address in Android emulator
                         // - turn off compression when running against local devappserver
-                        .setRootUrl("http://vivid-art-90101.appspot.com/_ah/api/");
+                        .setRootUrl("https://vivid-art-90101.appspot.com/_ah/api/");
                         //.setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
                         //    @Override
                         //    public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest) throws IOException {
@@ -682,20 +684,27 @@ public class PassengerHome extends FragmentActivity
             String taxiPlaceTxt = "";
             int minDriverID = 0;
             int driverID = 0;
-            int minDuration = 0;
+            int minDuration = 1000;
             int durationVal = 0;
             String minDurTxt = "";
             String durationTxt = "";
+
             if(taxis.getItems() != null) {
                 for (UserBean taxi : taxis.getItems()) {
 
                     taxiLatitude = taxi.getLatitude();
+
                     taxiLongitude = taxi.getLongitude();
+
+                    Log.i("latlng: ", String.valueOf(taxiLatitude));
+                    Log.i("latlng: ", String.valueOf(taxiLongitude));
                     driverID = taxi.getUserID();
 
                     LatLng currTaxi = new LatLng(taxiLatitude, taxiLongitude);
 
                     String place_url = REV_GEOCODE_BASE_URL + taxiLatitude + "," + taxiLongitude + "&key=" + getString(R.string.google_maps_places_key);
+
+                    Log.i("url: ", place_url.toString());
 
                     try {
 
@@ -706,6 +715,7 @@ public class PassengerHome extends FragmentActivity
                         //Each element of the routes array contains a single result from the specified origin and destination.
                         JSONObject result = (JSONObject) results.get(0);
                         taxiPlaceTxt = result.get("formatted_address").toString();
+                        Log.i("taxiPlaceTxt ", taxiPlaceTxt);
 
 
                     } catch (org.json.JSONException jsone) {
@@ -748,6 +758,8 @@ public class PassengerHome extends FragmentActivity
 
                 }
             }
+
+            Log.i("minDriver Location ", String.valueOf(minTaxiLatitude) + String.valueOf(minTaxiLongitude) + minDurTxt);
             return new String[]{String.valueOf(minTaxiLatitude), String.valueOf(minTaxiLongitude), minDurTxt};
 
 
