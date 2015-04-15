@@ -17,6 +17,15 @@ public class RequestBean {
     private Timestamp startTime;
     private Timestamp endTime;
     private boolean isServed;
+    private double distanceEstimated;
+
+    public double getDistanceEstimated() {
+        return distanceEstimated;
+    }
+
+    public void setDistanceEstimated(double distanceEstimated) {
+        this.distanceEstimated = distanceEstimated;
+    }
 
     public RequestBean(int requestId,double fare,float passRating){
         this.requestId = requestId;

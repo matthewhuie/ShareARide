@@ -6,6 +6,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * class that abstracts the business logic
+ * calls the google app engine endpoint methods
+ */
+
 public class AbstractFactory {
     Calendar calendar = Calendar.getInstance();
 
@@ -138,5 +143,7 @@ public class AbstractFactory {
 
         return result;
     }
+
+
 
 }

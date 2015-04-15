@@ -6,6 +6,15 @@ public class TripRequestBean {
 
     private int tripId;
     private ArrayList<RequestBean> requests = new ArrayList<>();
+    private double actualDistance;
+
+    public double getActualDistance() {
+        return actualDistance;
+    }
+
+    public void setActualDistance(double actualDistance) {
+        this.actualDistance = actualDistance;
+    }
 
     public int getTripId() {
         return tripId;
