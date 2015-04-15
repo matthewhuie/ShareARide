@@ -67,7 +67,7 @@ public class MyEndpoint {
     try {
       Connection conn = connect ();
       Statement statement = conn.createStatement ();
-      ResultSet rs = statement.executeQuery ("SELECT * FROM User WHERE " + where);
+      ResultSet rs = statement.executeQuery ("SELECT * FROM Trip WHERE " + where);
       while (rs.next ()) {
         TripBean ub = new TripBean ();
         ub.setTripId (rs.getInt (1));
@@ -93,7 +93,7 @@ public class MyEndpoint {
     try {
       Connection conn = connect ();
       Statement statement = conn.createStatement ();
-      ResultSet rs = statement.executeQuery ("SELECT * FROM User WHERE " + where);
+      ResultSet rs = statement.executeQuery ("SELECT * FROM Request WHERE " + where);
       while (rs.next ()) {
         RequestBean ub = new RequestBean ();
         ub.setRequestId (rs.getInt (1));
