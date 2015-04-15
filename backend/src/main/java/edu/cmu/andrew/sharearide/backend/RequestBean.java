@@ -18,6 +18,28 @@ public class RequestBean {
     private Timestamp endTime;
     private boolean isServed;
 
+    public RequestBean(int requestId,double fare,float passRating){
+        this.requestId = requestId;
+        this.fare = fare;
+        this.passRating = passRating;
+    }
+
+    public RequestBean(int requestId,float driverRating){
+        this.requestId = requestId;
+        //this.fare = fare;
+        this.driverRating = driverRating;
+    }
+
+    public RequestBean(int passUserId, double srcLongitude, double srcLatitude, double dstLongitude, double dstLatitude, Timestamp startTime) {
+        this.passUserId = passUserId;
+        this.srcLongitude = srcLongitude;
+        this.srcLatitude = srcLatitude;
+        this.dstLongitude = dstLongitude;
+        this.dstLatitude = dstLatitude;
+        this.startTime = startTime;
+    }
+
+
     public int getRequestId() {
         return requestId;
     }
