@@ -24,6 +24,8 @@ import javax.inject.Named;
     packagePath = ""))
 public class MyEndpoint {
 
+  // https://apis-explorer.appspot.com/apis-explorer/?base=https://vivid-art-90101.appspot.com/_ah/api#p/shareARideApi/v1/
+
   private static final Logger log = Logger.getLogger(MyEndpoint.class.getName());
 
   @ApiMethod (name = "getAvailableDrivers")
@@ -143,15 +145,6 @@ public class MyEndpoint {
     }
 
     return al;
-  }
-
-  public void testAddUser (@Named("s") String s) {
-    UserBean ub = new UserBean ();
-    ub.setUserID (200);
-    ub.setUserName (s);
-    ub.setSecret (s);
-    ub.setFirstName (s);
-    ub.setLastName (s);
   }
 
   private void updateUser (UserBean ub) {
