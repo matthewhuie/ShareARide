@@ -18,16 +18,13 @@ public class RequestBean {
     private Timestamp endTime;
     private boolean isServed;
     private double distanceEstimated;
+    private double actualDistance;
 
-    public double getDistanceEstimated() {
-        return distanceEstimated;
+    public RequestBean(){
+
     }
 
-    public void setDistanceEstimated(double distanceEstimated) {
-        this.distanceEstimated = distanceEstimated;
-    }
-
-    public RequestBean(int requestId,double fare,float passRating){
+      public RequestBean(int requestId,double fare,float passRating){
         this.requestId = requestId;
         this.fare = fare;
         this.passRating = passRating;
@@ -47,6 +44,8 @@ public class RequestBean {
         this.dstLatitude = dstLatitude;
         this.startTime = startTime;
     }
+
+
 
 
     public int getRequestId() {
