@@ -30,20 +30,18 @@ import javax.inject.Named;
 public class MyEndpoint {
 
   @ApiMethod (name = "getAvailableDrivers")
-  public List<RSBean> getAvailableDrivers () {
-    return query ("SELECT * FROM User WHERE user_type='Driver'",
-        new String []{"user_name","longitude","latitude"});
+  public List<UserBean> getAvailableDrivers () {
+    return queryUser ("user_type='Driver'");
   }
 
-  @ApiMethod (name = "userLogin")
-  public RSBean userLogin (@Named("username") String username,
+  /**@ApiMethod (name = "userLogin")
+  public UserBean userLogin (@Named("username") String username,
                            @Named("secret") String secret,
                            @Named("userType") String userType,
                            @Named("longitude") float longitude,
                            @Named("latitude") float latitude) {
-    RSBean query = query ("SELECT * FROM User WHERE user_name='" + username + "'",
-        new String []{"secret","longitude","latitude"}).get (0);
-    RSBean response = new RSBean ();
+    UserBean query = queryUser ("user_name='" + username + "'");
+    UserBean response = new UserBean ();
     String[] result = query.getData().split (",");
     if (result.length == 0 || ! secret.equals (result[0])) {
       response.setData ("false");
@@ -52,25 +50,31 @@ public class MyEndpoint {
     }
 
     return response;
-  }
+  }*/
 
   @ApiMethod (name = "userLogout")
-  public RSBean userLogout (@Named("username") String username) {
+  public UserBean userLogout (@Named("username") String username) {
     return null;
   }
 
-  private List<RSBean> query (String query, String... columns) {
-    ArrayList<RSBean> al = new ArrayList<RSBean> ();
-    try {
-      Connection conn = connect ();
+  public List<UserBean> queryUser (@Named("where") String where) {
+    ArrayList<UserBean> al = new ArrayList<UserBean> ();
+    try (Connection conn = connect ()) {
       Statement statement = conn.createStatement ();
-      ResultSet rs = statement.executeQuery (query);
+      ResultSet rs = statement.executeQuery ("SELECT * FROM User WHERE" + where);
       while (rs.next ()) {
-        RSBean response = new RSBean ();
-        for (String s : columns) {
-          response.setData (response.getData () + " " + rs.getString (s));
-        }
-        al.add (response);
+        UserBean ub = new UserBean ();
+        ub.setUserID (rs.getInt (0));
+        ub.setUserName (rs.getString (1));
+        ub.setSecret (rs.getString (2));
+        ub.setFirstName (rs.getString (3));
+        ub.setLastName (rs.getString (4));
+        ub.setPhoneNumber (rs.getInt (5));
+        ub.setEmail (rs.getString (6));
+        ub.setLongitude (rs.getDouble (7));
+        ub.setLatitude (rs.getDouble (8));
+        ub.setUserType (rs.getString (9));
+        al.add (ub);
       }
       disconnect (conn);
     } catch (Exception e) {
