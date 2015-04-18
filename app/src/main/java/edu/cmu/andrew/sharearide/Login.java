@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 
 import java.security.MessageDigest;
@@ -15,6 +16,7 @@ public class Login extends Activity {
 
     private Spinner mUserType;
     private Button mButton;
+    private String userName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,13 +25,19 @@ public class Login extends Activity {
 
         mUserType = (Spinner) findViewById (R.id.userType);
         mButton = (Button) findViewById (R.id.button);
+        userName = ((EditText)findViewById(R.id.userName)).getText().toString();
       mButton.setOnClickListener (new View.OnClickListener () {
         @Override
         public void onClick (View v) {
-          if (String.valueOf (mUserType.getSelectedItem ()).endsWith ("Passenger"))
-            startActivity (new Intent(Login.this,PassengerHome.class));
-          else
-            startActivity (new Intent(Login.this,DriverHome.class));
+            if (String.valueOf (mUserType.getSelectedItem ()).endsWith ("Passenger")) {
+                Intent loginIntent = new Intent(Login.this,PassengerHome.class);
+                loginIntent.putExtra("userName",userName);
+                startActivity(loginIntent);
+            } else {
+                Intent loginIntent = new Intent(Login.this,DriverHome.class);
+                loginIntent.putExtra("userName",userName);
+                startActivity(loginIntent);
+            }
         }
       });
     }
