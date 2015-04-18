@@ -12,7 +12,7 @@
     <string name="pick_time">Pick Time</string>
     <string name="request">Request</string>
     <string name="str_atv_places">Enter Destination Here</string>
-    <string name="login">Login</string>
+    <string name="login">Log in</string>
     <string name="passenger">Passenger</string>
     <string name="driver">Driver</string>
 
@@ -24,5 +24,11 @@
     </string-array>
 
     <string name="title_activity_driver_home">DriverHome</string>
+    <string name="name">Share-A-Ride</string>
+
+    <string-array name="user_type">
+        <item>I am a Passenger</item>
+        <item>I am a Driver</item>
+    </string-array>
 
 </resources>

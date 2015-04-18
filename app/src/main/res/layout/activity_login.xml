@@ -4,33 +4,32 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="edu.cmu.andrew.sharearide.Login">
-
-    <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_alignParentStart="true"
-        android:id="@+id/driverPassengerLayout">
-
+    tools:context="edu.cmu.andrew.sharearide.Login"
+    android:background="@color/material_red_500"
+    android:theme="@style/Theme.SARTheme"
+    android:id="@+id/driverPassengerLayout">
 
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="1000dp"
             android:layout_height="wrap_content"
             android:text="@string/login"
             android:id="@+id/button"
-            android:layout_marginTop="75dp"
             android:onClick="login"
-            android:layout_below="@+id/radioGroup"
+            android:theme="@style/Theme.SARTheme.Button"
+            android:background="@color/material_red_700"
+            android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"/>
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/editText"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="122dp"
-            android:text="Username"/>
+            android:textColor="@android:color/white"
+            android:hint="Username"
+            android:layout_marginTop="32dp"
+            android:layout_below="@+id/textView"
+            android:layout_alignStart="@+id/button"
+            android:textColorHint="@android:color/white"/>
 
         <EditText
             android:layout_width="match_parent"
@@ -38,36 +37,40 @@
             android:inputType="textPassword"
             android:ems="10"
             android:id="@+id/editText2"
+            android:textColor="@android:color/white"
+            android:hint="Password"
             android:layout_below="@+id/editText"
-            android:layout_alignParentStart="true"
-            android:text="Password"/>
+            android:layout_alignLeft="@+id/button"
+            android:textColorHint="@android:color/white"/>
 
-        <RadioGroup
-            android:id="@+id/radioGroup"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_alignEnd="@+id/button">
-
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/passenger"
-            android:id="@+id/passRadio"
-            android:layout_below="@+id/driverRadio"
-            android:layout_centerHorizontal="true"/>
-
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/driver"
-            android:id="@+id/driverRadio"
-            android:layout_below="@+id/editText2"
+    <ImageView
+            android:layout_width="128dp"
+            android:layout_height="128dp"
+            android:id="@+id/logo"
+            android:src="@drawable/logo"
+            android:layout_above="@+id/textView"
             android:layout_centerHorizontal="true"
-            android:checked="true"/>
+            android:layout_marginBottom="32dp"/>
 
-        </RadioGroup>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/name"
+        android:id="@+id/textView"
+        android:textColor="@android:color/white"
+        android:textSize="32sp"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"/>
 
-    </RelativeLayout>
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/userType"
+        android:spinnerMode="dropdown"
+        android:entries="@array/user_type"
+        android:theme="@style/Theme.SARTheme.Spinner"
+        android:transitionGroup="false"
+        android:layout_below="@+id/editText2"
+        android:layout_centerHorizontal="true"/>
 
 </RelativeLayout>
