@@ -12,7 +12,10 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -27,11 +30,54 @@ public class MyEndpoint {
   // https://apis-explorer.appspot.com/apis-explorer/?base=https://vivid-art-90101.appspot.com/_ah/api#p/shareARideApi/v1/
 
   private static final Logger log = Logger.getLogger(MyEndpoint.class.getName());
-
+    private static final Calendar calendar = Calendar.getInstance();
   @ApiMethod (name = "getAvailableDrivers")
   public List<UserBean> getAvailableDrivers () {
     return queryUser ("user_type='Driver'");
   }
+
+    /**
+     * adds a new request in the request table and returns true for successful inserts
+     * @param passenger
+     * @param srcLat
+     * @param srcLong
+     * @param destLat
+     * @param destLong
+     * @return
+     */
+    @ApiMethod (name = "createNewRequest")
+    public MessageBean createNewRequest(@Named ("passenger") String passenger,@Named("srcLat") double srcLat,
+                                    @Named("srcLong") double srcLong,@Named("destLat") double destLat,
+                                    @Named("destLong") double destLong){
+        Date startTime = calendar.getTime();
+
+        RequestBean rb = new RequestBean(getPassenger(passenger).getUserID(),srcLat,srcLong,destLat,destLong,new Timestamp(startTime.getTime()));
+        int result = updateRequest(rb);
+        MessageBean mb = new MessageBean();
+        if(result==0)
+        mb.setStatus(false);
+        else {
+        mb.setStatus(true);
+        mb.setMessage("New Request");
+        mb.setUser_name(passenger);
+         updateMessage(mb);
+        }
+
+        return mb;
+    }
+
+    private UserBean getPassenger(String userId){
+        return getUser(userId);
+    }
+
+    private UserBean getUser(String userId) {
+        UserBean user = new UserBean();
+        List<UserBean> users = queryUser("user_name=" + userId);
+        if(users!=null && users.size() > 0){
+            user = users.get(0);
+        }
+        return user;
+    }
 
   private List<UserBean> queryUser (String where) {
     ArrayList<UserBean> al = new ArrayList<> ();
@@ -147,11 +193,12 @@ public class MyEndpoint {
     return al;
   }
 
-  private void updateUser (UserBean ub) {
+  private int updateUser (UserBean ub) {
+      int result = -1;
     try {
       Connection conn = connect ();
       Statement statement = conn.createStatement ();
-      statement.executeUpdate ("INSERT INTO User (user_id, user_name, secret, first_name, last_name," +
+      result = statement.executeUpdate ("INSERT INTO User (user_id, user_name, secret, first_name, last_name," +
           "phone_number, email, longitude, latitude, user_type) VALUES (" + ub.getUserID () + ", \"" +
           ub.getUserName () + "\", \"" + ub.getSecret () + "\", \"" + ub.getFirstName () + "\", \"" +
           ub.getLastName () + "\", " + ub.getPhoneNumber () + ", \"" + ub.getEmail () + "\", " +
@@ -166,13 +213,16 @@ public class MyEndpoint {
       e.printStackTrace (pw);
       log.severe (sw.toString ());
     }
+
+      return result;
   }
 
-  private void updateRequest (RequestBean rb) {
+  private int updateRequest (RequestBean rb) {
+      int result = -1;
     try {
       Connection conn = connect ();
       Statement statement = conn.createStatement ();
-      statement.executeUpdate ("INSERT INTO User (request_id, pass_user_id, src_longitude, src_latitude, " +
+      result = statement.executeUpdate ("INSERT INTO User (request_id, pass_user_id, src_longitude, src_latitude, " +
           "dest_longitude, dest_latitude, fare, latestTime, passRating, driverRating, startTime, endTime," +
           "isServed, distanceEstimated, actualDistance) " +
           "VALUES (" + rb.getRequestId () + ", " + rb.getPassUserId () + ", " + rb.getSrcLongitude () +
@@ -191,13 +241,15 @@ public class MyEndpoint {
       e.printStackTrace (pw);
       log.severe (sw.toString ());
     }
+      return result;
   }
 
-  private void updateTrip (TripBean tb) {
+  private int updateTrip (TripBean tb) {
+      int result = -1;
     try {
       Connection conn = connect ();
       Statement statement = conn.createStatement ();
-      statement.executeUpdate ("INSERT INTO User (trip_id, driver_user_id, num_riders, is_active, is_ended) " +
+      result = statement.executeUpdate ("INSERT INTO User (trip_id, driver_user_id, num_riders, is_active, is_ended) " +
           "VALUES (" + tb.getTripId () + ", " + tb.getDriverUserId () + ", " + tb.getNumOfRiders () +
           ", " + tb.isActive () + ", " + tb.isHasEnded () + ") " +
           "ON DUPLICATE KEY UPDATE driver_user_id=VALUES(driver_user_id), " +
@@ -208,13 +260,15 @@ public class MyEndpoint {
       e.printStackTrace (pw);
       log.severe (sw.toString ());
     }
+      return result;
   }
 
-  private void updateTripRequest (TripRequestBean trb) {
+  private int updateTripRequest (TripRequestBean trb) {
+      int result = -1;
     try {
       Connection conn = connect ();
       Statement statement = conn.createStatement ();
-      statement.executeUpdate ("INSERT INTO User (trip_id, request_id) " +
+      result = statement.executeUpdate ("INSERT INTO User (trip_id, request_id) " +
           "VALUES (" + trb.getTripId () + ", " + trb.getRequestId () + ")");
     } catch (Exception e) {
       StringWriter sw = new StringWriter ();
@@ -222,7 +276,30 @@ public class MyEndpoint {
       e.printStackTrace (pw);
       log.severe (sw.toString ());
     }
+
+      return result;
   }
+
+    private int updateMessage (MessageBean mb) {
+        int result = -1;
+        try {
+            Connection conn = connect ();
+            Statement statement = conn.createStatement ();
+            result = statement.executeUpdate ("INSERT INTO Message (user_name, message, message_id, is_read)" +
+                    " VALUES (" + mb.getUser_name() + ", \"" +
+                    mb.getMessage() + "\", \"" + mb.getMessage_id() + "\", \"" + mb.isIs_read () + "\")" +
+                    "ON DUPLICATE KEY UPDATE user_name=VALUES(user_name), " +
+                    "message=VALUES(message), message_id=VALUES(message_id), is_read=VALUES(is_read)");
+
+        } catch (Exception e) {
+            StringWriter sw = new StringWriter ();
+            PrintWriter pw = new PrintWriter (sw);
+            e.printStackTrace (pw);
+            log.severe (sw.toString ());
+        }
+
+        return result;
+    }
 
   private Connection connect () throws ClassNotFoundException, SQLException {
     String url = null;

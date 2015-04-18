@@ -68,6 +68,7 @@ import edu.cmu.andrew.sharearide.backend.shareARideApi.ShareARideApi;
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.UserBean;
 
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.UserBeanCollection;
+import edu.cmu.andrew.utilities.GPSTracker;
 import edu.cmu.andrew.utilities.PlaceJSONParser;
 
 public class PassengerHome extends FragmentActivity
@@ -79,6 +80,9 @@ public class PassengerHome extends FragmentActivity
   private Location mLastLocation;
   private double latitude;
   private double longitude;
+    private double dest_latitude = 0;
+    private double dest_longitude = 0;
+    GPSTracker gpsTracker;
 
   private static final String GEOCODE_BASE_URL = "https://maps.googleapis.com/maps/api/geocode/xml?address=";
   private static final String REV_GEOCODE_BASE_URL =  "https://maps.googleapis.com/maps/api/geocode/json?latlng=";
@@ -100,6 +104,7 @@ public class PassengerHome extends FragmentActivity
       setupSpinner();
       //System.out.println("in on create");
     buildAutoComplete();
+      gpsTracker = new GPSTracker(getBaseContext());
   }
 
     public void setupSpinner(){
@@ -427,6 +432,11 @@ public class PassengerHome extends FragmentActivity
       new AsyncGooglePlaceSearch().execute(pickUpLocation, destinationTxt);
       new EndpointsAsyncTask().execute(pickUpLocation);
 
+        //aditi code for inserting request in request table
+      Intent myIntent = getIntent(); // gets the previously created intent
+      String userName = myIntent.getStringExtra("userName");
+
+      myApiService.createNewRequest(userName,gpsTracker.getLatitude(),gpsTracker.getLongitude(),dest_latitude,dest_longitude);
 
 
 
@@ -439,8 +449,6 @@ public class PassengerHome extends FragmentActivity
     private class AsyncGooglePlaceSearch extends
             AsyncTask<String, Void, String[]> {
 
-        private double dest_latitude = 0;
-        private double dest_longitude = 0;
         private String destination;
         private String pickUpLocation;
         private List<LatLng> latlngRoute = new ArrayList<>();
