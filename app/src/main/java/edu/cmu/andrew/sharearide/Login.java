@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.EditText;
+import android.widget.Button;
 import android.widget.Spinner;
 
 import java.security.MessageDigest;
@@ -14,6 +14,7 @@ import java.security.NoSuchAlgorithmException;
 public class Login extends Activity {
 
     private Spinner mUserType;
+    private Button mButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,19 +22,16 @@ public class Login extends Activity {
         setContentView(R.layout.activity_login);
 
         mUserType = (Spinner) findViewById (R.id.userType);
-    }
-
-    public void login(View view){
-        String userName = ((EditText)findViewById(R.id.userName)).getText().toString();
-      if (String.valueOf (mUserType.getSelectedItem ()).endsWith ("Passenger")) {
-          Intent loginIntent = new Intent(this,PassengerHome.class);
-          loginIntent.putExtra("userName",userName);
-          startActivity(loginIntent);
-      } else {
-          Intent loginIntent = new Intent(this,DriverHome.class);
-          loginIntent.putExtra("userName",userName);
-          startActivity(loginIntent);
-      }
+        mButton = (Button) findViewById (R.id.button);
+      mButton.setOnClickListener (new View.OnClickListener () {
+        @Override
+        public void onClick (View v) {
+          if (String.valueOf (mUserType.getSelectedItem ()).endsWith ("Passenger"))
+            startActivity (new Intent(Login.this,PassengerHome.class));
+          else
+            startActivity (new Intent(Login.this,DriverHome.class));
+        }
+      });
     }
 
   private String computeMD5 (String raw) {
