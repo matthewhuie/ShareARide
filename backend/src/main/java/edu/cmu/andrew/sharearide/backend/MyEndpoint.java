@@ -156,10 +156,35 @@ public class MyEndpoint {
           ub.getUserName () + "\", \"" + ub.getSecret () + "\", \"" + ub.getFirstName () + "\", \"" +
           ub.getLastName () + "\", " + ub.getPhoneNumber () + ", \"" + ub.getEmail () + "\", " +
           ub.getLongitude () + ", " + ub.getLatitude () + ", \"" + ub.getUserType () + "\") " +
-          "ON DUPLICATE KEY UPDATE user_id=VALUES(user_id), user_name=VALUES(user_name), " +
+          "ON DUPLICATE KEY UPDATE user_name=VALUES(user_name), " +
           "secret=VALUES(secret), first_name=VALUES(first_name), last_name=VALUES(last_name)," +
           "phone_number=VALUES(phone_number), email=VALUES(email), longitude=VALUES(longitude)," +
           "latitude=VALUES(latitude), user_type=VALUES(user_type)");
+    } catch (Exception e) {
+      StringWriter sw = new StringWriter ();
+      PrintWriter pw = new PrintWriter (sw);
+      e.printStackTrace (pw);
+      log.severe (sw.toString ());
+    }
+  }
+
+  private void updateRequest (RequestBean rb) {
+    try {
+      Connection conn = connect ();
+      Statement statement = conn.createStatement ();
+      statement.executeUpdate ("INSERT INTO User (request_id, pass_user_id, src_longitude, src_latitude, " +
+          "dest_longitude, dest_latitude, fare, latestTime, passRating, driverRating, startTime, endTime," +
+          "isServed, distanceEstimated, actualDistance) " +
+          "VALUES (" + rb.getRequestId () + ", " + rb.getPassUserId () + ", " + rb.getSrcLongitude () +
+          ", " + rb.getSrcLatitude () + ", " + rb.getDstLongitude () + ", " + rb.getDstLatitude () +
+          ", " + rb.getFare () + ", " + rb.getLatestTime () + ", " + rb.getPassRating () + ", " +
+          rb.getDriverRating () + ", " + rb.getStartTime () + ", " + rb.getEndTime () + ", " +
+          rb.isServed () + ", " + rb.getDistanceEstimated () + ", " + rb.getActualDistance () + ") " +
+          "ON DUPLICATE KEY UPDATE pass_user_id=VALUES(pass_user_id), " +
+          "src_longitude=VALUES(src_longitude), src_latitude=VALUES(src_latitude), dest_longitude=VALUES(dest_longitude), " +
+          "dest_latitude=VALUES(dest_latitude), fare=VALUES(fares), latestTime=VALUES(latestTime), passRating=VALUES(passRating), " +
+          "driverRating=VALUES(driverRating), startTime=VALUES(startTime), endTime=VALUES(endTime), isServed=VALUES(isServed), " +
+          "distanceEstimated=VALUES(distanceEstimated), actualDistance=VALUES(actualDistance)");
     } catch (Exception e) {
       StringWriter sw = new StringWriter ();
       PrintWriter pw = new PrintWriter (sw);
@@ -175,8 +200,22 @@ public class MyEndpoint {
       statement.executeUpdate ("INSERT INTO User (trip_id, driver_user_id, num_riders, is_active, is_ended) " +
           "VALUES (" + tb.getTripId () + ", " + tb.getDriverUserId () + ", " + tb.getNumOfRiders () +
           ", " + tb.isActive () + ", " + tb.isHasEnded () + ") " +
-          "ON DUPLICATE KEY UPDATE trip_id=VALUES(trip_id), driver_user_id=VALUES(driver_user_id), " +
+          "ON DUPLICATE KEY UPDATE driver_user_id=VALUES(driver_user_id), " +
           "num_riders=VALUES(num_riders), is_active=VALUES(is_active), is_ended=VALUES(is_ended)");
+    } catch (Exception e) {
+      StringWriter sw = new StringWriter ();
+      PrintWriter pw = new PrintWriter (sw);
+      e.printStackTrace (pw);
+      log.severe (sw.toString ());
+    }
+  }
+
+  private void updateTripRequest (TripRequestBean trb) {
+    try {
+      Connection conn = connect ();
+      Statement statement = conn.createStatement ();
+      statement.executeUpdate ("INSERT INTO User (trip_id, request_id) " +
+          "VALUES (" + trb.getTripId () + ", " + trb.getRequestId () + ")");
     } catch (Exception e) {
       StringWriter sw = new StringWriter ();
       PrintWriter pw = new PrintWriter (sw);

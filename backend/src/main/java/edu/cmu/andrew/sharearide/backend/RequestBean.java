@@ -152,5 +152,19 @@ public class RequestBean {
         this.isServed = isServed;
     }
 
+  public double getDistanceEstimated () {
+    return distanceEstimated;
+  }
 
+  public void setDistanceEstimated (double distanceEstimated) {
+    this.distanceEstimated = distanceEstimated;
+  }
+
+  public double getActualDistance () {
+    return actualDistance;
+  }
+
+  public void setActualDistance (double actualDistance) {
+    this.actualDistance = actualDistance;
+  }
 }
