@@ -168,6 +168,23 @@ public class MyEndpoint {
     }
   }
 
+  private void updateTrip (TripBean tb) {
+    try {
+      Connection conn = connect ();
+      Statement statement = conn.createStatement ();
+      statement.executeUpdate ("INSERT INTO User (trip_id, driver_user_id, num_riders, is_active, is_ended) " +
+          "VALUES (" + tb.getTripId () + ", " + tb.getDriverUserId () + ", " + tb.getNumOfRiders () +
+          ", " + tb.isActive () + ", " + tb.isHasEnded () + ") " +
+          "ON DUPLICATE KEY UPDATE trip_id=VALUES(trip_id), driver_user_id=VALUES(driver_user_id), " +
+          "num_riders=VALUES(num_riders), is_active=VALUES(is_active), is_ended=VALUES(is_ended)");
+    } catch (Exception e) {
+      StringWriter sw = new StringWriter ();
+      PrintWriter pw = new PrintWriter (sw);
+      e.printStackTrace (pw);
+      log.severe (sw.toString ());
+    }
+  }
+
   private Connection connect () throws ClassNotFoundException, SQLException {
     String url = null;
     Connection conn = null;
