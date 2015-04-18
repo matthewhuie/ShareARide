@@ -21,7 +21,7 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/editText"
+            android:id="@+id/userName"
             android:textColor="@android:color/white"
             android:hint="Username"
             android:layout_marginTop="32dp"
