@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">ShareARide</string>
+    <string name="app_name">Share-A-Ride</string>
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_driver_passenger">DriverPassenger</string>
     <string name="hello_world">Hello world!</string>
@@ -24,7 +24,6 @@
     </string-array>
 
     <string name="title_activity_driver_home">DriverHome</string>
-    <string name="name">Share-A-Ride</string>
 
     <string-array name="user_type">
         <item>I am a Passenger</item>
