@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Spinner;
 
 import java.security.MessageDigest;
@@ -23,10 +24,16 @@ public class Login extends Activity {
     }
 
     public void login(View view){
-      if (String.valueOf (mUserType.getSelectedItem ()).endsWith ("Passenger"))
-        startActivity (new Intent(this,PassengerHome.class));
-      else
-        startActivity (new Intent(this,DriverHome.class));
+        String userName = ((EditText)findViewById(R.id.userName)).getText().toString();
+      if (String.valueOf (mUserType.getSelectedItem ()).endsWith ("Passenger")) {
+          Intent loginIntent = new Intent(this,PassengerHome.class);
+          loginIntent.putExtra("userName",userName);
+          startActivity(loginIntent);
+      } else {
+          Intent loginIntent = new Intent(this,DriverHome.class);
+          loginIntent.putExtra("userName",userName);
+          startActivity(loginIntent);
+      }
     }
 
   private String computeMD5 (String raw) {
