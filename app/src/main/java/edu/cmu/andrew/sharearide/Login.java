@@ -31,8 +31,8 @@ public class Login extends Activity {
 
     private Spinner mUserType;
     private Button mButton;
-    private String userName;
-    private String passWord;
+    private String username;
+    private String password;
     private ShareARideApi apiInstance = null;
     private EndPointManager managerInstance = null;
     private boolean success = false;
@@ -51,26 +51,25 @@ public class Login extends Activity {
         @Override
         public void onClick (View v) {
             ct = getApplicationContext();
+            authenticate ();
             if (String.valueOf (mUserType.getSelectedItem ()).endsWith ("Passenger")) {
-                authenticate();
                 if(success) {
                     Toast t = Toast.makeText(ct,message,Toast.LENGTH_SHORT);
                     t.show();
                     Intent loginIntent = new Intent(Login.this, PassengerHome.class);
-                    loginIntent.putExtra("userName", userName);
+                    loginIntent.putExtra("username", username);
                     startActivity(loginIntent);
                 }else{
-                    Toast t = Toast.makeText(ct,message,Toast.LENGTH_LONG);
+                    Toast t = Toast.makeText(Login.this,message,Toast.LENGTH_LONG);
                     t.show();
                 }
             } else {
-                authenticate();
                 if(success) {
                     Intent loginIntent = new Intent(Login.this, DriverHome.class);
-                    loginIntent.putExtra("userName", userName);
+                    loginIntent.putExtra("username", username);
                     startActivity(loginIntent);
                 }else{
-                    Toast t = Toast.makeText(ct,message,Toast.LENGTH_LONG);
+                    Toast t = Toast.makeText(Login.this,message,Toast.LENGTH_LONG);
                     t.show();
                 }
             }
@@ -78,13 +77,13 @@ public class Login extends Activity {
       });
     }
 
-    private void authenticate(){
+    private void authenticate (){
 
         //try {
-        userName = ((EditText)findViewById(R.id.userName)).getText().toString();
-        passWord = ((EditText)findViewById(R.id.passWord)).getText().toString();
+        username = ((EditText)findViewById(R.id.username)).getText().toString();
+        password = ((EditText)findViewById(R.id.password)).getText().toString();
 
-            new EndpointsAsyncTask().execute(userName);
+            new EndpointsAsyncTask().execute(username);
 
 
      //   UserBean ub = apiInstance.getUser(userName).execute();
@@ -142,7 +141,7 @@ public class Login extends Activity {
             System.out.println(result[0]);
             System.out.println(result[1]);
             if(result!=null && result[0]!=null){
-                if(result[0].equals(computeMD5(passWord))){
+                if(result[0].equals(computeMD5(password))){
                     success = true;
                     message = "Authentication Successful";
                 }else{
@@ -151,7 +150,7 @@ public class Login extends Activity {
                 }
             }else{
                 success = false;
-                message = "UserName not found";
+                message = "Username not found";
             }
         }
 

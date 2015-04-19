@@ -20,7 +20,6 @@
         android:gravity="center"
         android:background="@android:color/white"/>
 
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="264dp"

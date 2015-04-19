@@ -30,4 +30,6 @@
         <item>I am a Driver</item>
     </string-array>
 
+    <string name="title_activity_passenger">Passenger</string>
+
 </resources>

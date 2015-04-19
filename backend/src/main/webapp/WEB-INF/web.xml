@@ -13,9 +13,7 @@
         <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
         <init-param>
             <param-name>services</param-name>
-            <param-value>edu.cmu.andrew.sharearide.backend.MyEndpoint,
-                edu.cmu.andrew.sharearide.backend.MyEndpointEndpoint,
-                edu.cmu.andrew.sharearide.backend.RequestBeanEndpoint</param-value>
+            <param-value>edu.cmu.andrew.sharearide.backend.MyEndpoint</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>
