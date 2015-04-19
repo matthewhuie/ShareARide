@@ -66,6 +66,13 @@ public class MyEndpoint {
         return mb;
     }
 
+    @ApiMethod (name = "getUser")
+    public UserBean getUserDetails(@Named ("userName") String userName){
+        UserBean ub = getUser(userName);
+        return ub;
+    }
+
+
     private UserBean getPassenger(String userId){
         return getUser(userId);
     }

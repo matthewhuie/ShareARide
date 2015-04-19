@@ -34,10 +34,10 @@
             android:layout_height="wrap_content"
             android:inputType="textPassword"
             android:ems="10"
-            android:id="@+id/editText2"
+            android:id="@+id/passWord"
             android:textColor="@android:color/white"
             android:hint="Password"
-            android:layout_below="@+id/editText"
+            android:layout_below="@+id/userName"
             android:layout_alignLeft="@+id/button"
             android:textColorHint="@android:color/white"/>
 

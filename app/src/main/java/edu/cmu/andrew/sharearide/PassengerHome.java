@@ -1,5 +1,6 @@
 package edu.cmu.andrew.sharearide;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
@@ -68,6 +69,7 @@ import edu.cmu.andrew.sharearide.backend.shareARideApi.ShareARideApi;
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.UserBean;
 
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.UserBeanCollection;
+import edu.cmu.andrew.utilities.EndPointManager;
 import edu.cmu.andrew.utilities.GPSTracker;
 import edu.cmu.andrew.utilities.PlaceJSONParser;
 
@@ -82,7 +84,8 @@ public class PassengerHome extends FragmentActivity
   private double longitude;
     private double dest_latitude = 0;
     private double dest_longitude = 0;
-    GPSTracker gpsTracker;
+    private GPSTracker gpsTracker;
+    private EndPointManager endpointInstance;
 
   private static final String GEOCODE_BASE_URL = "https://maps.googleapis.com/maps/api/geocode/xml?address=";
   private static final String REV_GEOCODE_BASE_URL =  "https://maps.googleapis.com/maps/api/geocode/json?latlng=";
@@ -421,7 +424,7 @@ public class PassengerHome extends FragmentActivity
     // More about this in the next section.
   }
 
-  public void selectDriver(View view){
+  public void selectDriver(View view) throws IOException{
       int indexOfLocation = ((TextView)findViewById(R.id.my_location)).getText().toString().indexOf(":") + 2;
       String pickUpLocation = ((TextView)findViewById(R.id.my_location)).getText().toString().substring(indexOfLocation);
       String destinationTxt = ((EditText)findViewById(R.id.destiTxt)).getText().toString();
@@ -630,27 +633,11 @@ public class PassengerHome extends FragmentActivity
         @Override
         protected String[] doInBackground(String... urls) {
 
-            if(myApiService == null) {  // Only do this once
+            if(endpointInstance == null) {  // Only do this once
 
-                ShareARideApi.Builder builder = new ShareARideApi.Builder(AndroidHttp.newCompatibleTransport(),
-                        new AndroidJsonFactory(), null)
-                        // options for running against local devappserver
-                        // - 10.0.2.2 is localhost's IP address in Android emulator
-                        // - turn off compression when running against local devappserver
-                        .setRootUrl("https://vivid-art-90101.appspot.com/_ah/api/");
-                        //.setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
-                        //    @Override
-                        //    public void initialize(AbstractGoogleClientRequest<?> abstractGoogleClientRequest) throws IOException {
-                        //        abstractGoogleClientRequest.setDisableGZipContent(true);
-                        //    }
-                        //}
-            //);
+                endpointInstance = new EndPointManager();
+                myApiService = endpointInstance.getEndpointInstance();
 
-
-                // end options for devappserver
-
-                myApiService = builder.build();
-                Log.i("API Backend Connection: ", myApiService.toString());
             }
 
             pickUpLocation = urls[0];
