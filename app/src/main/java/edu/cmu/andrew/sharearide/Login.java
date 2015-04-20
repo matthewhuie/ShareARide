@@ -49,7 +49,7 @@ public class Login extends Activity {
                 if(success) {
                     Toast t = Toast.makeText(ct,message,Toast.LENGTH_SHORT);
                     t.show();
-                    Intent loginIntent = new Intent(Login.this, PassengerMapFragment.class);
+                    Intent loginIntent = new Intent(Login.this, Passenger.class);
                     loginIntent.putExtra("username", username);
                     startActivity(loginIntent);
                 }else{
