@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:theme="@style/Theme.SARTheme"
+            android:background="@color/material_deep_teal_500">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:orientation="vertical">
+
+        <Button
+            android:id="@+id/passInputNext"
+            android:layout_width="96dp"
+            android:layout_height="wrap_content"
+            android:background="@color/material_red_500"
+            android:text="Next"
+            android:theme="@style/Theme.SARTheme.Button"
+            android:layout_gravity="right"/>
+
+        <TextView
+            android:id="@+id/youAreAtText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="64dp"
+            android:text="You are currently at"
+            android:textColor="@android:color/white"
+            android:textSize="28sp"/>
+
+        <TextView
+            android:id="@+id/currentLocationText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/youAreAtText"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="80dp"
+            android:layout_marginTop="16dp"
+            android:text="here!"
+            android:textColor="@android:color/white"
+            android:textSize="32sp"
+            android:textStyle="bold"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/card_background"
+            android:padding="16dp"
+            android:layout_margin="16dp">
+
+            <TextView
+                android:id="@+id/whereToGoText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Where do you want to go?"
+                android:textColor="@color/material_grey_500"
+                android:textSize="20sp"/>
+
+            <EditText
+                android:id="@+id/whereToGoInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/whereToGoText"
+                android:textColor="@color/material_grey_500"
+                android:textSize="20sp"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/card_background"
+            android:padding="16dp"
+            android:layout_margin="16dp">
+
+            <TextView
+                android:id="@+id/ridersText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="How many people are with you?"
+                android:textColor="@color/material_grey_500"
+                android:textSize="20sp"/>
+
+            <SeekBar
+                android:id="@+id/ridersInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/ridersText"
+                android:max="4"/>
+
+            <TextView
+                android:id="@+id/ridersOutput"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/ridersInput"
+                android:text="Number of Riders"
+                android:textColor="@color/material_grey_500"
+                android:textSize="20sp"/>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+</ScrollView>

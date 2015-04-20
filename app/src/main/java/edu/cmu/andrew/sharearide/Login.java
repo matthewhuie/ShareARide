@@ -5,17 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
-
-import com.google.android.gms.maps.model.LatLng;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.security.MessageDigest;
@@ -23,7 +17,6 @@ import java.security.NoSuchAlgorithmException;
 
 import edu.cmu.andrew.sharearide.backend.shareARideApi.ShareARideApi;
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.UserBean;
-import edu.cmu.andrew.sharearide.backend.shareARideApi.model.UserBeanCollection;
 import edu.cmu.andrew.utilities.EndPointManager;
 
 
@@ -56,7 +49,7 @@ public class Login extends Activity {
                 if(success) {
                     Toast t = Toast.makeText(ct,message,Toast.LENGTH_SHORT);
                     t.show();
-                    Intent loginIntent = new Intent(Login.this, PassengerHome.class);
+                    Intent loginIntent = new Intent(Login.this, PassengerMapFragment.class);
                     loginIntent.putExtra("username", username);
                     startActivity(loginIntent);
                 }else{
