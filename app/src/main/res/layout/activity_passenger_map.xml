@@ -10,7 +10,7 @@
         android:name="com.google.android.gms.maps.SupportMapFragment">
     </fragment>
 
-    <TextView
+    <!--TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="New Text"
@@ -121,5 +121,5 @@
                 android:layout_marginTop="15dp" />
 
         </RelativeLayout>
-    </RelativeLayout>
+    </RelativeLayout-->
 </RelativeLayout>
