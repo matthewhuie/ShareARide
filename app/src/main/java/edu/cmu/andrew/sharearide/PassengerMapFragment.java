@@ -116,7 +116,7 @@ public class PassengerMapFragment extends Fragment {
   }
 
   public void setupSpinner () {
-    Spinner spinner = (Spinner) mLayout.findViewById (R.id.riderNumbers);
+    Spinner spinner = (Spinner) mLayout.findViewById (R.id.ridersInput);
 // Create an ArrayAdapter using the string array and a default spinner layout
     ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource (mContext,
         R.array.riderNumbers, android.R.layout.simple_spinner_item);
@@ -127,7 +127,7 @@ public class PassengerMapFragment extends Fragment {
   }
 
   private void buildAutoComplete () {
-    atvPlaces = (AutoCompleteTextView) mLayout.findViewById (R.id.destiTxt);
+    atvPlaces = (AutoCompleteTextView) mLayout.findViewById (R.id.whereToGoInput);
     atvPlaces.setThreshold (1);
 
     atvPlaces.addTextChangedListener (new TextWatcher () {
@@ -378,9 +378,8 @@ public class PassengerMapFragment extends Fragment {
 
 
   public void selectDriver (View view) throws IOException {
-    int indexOfLocation = ((TextView) mLayout.findViewById (R.id.my_location)).getText ().toString ().indexOf (":") + 2;
-    String pickUpLocation = ((TextView) mLayout.findViewById (R.id.my_location)).getText ().toString ().substring (indexOfLocation);
-    String destinationTxt = ((EditText) mLayout.findViewById (R.id.destiTxt)).getText ().toString ();
+    String pickUpLocation = ((TextView) mLayout.findViewById (R.id.currentLocationText)).getText ().toString ();
+    String destinationTxt = ((EditText) mLayout.findViewById (R.id.whereToGoInput)).getText ().toString ();
 
     //cannot make http request in main thread, has to create a asyn helper thread
     //calculatePriceAndTime(destinationTxt);
