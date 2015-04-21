@@ -112,8 +112,8 @@ public class Login extends Activity {
              try {
             if(apiInstance == null) {  // Only do this once
 
-                managerInstance = new EndPointManager();
-                apiInstance = managerInstance.getEndpointInstance();
+               // managerInstance = new EndPointManager();
+                apiInstance = EndPointManager.getEndpointInstance();
 
             }
 
@@ -131,8 +131,8 @@ public class Login extends Activity {
         @Override
         protected void onPostExecute(String[] result) {
             //Toast.makeText(context, result, Toast.LENGTH_LONG).show();
-            System.out.println(result[0]);
-            System.out.println(result[1]);
+          //  System.out.println(result[0]);
+            //System.out.println(result[1]);
             if(result!=null && result[0]!=null){
                 if(result[0].equals(computeMD5(password))){
                     success = true;

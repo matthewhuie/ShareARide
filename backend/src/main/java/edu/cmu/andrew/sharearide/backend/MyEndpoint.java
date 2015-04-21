@@ -79,7 +79,7 @@ public class MyEndpoint {
 
     private UserBean getUser(String userId) {
         UserBean user = new UserBean();
-        List<UserBean> users = queryUser("user_name=" + userId);
+        List<UserBean> users = queryUser("user_name='" + userId +"'");
         if(users!=null && users.size() > 0){
             user = users.get(0);
         }
