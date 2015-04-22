@@ -5,8 +5,8 @@ import android.app.FragmentTransaction;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -15,13 +15,15 @@ import com.google.android.gms.location.LocationServices;
 import java.io.IOException;
 import java.util.List;
 
-public class Passenger extends FragmentActivity
+public class SARActivity extends FragmentActivity
     implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
   private GoogleApiClient mGoogleApiClient;
   private Location mLastLocation;
   private double latitude;
   private double longitude;
+  private String locationName;
+  private LoginFragment lf;
   private PassengerInputFragment pif;
 
   @Override
@@ -31,8 +33,8 @@ public class Passenger extends FragmentActivity
 
     buildGoogleApiClient ();
 
-    pif = new PassengerInputFragment ();
-    setFragment (pif);
+    lf = new LoginFragment ();
+    setFragment (lf);
   }
 
   public void setFragment (Fragment fragment) {
@@ -79,8 +81,8 @@ public class Passenger extends FragmentActivity
         places = geoCoder.getFromLocation (latitude, longitude, 1);
       } catch (IOException ioe) {
       }
-      String thisPlace = (places.isEmpty () ? null : places.get (0).getAddressLine (0));
-      pif.setLocation (thisPlace);
+      locationName = (places.isEmpty () ? null : places.get (0).getAddressLine (0));
+      pif.setLocation (locationName);
     }
   }
 
