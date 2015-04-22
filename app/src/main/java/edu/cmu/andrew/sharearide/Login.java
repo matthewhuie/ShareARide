@@ -28,9 +28,7 @@ public class Login extends Activity {
   private String password;
   private ShareARideApi apiInstance = null;
   private EndPointManager managerInstance = null;
-  private boolean success = false;
   private String message = "";
-  private Context ct;
 
   @Override
   protected void onCreate (Bundle savedInstanceState) {
@@ -43,7 +41,6 @@ public class Login extends Activity {
     mButton.setOnClickListener (new View.OnClickListener () {
       @Override
       public void onClick (View v) {
-        ct = getApplicationContext ();
         authenticate ();
         if (String.valueOf (mUserType.getSelectedItem ()).endsWith ("Passenger")) {
           if (success) {
@@ -134,24 +131,16 @@ public class Login extends Activity {
       //  System.out.println(result[0]);
       //System.out.println(result[1]);
       if (result != null) {
-        //if(result[0].equals(computeMD5(password))){
-        success = true;
-        message = "Authentication Successful";
-        //}else{
-        success = false;
-        message = "Incorrect Username/Password combination";
+        message = "Authentication successful!";
+        Intent loginIntent = new Intent (Login.this, (result.getUserType ().equals ("Passenger") ? Passenger.class : DriverHome.class));
+        loginIntent.putExtra ("username", username);
+        startActivity (loginIntent);
+      } else {
+        message = "Invalid username/password!";
       }
+      Toast.makeText (Login.this, message, Toast.LENGTH_SHORT).show ();
     }
 
-    else
-
-    {
-      success = false;
-      message = "Username not found";
-    }
   }
-
-
-}
 
 }
