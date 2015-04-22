@@ -29,62 +29,74 @@ public class MyEndpoint {
 
   // https://apis-explorer.appspot.com/apis-explorer/?base=https://vivid-art-90101.appspot.com/_ah/api#p/shareARideApi/v1/
 
-  private static final Logger log = Logger.getLogger(MyEndpoint.class.getName());
-    private static final Calendar calendar = Calendar.getInstance();
+  private static final Logger log = Logger.getLogger (MyEndpoint.class.getName ());
+  private static final Calendar calendar = Calendar.getInstance ();
+
   @ApiMethod (name = "getAvailableDrivers")
   public List<UserBean> getAvailableDrivers () {
     return queryUser ("user_type='Driver'");
   }
 
-    /**
-     * adds a new request in the request table and returns true for successful inserts
-     * @param passenger
-     * @param srcLat
-     * @param srcLong
-     * @param destLat
-     * @param destLong
-     * @return
-     */
-    @ApiMethod (name = "createNewRequest")
-    public MessageBean createNewRequest(@Named ("passenger") String passenger,@Named("srcLat") double srcLat,
-                                    @Named("srcLong") double srcLong,@Named("destLat") double destLat,
-                                    @Named("destLong") double destLong){
-        Date startTime = calendar.getTime();
+  /**
+   * adds a new request in the request table and returns true for successful inserts
+   *
+   * @param passenger
+   * @param srcLat
+   * @param srcLong
+   * @param destLat
+   * @param destLong
+   * @return
+   */
+  @ApiMethod (name = "createNewRequest")
+  public MessageBean createNewRequest (@Named ("passenger") String passenger, @Named ("srcLat") double srcLat,
+                                       @Named ("srcLong") double srcLong, @Named ("destLat") double destLat,
+                                       @Named ("destLong") double destLong) {
+    Date startTime = calendar.getTime ();
 
-        RequestBean rb = new RequestBean(getPassenger(passenger).getUserID(),srcLat,srcLong,destLat,destLong,new Timestamp(startTime.getTime()));
-        int result = updateRequest(rb);
-        MessageBean mb = new MessageBean();
-        if(result==0)
-        mb.setStatus(false);
-        else {
-        mb.setStatus(true);
-        mb.setMessage("New Request");
-        mb.setUser_name(passenger);
-         updateMessage(mb);
-        }
-
-        return mb;
+    RequestBean rb = new RequestBean (getPassenger (passenger).getUserID (), srcLat, srcLong, destLat, destLong, new Timestamp (startTime.getTime ()));
+    int result = updateRequest (rb);
+    MessageBean mb = new MessageBean ();
+    if (result == 0)
+      mb.setStatus (false);
+    else {
+      mb.setStatus (true);
+      mb.setMessage ("New Request");
+      mb.setUser_name (passenger);
+      updateMessage (mb);
     }
 
-    @ApiMethod (name = "getUser")
-    public UserBean getUserDetails(@Named ("userName") String userName){
-        UserBean ub = getUser(userName);
-        return ub;
+    return mb;
+  }
+
+  @ApiMethod (name = "getUser")
+  public UserBean getUserDetails (@Named ("userName") String userName) {
+    UserBean ub = getUser (userName);
+    return ub;
+  }
+
+  public UserBean userLogin (@Named ("username") String username, @Named ("secret") String secret) {
+    List<UserBean> users = queryUser ("user_name'" + username + "' OR secret='" + secret + "'");
+    if (users != null && users.size () == 1) {
+      UserBean ub = users.get (0);
+      // ***** SET USERS'S LOCATION AND USER TYPE HERE, THEN UPDATEUSER() BEFORE SENDING BACK TO LOGIN.JAVA
+      return users.get (0);
     }
+    return null;
+  }
 
 
-    private UserBean getPassenger(String userId){
-        return getUser(userId);
-    }
+  private UserBean getPassenger (String userId) {
+    return getUser (userId);
+  }
 
-    private UserBean getUser(String userId) {
-        UserBean user = new UserBean();
-        List<UserBean> users = queryUser("user_name='" + userId +"'");
-        if(users!=null && users.size() > 0){
-            user = users.get(0);
-        }
-        return user;
+  private UserBean getUser (String userId) {
+    UserBean user = new UserBean ();
+    List<UserBean> users = queryUser ("user_name='" + userId + "'");
+    if (users != null && users.size () > 0) {
+      user = users.get (0);
     }
+    return user;
+  }
 
   private List<UserBean> queryUser (String where) {
     ArrayList<UserBean> al = new ArrayList<> ();
@@ -201,7 +213,7 @@ public class MyEndpoint {
   }
 
   private int updateUser (UserBean ub) {
-      int result = -1;
+    int result = -1;
     try {
       Connection conn = connect ();
       Statement statement = conn.createStatement ();
@@ -221,11 +233,11 @@ public class MyEndpoint {
       log.severe (sw.toString ());
     }
 
-      return result;
+    return result;
   }
 
   private int updateRequest (RequestBean rb) {
-      int result = -1;
+    int result = -1;
     try {
       Connection conn = connect ();
       Statement statement = conn.createStatement ();
@@ -248,11 +260,11 @@ public class MyEndpoint {
       e.printStackTrace (pw);
       log.severe (sw.toString ());
     }
-      return result;
+    return result;
   }
 
   private int updateTrip (TripBean tb) {
-      int result = -1;
+    int result = -1;
     try {
       Connection conn = connect ();
       Statement statement = conn.createStatement ();
@@ -267,11 +279,11 @@ public class MyEndpoint {
       e.printStackTrace (pw);
       log.severe (sw.toString ());
     }
-      return result;
+    return result;
   }
 
   private int updateTripRequest (TripRequestBean trb) {
-      int result = -1;
+    int result = -1;
     try {
       Connection conn = connect ();
       Statement statement = conn.createStatement ();
@@ -284,29 +296,29 @@ public class MyEndpoint {
       log.severe (sw.toString ());
     }
 
-      return result;
+    return result;
   }
 
-    private int updateMessage (MessageBean mb) {
-        int result = -1;
-        try {
-            Connection conn = connect ();
-            Statement statement = conn.createStatement ();
-            result = statement.executeUpdate ("INSERT INTO Message (user_name, message, message_id, is_read)" +
-                    " VALUES (" + mb.getUser_name() + ", \"" +
-                    mb.getMessage() + "\", \"" + mb.getMessage_id() + "\", \"" + mb.isIs_read () + "\")" +
-                    "ON DUPLICATE KEY UPDATE user_name=VALUES(user_name), " +
-                    "message=VALUES(message), message_id=VALUES(message_id), is_read=VALUES(is_read)");
+  private int updateMessage (MessageBean mb) {
+    int result = -1;
+    try {
+      Connection conn = connect ();
+      Statement statement = conn.createStatement ();
+      result = statement.executeUpdate ("INSERT INTO Message (user_name, message, message_id, is_read)" +
+          " VALUES (" + mb.getUser_name () + ", \"" +
+          mb.getMessage () + "\", \"" + mb.getMessage_id () + "\", \"" + mb.isIs_read () + "\")" +
+          "ON DUPLICATE KEY UPDATE user_name=VALUES(user_name), " +
+          "message=VALUES(message), message_id=VALUES(message_id), is_read=VALUES(is_read)");
 
-        } catch (Exception e) {
-            StringWriter sw = new StringWriter ();
-            PrintWriter pw = new PrintWriter (sw);
-            e.printStackTrace (pw);
-            log.severe (sw.toString ());
-        }
-
-        return result;
+    } catch (Exception e) {
+      StringWriter sw = new StringWriter ();
+      PrintWriter pw = new PrintWriter (sw);
+      e.printStackTrace (pw);
+      log.severe (sw.toString ());
     }
+
+    return result;
+  }
 
   private Connection connect () throws ClassNotFoundException, SQLException {
     String url = null;
