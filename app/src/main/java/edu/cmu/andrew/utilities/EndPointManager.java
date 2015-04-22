@@ -1,12 +1,10 @@
 package edu.cmu.andrew.utilities;
 
-import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import edu.cmu.andrew.sharearide.backend.shareARideApi.ShareARideApi;
-import edu.cmu.andrew.sharearide.backend.shareARideApi.model.UserBean;
 
 /**
  * Created by Aditi on 4/19/2015.

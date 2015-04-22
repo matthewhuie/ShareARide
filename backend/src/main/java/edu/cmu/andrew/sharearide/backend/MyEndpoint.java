@@ -74,6 +74,7 @@ public class MyEndpoint {
     return ub;
   }
 
+  @ApiMethod (name = "userLogin")
   public UserBean userLogin (@Named ("username") String username, @Named ("secret") String secret) {
     List<UserBean> users = queryUser ("user_name'" + username + "' OR secret='" + secret + "'");
     if (users != null && users.size () == 1) {
@@ -83,6 +84,13 @@ public class MyEndpoint {
     }
     return null;
   }
+
+  @ApiMethod (name = "startTrip")
+  public TripBean startTrip (@Named ("driver_username") String driverUsername) {
+    return null;
+  }
+
+
 
 
   private UserBean getPassenger (String userId) {

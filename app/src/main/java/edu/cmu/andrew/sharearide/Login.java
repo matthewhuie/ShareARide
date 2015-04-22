@@ -25,7 +25,7 @@ public class Login extends Activity {
   private Spinner mUserType;
   private Button mButton;
   private String username;
-  private String password;
+  private String secret;
   private ShareARideApi apiInstance = null;
   private EndPointManager managerInstance = null;
   private String message = "";
@@ -41,48 +41,12 @@ public class Login extends Activity {
     mButton.setOnClickListener (new View.OnClickListener () {
       @Override
       public void onClick (View v) {
-        authenticate ();
-        if (String.valueOf (mUserType.getSelectedItem ()).endsWith ("Passenger")) {
-          if (success) {
-            Toast t = Toast.makeText (ct, message, Toast.LENGTH_SHORT);
-            t.show ();
-            Intent loginIntent = new Intent (Login.this, Passenger.class);
-            loginIntent.putExtra ("username", username);
-            startActivity (loginIntent);
-          } else {
-            Toast t = Toast.makeText (Login.this, message, Toast.LENGTH_LONG);
-            t.show ();
-          }
-        } else {
-          if (success) {
-            Intent loginIntent = new Intent (Login.this, DriverHome.class);
-            loginIntent.putExtra ("username", username);
-            startActivity (loginIntent);
-          } else {
-            Toast t = Toast.makeText (Login.this, message, Toast.LENGTH_LONG);
-            t.show ();
-          }
-        }
+        username = ((EditText) findViewById (R.id.username)).getText ().toString ();
+        secret = computeMD5 (((EditText) findViewById (R.id.password)).getText ().toString ());
+
+        new LoginTask ().execute (username, secret);
       }
     });
-  }
-
-  private void authenticate () {
-
-    //try {
-    username = ((EditText) findViewById (R.id.username)).getText ().toString ();
-    password = ((EditText) findViewById (R.id.password)).getText ().toString ();
-
-    new LoginTask ().execute (username, computeMD5 (password));
-
-
-    //   UserBean ub = apiInstance.getUser(userName).execute();
-
-    //if(success){
-
-    //}
-    //  }
-
   }
 
   private String computeMD5 (String raw) {
@@ -108,19 +72,12 @@ public class Login extends Activity {
       UserBean user = new UserBean ();
       try {
         if (apiInstance == null) {  // Only do this once
-
-          // managerInstance = new EndPointManager();
           apiInstance = EndPointManager.getEndpointInstance ();
-
         }
-
-        //  System.out.println(urls[0] + "usrls");
         user = apiInstance.userLogin (urls[0], urls[1]).execute ();
       } catch (IOException e) {
         e.printStackTrace ();
       }
-      // Log.i("Taxi list: ", taxis.toString());
-
       return user;
 
     }
