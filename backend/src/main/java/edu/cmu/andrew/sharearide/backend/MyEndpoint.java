@@ -76,11 +76,11 @@ public class MyEndpoint {
 
   @ApiMethod (name = "userLogin")
   public UserBean userLogin (@Named ("username") String username, @Named ("secret") String secret) {
-    List<UserBean> users = queryUser ("user_name'" + username + "' OR secret='" + secret + "'");
-    if (users != null && users.size () == 1) {
+    List<UserBean> users = queryUser ("user_name='" + username + "' AND secret='" + secret + "'");
+    if (users != null && users.size () > 0) {
       UserBean ub = users.get (0);
       // ***** SET USERS'S LOCATION AND USER TYPE HERE, THEN UPDATEUSER() BEFORE SENDING BACK TO LOGIN.JAVA
-      return users.get (0);
+      return ub;
     }
     return null;
   }

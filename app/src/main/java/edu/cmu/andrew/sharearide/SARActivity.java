@@ -82,7 +82,7 @@ public class SARActivity extends FragmentActivity
       } catch (IOException ioe) {
       }
       locationName = (places.isEmpty () ? null : places.get (0).getAddressLine (0));
-      pif.setLocation (locationName);
+      //pif.setLocation (locationName);
     }
   }
 

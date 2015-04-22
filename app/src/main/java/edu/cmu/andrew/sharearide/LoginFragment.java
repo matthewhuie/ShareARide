@@ -50,6 +50,8 @@ public class LoginFragment extends Fragment {
         new LoginTask ().execute (username, secret);
       }
     });
+
+    return mLayout;
   }
 
   private String computeMD5 (String raw) {
@@ -92,9 +94,7 @@ public class LoginFragment extends Fragment {
       //System.out.println(result[1]);
       if (result != null) {
         message = "Authentication successful!";
-        Intent loginIntent = new Intent (mContext, (result.getUserType ().equals ("Passenger") ? Passenger.class : DriverHome.class));
-        loginIntent.putExtra ("username", username);
-        startActivity (loginIntent);
+        mContext.setFragment (new PassengerInputFragment ());
       } else {
         message = "Invalid username/password!";
       }
