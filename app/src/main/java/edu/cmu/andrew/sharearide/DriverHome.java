@@ -1,14 +1,18 @@
 package edu.cmu.andrew.sharearide;
 
 
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.AsyncTask;
+import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -22,6 +26,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.io.IOException;
 import java.util.List;
 
+import edu.cmu.andrew.sharearide.backend.shareARideApi.ShareARideApi;
+import edu.cmu.andrew.sharearide.backend.shareARideApi.model.MessageBean;
+import edu.cmu.andrew.sharearide.backend.shareARideApi.model.UserBean;
+import edu.cmu.andrew.utilities.EndPointManager;
+
 
 public class DriverHome extends FragmentActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
@@ -30,14 +39,45 @@ public class DriverHome extends FragmentActivity implements GoogleApiClient.Conn
     private Location mLastLocation;
     private double latitude;
     private double longitude;
+    public final Handler handler = new Handler();
+    private ShareARideApi apiInstance = null;
+    String userName="";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_home);
         buildGoogleApiClient ();
         setUpMapIfNeeded ();
+        pollForMessages();
     }
 
+    private void pollForMessages() {
+        Intent myIntent = getIntent (); // gets the previously created intent
+        userName = myIntent.getStringExtra ("userName");
+        Sync sync = new Sync(call,60*1000);
+
+    }
+
+
+    public class Sync {
+        Runnable task;
+
+        public Sync(Runnable task, long time) {
+            this.task = task;
+            handler.removeCallbacks(task);
+            handler.postDelayed(task, time);
+        }
+    }
+
+    final private Runnable call = new Runnable() {
+        public void run() {
+            //This is where my sync code will be, but for testing purposes I only have a Log statement
+            //will run every 20 seconds
+            new PollTask().execute(userName);
+            handler.postDelayed(call,20*1000);
+        }
+    };
 
     @Override
     protected void onResume () {
@@ -135,4 +175,36 @@ public class DriverHome extends FragmentActivity implements GoogleApiClient.Conn
 
         return super.onOptionsItemSelected(item);
     }
+
+    /**
+     * async task to poll message table
+     */
+    class PollTask extends AsyncTask<String, Void, MessageBean> {
+
+        @Override
+        protected MessageBean doInBackground (String... data) {
+            MessageBean mb = new MessageBean ();
+            try {
+                if (apiInstance == null) {  // Only do this once
+                    apiInstance = EndPointManager.getEndpointInstance ();
+                }
+                mb = apiInstance.pollMessage(data[0]).execute ();
+            } catch (IOException e) {
+                e.printStackTrace ();
+            }
+            return mb;
+
+        }
+
+        @Override
+        protected void onPostExecute (MessageBean result) {
+            //Toast.makeText(context, result, Toast.LENGTH_LONG).show();
+            //  System.out.println(result[0]);
+            //System.out.println(result[1]);
+
+            Toast.makeText(DriverHome.this, result.getMessage(), Toast.LENGTH_LONG).show ();
+        }
+
+    }
+
 }

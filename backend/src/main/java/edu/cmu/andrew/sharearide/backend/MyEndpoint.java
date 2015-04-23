@@ -37,6 +37,13 @@ public class MyEndpoint {
     return queryUser ("user_type='Driver'");
   }
 
+
+    @ApiMethod (name = "pollMessage")
+    public MessageBean pollMessage (@Named ("userName") String userName) {
+        MessageBean mb = getMessage(userName);
+        return mb;
+    }
+
   /**
    * adds a new request in the request table and returns true for successful inserts
    *
@@ -91,7 +98,16 @@ public class MyEndpoint {
   }
 
 
+  private MessageBean getMessage(String userName){
+    MessageBean mb = new MessageBean();
+      List<MessageBean> al = new ArrayList<>();
+      al = queryMessage("user_name='" +userName +"'");
 
+      if(al.size()>0){
+          mb = al.get(0);
+      }
+      return mb;
+  }
 
   private UserBean getPassenger (String userId) {
     return getUser (userId);
@@ -219,6 +235,32 @@ public class MyEndpoint {
 
     return al;
   }
+
+    private List<MessageBean> queryMessage (String where) {
+        ArrayList<MessageBean> al = new ArrayList<> ();
+        try {
+            Connection conn = connect ();
+            Statement statement = conn.createStatement ();
+            ResultSet rs = statement.executeQuery ("SELECT * FROM Message WHERE " + where);
+            while (rs.next ()) {
+                MessageBean mb = new MessageBean ();
+                mb.setUser_name(rs.getString(1));
+                mb.setMessage(rs.getString(2));
+                mb.setMessage_id(rs.getInt(3));
+                mb.setIs_read(rs.getBoolean(4));
+                al.add (mb);
+            }
+            disconnect (conn);
+        } catch (Exception e) {
+            StringWriter sw = new StringWriter ();
+            PrintWriter pw = new PrintWriter (sw);
+            e.printStackTrace (pw);
+            log.severe (sw.toString ());
+        }
+
+        return al;
+    }
+
 
   private int updateUser (UserBean ub) {
     int result = -1;
