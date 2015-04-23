@@ -13,6 +13,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SARActivity extends FragmentActivity
@@ -23,6 +24,7 @@ public class SARActivity extends FragmentActivity
   private double latitude;
   private double longitude;
   private String locationName;
+  private List<Fragment> pFragments;
   private LoginFragment lf;
   private PassengerInputFragment pif;
 
@@ -33,8 +35,12 @@ public class SARActivity extends FragmentActivity
 
     buildGoogleApiClient ();
 
-    lf = new LoginFragment ();
-    setFragment (lf);
+    pFragments = new ArrayList<> ();
+    pFragments.add (new LoginFragment ());
+    pFragments.add (new PassengerInputFragment ());
+    pFragments.add (new PassengerMapFragment ());
+
+    setFragment (pFragments.get (0));
   }
 
   public void setFragment (Fragment fragment) {
