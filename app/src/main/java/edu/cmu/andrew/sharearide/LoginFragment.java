@@ -47,11 +47,26 @@ public class LoginFragment extends Fragment {
         username = ((EditText) mLayout.findViewById (R.id.username)).getText ().toString ();
         secret = computeMD5 (((EditText) mLayout.findViewById (R.id.password)).getText ().toString ());
 
+        disableButton ();
         new LoginTask ().execute (username, secret);
       }
     });
 
+    resetButton ();
+
     return mLayout;
+  }
+
+  private void disableButton () {
+    mButton.setText ("Please wait...");
+    mButton.setBackgroundColor (getResources ().getColor (R.color.material_red_900));
+    mButton.setClickable (false);
+  }
+
+  private void resetButton () {
+    mButton.setText ("Log in");
+    mButton.setBackgroundColor (getResources ().getColor (R.color.material_red_700));
+    mButton.setClickable (true);
   }
 
   private String computeMD5 (String raw) {
@@ -97,6 +112,7 @@ public class LoginFragment extends Fragment {
         mContext.setFragment (new PassengerInputFragment ());
       } else {
         message = "Invalid username/password!";
+        resetButton ();
       }
       Toast.makeText (mContext, message, Toast.LENGTH_SHORT).show ();
     }

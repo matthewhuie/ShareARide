@@ -35,7 +35,7 @@ import edu.cmu.andrew.utilities.PlaceJSONParser;
 
 public class PassengerInputFragment extends Fragment {
 
-  private Passenger mContext;
+  private SARActivity mContext;
   private ScrollView mLayout;
   private SeekBar mRiders;
   private TextView mRidersOutput;
@@ -48,7 +48,7 @@ public class PassengerInputFragment extends Fragment {
 
   @Override
   public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    mContext = (Passenger) super.getActivity ();
+    mContext = (SARActivity) super.getActivity ();
     mLayout = (ScrollView) inflater.inflate (R.layout.activity_passenger_input, container, false);
 
     mRiders = (SeekBar) mLayout.findViewById (R.id.ridersInput);
@@ -73,7 +73,7 @@ public class PassengerInputFragment extends Fragment {
     mNext.setOnClickListener (new View.OnClickListener () {
       @Override
       public void onClick (View v) {
-        mContext.setFragment (new PassengerMapFragment ());
+        mContext.nextPFragment ();
       }
     });
 
