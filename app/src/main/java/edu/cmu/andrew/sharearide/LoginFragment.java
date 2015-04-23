@@ -59,7 +59,7 @@ public class LoginFragment extends Fragment {
 
   private void disableButton () {
     mButton.setText ("Please wait...");
-    mButton.setBackgroundColor (getResources ().getColor (R.color.material_red_500));
+    mButton.setBackgroundColor (getResources ().getColor (R.color.material_red_900));
     mButton.setClickable (false);
   }
 
