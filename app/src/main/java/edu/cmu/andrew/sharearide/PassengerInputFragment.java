@@ -73,7 +73,7 @@ public class PassengerInputFragment extends Fragment {
     mNext.setOnClickListener (new View.OnClickListener () {
       @Override
       public void onClick (View v) {
-        //mContext.setFragment (new PassengerMapFragment ());
+        mContext.nextPFragment ();
       }
     });
 

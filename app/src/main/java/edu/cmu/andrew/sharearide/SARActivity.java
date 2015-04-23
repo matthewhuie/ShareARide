@@ -45,8 +45,14 @@ public class SARActivity extends FragmentActivity
 
   public void setFragment (Fragment fragment) {
     FragmentTransaction ft = getFragmentManager ().beginTransaction ();
+    ft.addToBackStack ("back");
     ft.replace (R.id.fragmentLayout, fragment);
     ft.commit ();
+  }
+
+  public void nextPFragment () {
+    int position = pFragments.indexOf (getFragmentManager ().findFragmentById (R.id.fragmentLayout));
+    setFragment (pFragments.get (position + 1));
   }
 
   protected synchronized void buildGoogleApiClient () {
