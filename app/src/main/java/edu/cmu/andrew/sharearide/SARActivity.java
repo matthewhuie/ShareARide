@@ -44,10 +44,10 @@ public class SARActivity extends FragmentActivity
   }
 
   public void setFragment (Fragment fragment) {
-    FragmentTransaction ft = getFragmentManager ().beginTransaction ();
-    ft.addToBackStack ("back");
-    ft.replace (R.id.fragmentLayout, fragment);
-    ft.commit ();
+    getFragmentManager ().beginTransaction ()
+        .replace (R.id.fragmentLayout, fragment)
+        .addToBackStack ("")
+        .commit ();
   }
 
   public void nextPFragment () {

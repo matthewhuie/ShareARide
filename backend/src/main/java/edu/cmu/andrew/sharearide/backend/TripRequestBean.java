@@ -8,6 +8,16 @@ public class TripRequestBean {
 
     private double actualDistance;
 
+    public TripRequestBean(){
+
+    }
+
+    public TripRequestBean(int tripId, int requestId){
+        this.requestId = requestId;
+        this.tripId = tripId;
+    }
+
+
     public double getActualDistance() {
         return actualDistance;
     }
