@@ -7,6 +7,18 @@ public class MessageBean {
 
     private boolean status;
     private String user_name;
+    private String message;
+    private int message_id;
+    private boolean is_read;
+    private int request_id;
+
+    public int getRequest_id() {
+        return request_id;
+    }
+
+    public void setRequest_id(int request_id) {
+        this.request_id = request_id;
+    }
 
     public String getUser_name() {
         return user_name;
@@ -39,11 +51,6 @@ public class MessageBean {
     public void setIs_read(boolean is_read) {
         this.is_read = is_read;
     }
-
-    private String message;
-    private int message_id;
-    private boolean is_read;
-
 
     public boolean getStatus() {
         return status;
