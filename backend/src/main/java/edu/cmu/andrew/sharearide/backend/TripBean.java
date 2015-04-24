@@ -10,6 +10,15 @@ public class TripBean {
     private boolean isActive;
     private boolean hasEnded;
 
+    public TripBean(){
+
+    }
+
+    public TripBean(int tripId, int numOfRiders){
+        this.tripId = tripId;
+        this.numOfRiders = numOfRiders;
+    }
+
     public int getTripId() {
         return tripId;
     }

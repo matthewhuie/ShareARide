@@ -24,6 +24,11 @@ public class RequestBean {
 
     }
 
+    public RequestBean(int passUserId, boolean isServed){
+        this.passUserId = passUserId;
+        this.isServed = isServed;
+    }
+
       public RequestBean(int requestId,double fare,float passRating){
         this.requestId = requestId;
         this.fare = fare;

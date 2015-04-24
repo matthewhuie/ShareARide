@@ -32,8 +32,9 @@ public class MyEndpoint {
   private static final Logger log = Logger.getLogger (MyEndpoint.class.getName ());
   private static final Calendar calendar = Calendar.getInstance ();
 
+  //change!!!
   @ApiMethod (name = "getAvailableDrivers")
-  public List<UserBean> getAvailableDrivers () {
+  public List<UserBean> getAvailableDrivers (@Named ("numOfRiders") int numOfRiders) {
     return queryUser ("user_type='Driver'");
   }
 
@@ -58,7 +59,7 @@ public class MyEndpoint {
   public MessageBean createNewRequest (@Named ("passenger") String passenger, @Named ("srcLat") double srcLat,
                                        @Named ("srcLong") double srcLong, @Named ("destLat") double destLat,
                                        @Named ("destLong") double destLong) {
-    Date startTime = calendar.getTime ();
+    Date startTime = calendar.getTime();
 
     RequestBean rb = new RequestBean (getPassenger (passenger).getUserID (), srcLat, srcLong, destLat, destLong, new Timestamp (startTime.getTime ()));
     int result = updateRequest (rb);
@@ -75,9 +76,31 @@ public class MyEndpoint {
     return mb;
   }
 
+    @ApiMethod (name = "fulfillRequest")
+    public MessageBean fulfillRequest (@Named ("passenger") String passenger) {
+        Date startTime = calendar.getTime();
+
+        RequestBean rb = new RequestBean (getPassenger (passenger).getUserID (), true);
+        int result = updateRequest (rb);
+        MessageBean mb = new MessageBean ();
+        if (result == 0)
+            mb.setStatus (false);
+        else {
+            mb.setStatus (true);
+            mb.setMessage ("Fulfill Request");
+            mb.setUser_name (passenger);
+            updateMessage (mb);
+        }
+
+        return mb;
+    }
+
+
+
+
   @ApiMethod (name = "getUser")
   public UserBean getUserDetails (@Named ("userName") String userName) {
-    UserBean ub = getUser (userName);
+    UserBean ub = getUser(userName);
     return ub;
   }
 
@@ -96,7 +119,6 @@ public class MyEndpoint {
   public TripBean startTrip (@Named ("driver_username") String driverUsername) {
     return null;
   }
-
 
   private MessageBean getMessage(String userName){
     MessageBean mb = new MessageBean();
@@ -153,6 +175,19 @@ public class MyEndpoint {
     return al;
   }
 
+    @ApiMethod (name = "getTrip")
+    public TripBean getTrip (@Named ("driverId") int driverId) {
+        TripBean trip = new TripBean ();
+        List<TripBean> trips = queryTrip ("driver_user_id='" + driverId + "' AND hasEnded='false'");
+        if (trips != null && trips.size () > 0) {
+            trip = trips.get (0);
+        }
+        return trip;
+    }
+
+
+
+
   private List<TripBean> queryTrip (String where) {
     ArrayList<TripBean> al = new ArrayList<> ();
     try {
@@ -178,6 +213,20 @@ public class MyEndpoint {
 
     return al;
   }
+
+
+    @ApiMethod (name = "getRequest")
+    public RequestBean getRequest (@Named ("passenger") String passenger) {
+        RequestBean request = new RequestBean ();
+        List<RequestBean> requests = queryRequest ("pass_user_id='" + getPassenger (passenger).getUserID () + "' AND is_served=FALSE");
+        if (requests != null && requests.size () > 0) {
+            request = requests.get (0);
+        }
+        return request;
+    }
+
+
+
 
   private List<RequestBean> queryRequest (String where) {
     ArrayList<RequestBean> al = new ArrayList<> ();
@@ -313,6 +362,14 @@ public class MyEndpoint {
     return result;
   }
 
+
+  @ApiMethod (name = "updateTrip")
+  public TripBean updateTrip (@Named ("tripId") int tripId, @Named ("numOfRiders") int numOfRiders) {
+      TripBean tb =  new TripBean(tripId, numOfRiders);
+      updateTrip (tb);
+      return null;
+  }
+
   private int updateTrip (TripBean tb) {
     int result = -1;
     try {
@@ -331,6 +388,16 @@ public class MyEndpoint {
     }
     return result;
   }
+
+
+  @ApiMethod (name = "updateTripRequest")
+  public TripRequestBean updateTripRequest (@Named ("tripId") int tripId, @Named ("requestId") int requestId) {
+      TripRequestBean trb =  new TripRequestBean(tripId, requestId);
+      updateTripRequest (trb);
+      return null;
+  }
+
+
 
   private int updateTripRequest (TripRequestBean trb) {
     int result = -1;

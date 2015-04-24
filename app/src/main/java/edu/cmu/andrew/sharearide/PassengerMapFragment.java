@@ -67,7 +67,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import edu.cmu.andrew.sharearide.backend.shareARideApi.ShareARideApi;
+import edu.cmu.andrew.sharearide.backend.shareARideApi.model.TripBean;
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.UserBean;
+import edu.cmu.andrew.sharearide.backend.shareARideApi.model.RequestBean;
 
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.UserBeanCollection;
 import edu.cmu.andrew.utilities.EndPointManager;
@@ -385,14 +387,14 @@ public class PassengerMapFragment extends Fragment {
     //calculatePriceAndTime(destinationTxt);
 
     new AsyncGooglePlaceSearch ().execute (pickUpLocation, destinationTxt);
-    new EndpointsAsyncTask ().execute (pickUpLocation);
+
 
     //aditi code for inserting request in request table
     Intent myIntent = mContext.getIntent (); // gets the previously created intent
     String userName = myIntent.getStringExtra ("userName");
 
     myApiService.createNewRequest (userName, gpsTracker.getLatitude (), gpsTracker.getLongitude (), dest_latitude, dest_longitude);
-
+      new EndpointsAsyncTask ().execute (pickUpLocation, userName);
 
     //Intent intent = new Intent(this,DriverSelected.class);
     //startActivity(intent);
@@ -574,6 +576,7 @@ public class PassengerMapFragment extends Fragment {
   class EndpointsAsyncTask extends AsyncTask<String, Void, String[]> {
 
     private String pickUpLocation;
+    private String userName;
 
 
     @Override
@@ -587,11 +590,19 @@ public class PassengerMapFragment extends Fragment {
       }
 
       pickUpLocation = urls[0];
+      userName = urls[1];
 
       UserBeanCollection taxis = queryTaxi ();
       Log.i ("Taxi list: ", taxis.toString ());
 
-      return taxiSearching (taxis);
+      String[] taxiSearchingResult = new String[3];
+        try {
+            taxiSearchingResult = taxiSearching(taxis, userName);
+        }
+        catch (IOException ioe) {
+            Log.i ("Hit the IO error: ", ioe.toString ());
+        }
+      return taxiSearchingResult;
 
     }
 
@@ -601,11 +612,11 @@ public class PassengerMapFragment extends Fragment {
       setUpDriverLocation (Double.parseDouble (result[0]), Double.parseDouble (result[1]), result[2]);
     }
 
-    private UserBeanCollection queryTaxi () {
+    private UserBeanCollection queryTaxi (int numOfRiders) {
 
       try {
         Log.i ("In queryTaxi : ", " executed");
-        UserBeanCollection usc = myApiService.getAvailableDrivers ().execute ();
+        UserBeanCollection usc = myApiService.getAvailableDrivers (numOfRiders).execute ();
         Log.i ("Query result : ", usc.toString ());
         return usc;
 
@@ -617,7 +628,7 @@ public class PassengerMapFragment extends Fragment {
 
     }
 
-    private String[] taxiSearching (UserBeanCollection taxis) {
+    private String[] taxiSearching (UserBeanCollection taxis, String userName) throws IOException {
       double taxiLatitude = 0;
       double taxiLongitude = 0;
       double minTaxiLatitude = 0;
@@ -699,6 +710,19 @@ public class PassengerMapFragment extends Fragment {
 
         }
       }
+
+      //get tripId related to a driver from trip table
+      TripBean trip = myApiService.getTrip(minDriverID).execute();
+      int tripId = trip.getTripId();
+      //get requestId related to a user
+      RequestBean request = myApiService.getRequest(userName).execute();
+      int requestId = request.getRequestId();
+      //insert a new row into trip table
+      myApiService.updateTripRequest(tripId, requestId);
+      //update the request in request table
+      myApiService.fulfillRequest(userName);
+      //update the trip in trip table
+      myApiService.updateTrip(tripId, numOfRiders);
 
       Log.i ("minDriver Location ", String.valueOf (minTaxiLatitude) + String.valueOf (minTaxiLongitude) + minDurTxt);
       return new String[] {String.valueOf (minTaxiLatitude), String.valueOf (minTaxiLongitude), minDurTxt};
