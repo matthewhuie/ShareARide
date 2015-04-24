@@ -584,8 +584,8 @@ public class PassengerMapFragment extends Fragment {
 
       if (endpointInstance == null) {  // Only do this once
 
-        endpointInstance = new EndPointManager ();
-        myApiService = endpointInstance.getEndpointInstance ();
+       // endpointInstance = new EndPointManager ();
+        myApiService = EndPointManager.getEndpointInstance ();
 
       }
 
