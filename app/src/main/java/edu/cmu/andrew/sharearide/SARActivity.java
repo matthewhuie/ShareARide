@@ -3,13 +3,10 @@ package edu.cmu.andrew.sharearide;
 import android.app.Fragment;
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,7 +15,6 @@ import java.util.List;
 import edu.cmu.andrew.utilities.GPSTracker;
 
 public class SARActivity extends FragmentActivity {
-    //implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
   private GoogleApiClient mGoogleApiClient;
   private String locationName;
@@ -54,7 +50,7 @@ public class SARActivity extends FragmentActivity {
   }
 
   public void initDriver () {
-
+    fragments.add (new DriverMapFragment ());
   }
 
   public String geocode (double latitude, double longitude) {
