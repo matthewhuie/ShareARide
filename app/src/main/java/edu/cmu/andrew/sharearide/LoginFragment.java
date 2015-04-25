@@ -26,7 +26,7 @@ public class LoginFragment extends Fragment {
 
   private SARActivity mContext;
   private RelativeLayout mLayout;
-  private Spinner mUserType;
+  private String userType;
   private Button mButton;
   private String username;
   private String secret;
@@ -37,8 +37,6 @@ public class LoginFragment extends Fragment {
   public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mContext = (SARActivity) super.getActivity ();
     mLayout = (RelativeLayout) inflater.inflate (R.layout.activity_login, container, false);
-
-    mUserType = (Spinner) mLayout.findViewById (R.id.userType);
     mButton = (Button) mLayout.findViewById (R.id.button);
 
     mButton.setOnClickListener (new View.OnClickListener () {
@@ -46,9 +44,12 @@ public class LoginFragment extends Fragment {
       public void onClick (View v) {
         username = ((EditText) mLayout.findViewById (R.id.username)).getText ().toString ();
         secret = computeMD5 (((EditText) mLayout.findViewById (R.id.password)).getText ().toString ());
+        userType = ((Spinner) mLayout.findViewById (R.id.userType)).getSelectedItem ().toString ();
 
         disableButton ();
-        new LoginTask ().execute (username, secret);
+        new LoginTask ().execute (username, secret,
+            String.valueOf (mContext.getLatitude ()),
+            String.valueOf (mContext.getLongitude ()), userType);
       }
     });
 
@@ -94,7 +95,7 @@ public class LoginFragment extends Fragment {
         if (apiInstance == null) {  // Only do this once
           apiInstance = EndPointManager.getEndpointInstance ();
         }
-        user = apiInstance.userLogin (data[0], data[1]).execute ();
+        user = apiInstance.userLogin (data[0], data[1], data[2], data[3], data[4]).execute ();
       } catch (IOException e) {
         e.printStackTrace ();
       }
@@ -106,6 +107,11 @@ public class LoginFragment extends Fragment {
     protected void onPostExecute (UserBean result) {
       if (result != null) {
         message = "Authentication successful!";
+        if (userType.endsWith ("Passenger")) {
+          mContext.initPassenger ();
+        } else {
+          mContext.initDriver ();
+        }
         mContext.nextFragment ();
       } else {
         message = "Invalid username/password!";

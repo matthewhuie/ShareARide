@@ -105,11 +105,19 @@ public class MyEndpoint {
   }
 
   @ApiMethod (name = "userLogin")
-  public UserBean userLogin (@Named ("username") String username, @Named ("secret") String secret) {
+  public UserBean userLogin (
+      @Named ("username") String username,
+      @Named ("secret") String secret,
+      @Named ("latitude") String latitude,
+      @Named ("longitude") String longitude,
+      @Named ("user_type") String userType) {
     List<UserBean> users = queryUser ("user_name='" + username + "' AND secret='" + secret + "'");
     if (users != null && users.size () > 0) {
       UserBean ub = users.get (0);
-      // ***** SET USERS'S LOCATION AND USER TYPE HERE, THEN UPDATEUSER() BEFORE SENDING BACK TO LOGIN.JAVA
+      ub.setLatitude (Double.parseDouble (latitude));
+      ub.setLongitude (Double.parseDouble (longitude));
+      ub.setUserType (userType);
+      updateUser (ub);
       return ub;
     }
     return null;
