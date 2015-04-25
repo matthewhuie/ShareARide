@@ -3,12 +3,9 @@ package edu.cmu.andrew.sharearide;
 import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.Color;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -30,9 +27,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -88,7 +82,7 @@ public class PassengerMapFragment extends Fragment {
   private GPSTracker gpsTracker;
   private EndPointManager endpointInstance;
   private RelativeLayout mLayout;
-  private Passenger mContext;
+  private OLDPassenger mContext;
 
   private static final String GEOCODE_BASE_URL = "https://maps.googleapis.com/maps/api/geocode/xml?address=";
   private static final String REV_GEOCODE_BASE_URL = "https://maps.googleapis.com/maps/api/geocode/json?latlng=";
@@ -103,7 +97,7 @@ public class PassengerMapFragment extends Fragment {
 
   @Override
   public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    mContext = (Passenger) super.getActivity ();
+    mContext = (OLDPassenger) super.getActivity ();
     mLayout = (RelativeLayout) inflater.inflate (R.layout.activity_passenger_map, container, false);
     //buildGoogleApiClient ();
     setUpMapIfNeeded ();
@@ -592,7 +586,7 @@ public class PassengerMapFragment extends Fragment {
       pickUpLocation = urls[0];
       userName = urls[1];
 
-      UserBeanCollection taxis = queryTaxi ();
+      UserBeanCollection taxis = queryTaxi (0);
       Log.i ("Taxi list: ", taxis.toString ());
 
       String[] taxiSearchingResult = new String[3];
@@ -722,7 +716,7 @@ public class PassengerMapFragment extends Fragment {
       //update the request in request table
       myApiService.fulfillRequest(userName);
       //update the trip in trip table
-      myApiService.updateTrip(tripId, numOfRiders);
+      //myApiService.updateTrip(tripId, numOfRiders);
 
       Log.i ("minDriver Location ", String.valueOf (minTaxiLatitude) + String.valueOf (minTaxiLongitude) + minDurTxt);
       return new String[] {String.valueOf (minTaxiLatitude), String.valueOf (minTaxiLongitude), minDurTxt};

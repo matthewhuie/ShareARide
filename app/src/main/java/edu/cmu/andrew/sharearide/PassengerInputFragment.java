@@ -40,11 +40,13 @@ public class PassengerInputFragment extends Fragment {
   private SeekBar mRiders;
   private TextView mRidersOutput;
   private Button mNext;
-    //for autocomplete
-    AutoCompleteTextView atvPlaces;
-    PlacesTask placesTask;
-    ParserTask parserTask;
-    private static final String GOOGLE_AUTOCOMPLETE_URL = "https://maps.googleapis.com/maps/api/place/autocomplete/";
+  private TextView mLocation;
+
+  //for autocomplete
+  AutoCompleteTextView atvPlaces;
+  PlacesTask placesTask;
+  ParserTask parserTask;
+  private static final String GOOGLE_AUTOCOMPLETE_URL = "https://maps.googleapis.com/maps/api/place/autocomplete/";
 
   @Override
   public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -54,7 +56,11 @@ public class PassengerInputFragment extends Fragment {
     mRiders = (SeekBar) mLayout.findViewById (R.id.ridersInput);
     mRidersOutput = (TextView) mLayout.findViewById (R.id.ridersOutput);
     mRidersOutput.setText ("1");
-      buildAutoComplete ();
+
+    mLocation = ((TextView) mLayout.findViewById (R.id.currentLocationText));
+    mLocation.setText (mContext.getLocationName ());
+
+    buildAutoComplete ();
 
     mRiders.setOnSeekBarChangeListener (new SeekBar.OnSeekBarChangeListener () {
       @Override
@@ -63,16 +69,20 @@ public class PassengerInputFragment extends Fragment {
       }
 
       @Override
-      public void onStartTrackingTouch (SeekBar seekBar) {}
+      public void onStartTrackingTouch (SeekBar seekBar) {
+      }
 
       @Override
-      public void onStopTrackingTouch (SeekBar seekBar) {}
+      public void onStopTrackingTouch (SeekBar seekBar) {
+      }
     });
 
     mNext = (Button) mLayout.findViewById (R.id.passInputNext);
     mNext.setOnClickListener (new View.OnClickListener () {
       @Override
       public void onClick (View v) {
+
+        // *** NEED TO VERIFY INPUT FIELD HERE
         mContext.nextPFragment ();
       }
     });
@@ -81,172 +91,165 @@ public class PassengerInputFragment extends Fragment {
   }
 
 
-    private void buildAutoComplete () {
-        System.out.println("in buildauto");
-        atvPlaces = (CustomAutoCompleteTextView) mLayout.findViewById (R.id.whereToGoInput);
-        //atvPlaces.setThreshold (1);
+  private void buildAutoComplete () {
+    System.out.println ("in buildauto");
+    atvPlaces = (CustomAutoCompleteTextView) mLayout.findViewById (R.id.whereToGoInput);
+    //atvPlaces.setThreshold (1);
 
-        atvPlaces.addTextChangedListener (new TextWatcher() {
+    atvPlaces.addTextChangedListener (new TextWatcher () {
 
-            @Override
-            public void onTextChanged (CharSequence s, int start, int before, int count) {
-                System.out.println ("on text changed" + s);
-                placesTask = new PlacesTask ();
-                placesTask.execute (s.toString ());
-            }
+      @Override
+      public void onTextChanged (CharSequence s, int start, int before, int count) {
+        System.out.println ("on text changed" + s);
+        placesTask = new PlacesTask ();
+        placesTask.execute (s.toString ());
+      }
 
-            @Override
-            public void beforeTextChanged (CharSequence s, int start, int count,
-                                           int after) {
-                // TODO Auto-generated method stub
-            }
+      @Override
+      public void beforeTextChanged (CharSequence s, int start, int count,
+                                     int after) {
+        // TODO Auto-generated method stub
+      }
 
-            @Override
-            public void afterTextChanged (Editable s) {
-                // TODO Auto-generated method stub
-            }
-        });
+      @Override
+      public void afterTextChanged (Editable s) {
+        // TODO Auto-generated method stub
+      }
+    });
+  }
+
+  /**
+   * A class to parse the Google Places in JSON format
+   */
+  private class ParserTask extends AsyncTask<String, Integer, List<HashMap<String, String>>> {
+
+    JSONObject jObject;
+
+    @Override
+    protected List<HashMap<String, String>> doInBackground (String... jsonData) {
+
+      List<HashMap<String, String>> places = null;
+
+      PlaceJSONParser placeJsonParser = new PlaceJSONParser ();
+
+      try {
+        jObject = new JSONObject (jsonData[0]);
+
+        // Getting the parsed data as a List construct
+        places = placeJsonParser.parse (jObject);
+        System.out.println ("places" + places.size ());
+      } catch (Exception e) {
+        Log.d ("Exception", e.toString ());
+      }
+      return places;
     }
 
-    /**
-     * A class to parse the Google Places in JSON format
-     */
-    private class ParserTask extends AsyncTask<String, Integer, List<HashMap<String, String>>> {
+    @Override
+    protected void onPostExecute (List<HashMap<String, String>> result) {
 
-        JSONObject jObject;
+      String[] from = new String[] {"description"};
+      int[] to = new int[] {android.R.id.text1};
 
-        @Override
-        protected List<HashMap<String, String>> doInBackground (String... jsonData) {
+      // Creating a SimpleAdapter for the AutoCompleteTextView
+      SimpleAdapter adapter = new SimpleAdapter (mContext, result, android.R.layout.simple_list_item_1, from, to);
 
-            List<HashMap<String, String>> places = null;
+      // Setting the adapter
+      atvPlaces.setAdapter (adapter);
+    }
+  }
 
-            PlaceJSONParser placeJsonParser = new PlaceJSONParser ();
+  // Fetches all places from GooglePlaces AutoComplete Web Service
+  private class PlacesTask extends AsyncTask<String, Void, String> {
 
-            try {
-                jObject = new JSONObject (jsonData[0]);
+    @Override
+    protected String doInBackground (String... place) {
+      // For storing data from web service
+      String data = "";
+      System.out.println (place[0] + " place");
+      String input = "";
 
-                // Getting the parsed data as a List construct
-                places = placeJsonParser.parse (jObject);
-                System.out.println ("places" + places.size ());
-            } catch (Exception e) {
-                Log.d("Exception", e.toString());
-            }
-            return places;
-        }
+      try {
+        input = "input=" + URLEncoder.encode (place[0], "utf-8");
+        System.out.println ("do in background input" + input);
+      } catch (UnsupportedEncodingException e1) {
+        e1.printStackTrace ();
+      }
 
-        @Override
-        protected void onPostExecute (List<HashMap<String, String>> result) {
+      // place type to be searched
+      String types = "types=address";
 
-            String[] from = new String[] {"description"};
-            int[] to = new int[] {android.R.id.text1};
+      // Sensor enabled
+      String sensor = "sensor=false";
 
-            // Creating a SimpleAdapter for the AutoCompleteTextView
-            SimpleAdapter adapter = new SimpleAdapter (mContext, result, android.R.layout.simple_list_item_1, from, to);
+      // Building the parameters to the web service
+      String parameters = input + "&" + types + "&" + sensor + "&key=" + getString (R.string.google_maps_places_key);
 
-            // Setting the adapter
-            atvPlaces.setAdapter (adapter);
-        }
+      // Output format
+      String output = "json";
+
+      // Building the url to the web service
+      String url = GOOGLE_AUTOCOMPLETE_URL + output + "?" + parameters;
+      System.out.println (url + " url");
+      try {
+        // Fetching the data from we service
+        data = downloadUrl (url);
+      } catch (Exception e) {
+        Log.d ("Background Task", e.toString ());
+      }
+      System.out.println (data + " data");
+      return data;
     }
 
-    // Fetches all places from GooglePlaces AutoComplete Web Service
-    private class PlacesTask extends AsyncTask<String, Void, String> {
+    @Override
+    protected void onPostExecute (String result) {
+      super.onPostExecute (result);
 
-        @Override
-        protected String doInBackground (String... place) {
-            // For storing data from web service
-            String data = "";
-            System.out.println(place[0] + " place");
-            String input = "";
+      // Creating ParserTask
+      parserTask = new ParserTask ();
 
-            try {
-                input = "input=" + URLEncoder.encode(place[0], "utf-8");
-                System.out.println ("do in background input" + input);
-            } catch (UnsupportedEncodingException e1) {
-                e1.printStackTrace ();
-            }
-
-            // place type to be searched
-            String types = "types=address";
-
-            // Sensor enabled
-            String sensor = "sensor=false";
-
-            // Building the parameters to the web service
-            String parameters = input + "&" + types + "&" + sensor + "&key=" + getString (R.string.google_maps_places_key);
-
-            // Output format
-            String output = "json";
-
-            // Building the url to the web service
-            String url = GOOGLE_AUTOCOMPLETE_URL + output + "?" + parameters;
-            System.out.println(url + " url");
-            try {
-                // Fetching the data from we service
-                data = downloadUrl (url);
-            } catch (Exception e) {
-                Log.d ("Background Task", e.toString ());
-            }
-            System.out.println(data + " data");
-            return data;
-        }
-
-        @Override
-        protected void onPostExecute (String result) {
-            super.onPostExecute (result);
-
-            // Creating ParserTask
-            parserTask = new ParserTask ();
-
-            // Starting Parsing the JSON string returned by Web Service
-            parserTask.execute (result);
-        }
+      // Starting Parsing the JSON string returned by Web Service
+      parserTask.execute (result);
     }
+  }
 
-    /**
-     * A method to download json data from url
-     */
-    private String downloadUrl (String strUrl) throws IOException {
-        String data = "";
-        InputStream iStream = null;
-        HttpURLConnection urlConnection = null;
-        try {
-            URL url = new URL (strUrl);
+  /**
+   * A method to download json data from url
+   */
+  private String downloadUrl (String strUrl) throws IOException {
+    String data = "";
+    InputStream iStream = null;
+    HttpURLConnection urlConnection = null;
+    try {
+      URL url = new URL (strUrl);
 
-            // Creating an http connection to communicate with url
-            urlConnection = (HttpURLConnection) url.openConnection ();
+      // Creating an http connection to communicate with url
+      urlConnection = (HttpURLConnection) url.openConnection ();
 
-            // Connecting to url
-            urlConnection.connect ();
+      // Connecting to url
+      urlConnection.connect ();
 
-            // Reading data from url
-            iStream = urlConnection.getInputStream ();
+      // Reading data from url
+      iStream = urlConnection.getInputStream ();
 
-            BufferedReader br = new BufferedReader (new InputStreamReader(iStream));
+      BufferedReader br = new BufferedReader (new InputStreamReader (iStream));
 
-            StringBuffer sb = new StringBuffer ();
+      StringBuffer sb = new StringBuffer ();
 
-            String line = "";
-            while ((line = br.readLine ()) != null) {
-                sb.append (line);
-            }
+      String line = "";
+      while ((line = br.readLine ()) != null) {
+        sb.append (line);
+      }
 
-            data = sb.toString ();
-            System.out.println ("json" + sb);
-            br.close ();
+      data = sb.toString ();
+      System.out.println ("json" + sb);
+      br.close ();
 
-        } catch (Exception e) {
-            Log.d ("Exception while downloading url", e.toString ());
-        } finally {
-            iStream.close ();
-            urlConnection.disconnect ();
-        }
-        return data;
+    } catch (Exception e) {
+      Log.d ("Exception while downloading url", e.toString ());
+    } finally {
+      iStream.close ();
+      urlConnection.disconnect ();
     }
-
-
-
-
-    public void setLocation (String location) {
-    ((TextView) mLayout.findViewById (R.id.currentLocationText)).setText (location);
+    return data;
   }
 }

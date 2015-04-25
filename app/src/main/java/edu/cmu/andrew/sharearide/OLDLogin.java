@@ -1,7 +1,6 @@
 package edu.cmu.andrew.sharearide;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -20,7 +19,7 @@ import edu.cmu.andrew.sharearide.backend.shareARideApi.model.UserBean;
 import edu.cmu.andrew.utilities.EndPointManager;
 
 
-public class Login extends Activity {
+public class OLDLogin extends Activity {
 
   private Spinner mUserType;
   private Button mButton;
@@ -89,13 +88,13 @@ public class Login extends Activity {
       //System.out.println(result[1]);
       if (result != null) {
         message = "Authentication successful!";
-        Intent loginIntent = new Intent (Login.this, (result.getUserType ().equals ("Passenger") ? Passenger.class : DriverHome.class));
+        Intent loginIntent = new Intent (OLDLogin.this, (result.getUserType ().equals ("Passenger") ? OLDPassenger.class : DriverHome.class));
         loginIntent.putExtra ("username", username);
         startActivity (loginIntent);
       } else {
         message = "Invalid username/password!";
       }
-      Toast.makeText (Login.this, message, Toast.LENGTH_SHORT).show ();
+      Toast.makeText (OLDLogin.this, message, Toast.LENGTH_SHORT).show ();
     }
 
   }
