@@ -41,7 +41,7 @@ public class MyEndpoint {
 
     @ApiMethod (name = "pollMessage")
     public MessageBean pollMessage (@Named ("userName") String userName) {
-        MessageBean mb = getMessage(userName);
+        MessageBean mb = getMessage (userName);
         return mb;
     }
 
@@ -59,7 +59,7 @@ public class MyEndpoint {
   public MessageBean createNewRequest (@Named ("passenger") String passenger, @Named ("srcLat") double srcLat,
                                        @Named ("srcLong") double srcLong, @Named ("destLat") double destLat,
                                        @Named ("destLong") double destLong) {
-    Date startTime = calendar.getTime();
+    Date startTime = calendar.getTime ();
 
     RequestBean rb = new RequestBean (getPassenger (passenger).getUserID (), srcLat, srcLong, destLat, destLong, new Timestamp (startTime.getTime ()));
     int result = updateRequest (rb);
@@ -78,7 +78,7 @@ public class MyEndpoint {
 
     @ApiMethod (name = "fulfillRequest")
     public MessageBean fulfillRequest (@Named ("passenger") String passenger) {
-        Date startTime = calendar.getTime();
+        Date startTime = calendar.getTime ();
 
         RequestBean rb = new RequestBean (getPassenger (passenger).getUserID (), true);
         int result = updateRequest (rb);
@@ -100,7 +100,7 @@ public class MyEndpoint {
 
   @ApiMethod (name = "getUser")
   public UserBean getUserDetails (@Named ("userName") String userName) {
-    UserBean ub = getUser(userName);
+    UserBean ub = getUser (userName);
     return ub;
   }
 
@@ -111,14 +111,16 @@ public class MyEndpoint {
       @Named ("latitude") double latitude,
       @Named ("longitude") double longitude,
       @Named ("user_type") String userType) {
-    List<UserBean> users = queryUser ("user_name='" + username + "' AND secret='" + secret + "'");
-    if (users != null && users.size () > 0) {
-      UserBean ub = users.get (0);
-      ub.setLatitude (latitude);
-      ub.setLongitude (longitude);
-      ub.setUserType (userType);
-      updateUser (ub);
-      return ub;
+    if (! username.equals ("") && ! secret.equals ("")) {
+      List<UserBean> users = queryUser ("user_name='" + username + "' AND secret='" + secret + "'");
+      if (users != null && users.size () > 0) {
+        UserBean ub = users.get (0);
+        ub.setLatitude (latitude);
+        ub.setLongitude (longitude);
+        ub.setUserType (userType);
+        updateUser (ub);
+        return ub;
+      }
     }
     return null;
   }
