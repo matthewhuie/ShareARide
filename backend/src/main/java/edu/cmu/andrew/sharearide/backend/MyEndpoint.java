@@ -108,14 +108,14 @@ public class MyEndpoint {
   public UserBean userLogin (
       @Named ("username") String username,
       @Named ("secret") String secret,
-      @Named ("latitude") String latitude,
-      @Named ("longitude") String longitude,
+      @Named ("latitude") double latitude,
+      @Named ("longitude") double longitude,
       @Named ("user_type") String userType) {
     List<UserBean> users = queryUser ("user_name='" + username + "' AND secret='" + secret + "'");
     if (users != null && users.size () > 0) {
       UserBean ub = users.get (0);
-      ub.setLatitude (Double.parseDouble (latitude));
-      ub.setLongitude (Double.parseDouble (longitude));
+      ub.setLatitude (latitude);
+      ub.setLongitude (longitude);
       ub.setUserType (userType);
       updateUser (ub);
       return ub;

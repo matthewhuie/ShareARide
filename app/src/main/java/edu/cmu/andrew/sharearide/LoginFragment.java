@@ -95,7 +95,9 @@ public class LoginFragment extends Fragment {
         if (apiInstance == null) {  // Only do this once
           apiInstance = EndPointManager.getEndpointInstance ();
         }
-        user = apiInstance.userLogin (data[0], data[1], data[2], data[3], data[4]).execute ();
+        user = apiInstance.userLogin (data[0], data[1],
+            Double.parseDouble (data[2]),
+            Double.parseDouble (data[3]), data[4]).execute ();
       } catch (IOException e) {
         e.printStackTrace ();
       }
