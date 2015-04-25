@@ -3,7 +3,9 @@ package edu.cmu.andrew.sharearide;
 import android.app.Fragment;
 import android.location.Address;
 import android.location.Geocoder;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -12,6 +14,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.cmu.andrew.sharearide.backend.shareARideApi.model.MessageBean;
+import edu.cmu.andrew.utilities.EndPointManager;
 import edu.cmu.andrew.utilities.GPSTracker;
 
 public class SARActivity extends FragmentActivity {
@@ -23,6 +27,7 @@ public class SARActivity extends FragmentActivity {
   private GPSTracker mGPS;
   private String destination;
   private String username;
+  public final Handler handler = new Handler ();
 
   public final String GEOCODE_BASE_URL = "https://maps.googleapis.com/maps/api/geocode/xml?address=";
   public final String REV_GEOCODE_BASE_URL = "https://maps.googleapis.com/maps/api/geocode/json?latlng=";
@@ -121,4 +126,53 @@ public class SARActivity extends FragmentActivity {
       super.onBackPressed ();
     }
   }
+
+  /**
+   * async task to poll message table
+   */
+  class PollTask extends AsyncTask<String, Void, MessageBean> {
+
+    @Override
+    protected MessageBean doInBackground (String... data) {
+      MessageBean mb = new MessageBean ();
+      try {
+        EndPointManager.getEndpointInstance ().pollMessage(data[0]).execute ();
+      } catch (IOException e) {
+        e.printStackTrace ();
+      }
+      return mb;
+
+    }
+
+    @Override
+    protected void onPostExecute (MessageBean result) {
+      //Toast.makeText(DriverHome.this, result.getMessage(), Toast.LENGTH_LONG).show ();
+    }
+
+  }
+
+  private void pollForMessages() {
+    Sync sync = new Sync(call,60*1000);
+
+  }
+
+  public class Sync {
+    Runnable task;
+
+    public Sync(Runnable task, long time) {
+      this.task = task;
+      handler.removeCallbacks(task);
+      handler.postDelayed(task, time);
+    }
+  }
+
+  final private Runnable call = new Runnable() {
+    public void run() {
+      //This is where my sync code will be, but for testing purposes I only have a Log statement
+      //will run every 20 seconds
+      new PollTask().execute (username);
+      handler.postDelayed(call,20*1000);
+    }
+  };
+  
 }
