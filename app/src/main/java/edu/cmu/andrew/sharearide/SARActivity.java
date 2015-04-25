@@ -30,11 +30,7 @@ public class SARActivity extends FragmentActivity {
 
     mGPS = new GPSTracker (this);
 
-    position = 0;
-    fragments = new ArrayList<> ();
-    fragments.add (new LoginFragment ());
-
-    setFragment (position);
+    initFragments ();
   }
 
   private void setFragment (int position) {
@@ -42,6 +38,13 @@ public class SARActivity extends FragmentActivity {
         .replace (R.id.fragmentLayout, fragments.get (position))
         .addToBackStack (null)
         .commit ();
+  }
+
+  private void initFragments () {
+    position = 0;
+    fragments = new ArrayList<> ();
+    fragments.add (new LoginFragment ());
+    setFragment (position);
   }
 
   public void initPassenger () {
@@ -68,8 +71,11 @@ public class SARActivity extends FragmentActivity {
   }
 
   public void previousFragment () {
-    fragments.remove (position);
-    setFragment (--position);
+    if (position > 1) {
+      setFragment (--position);
+    } else {
+      initFragments ();
+    }
   }
 
   public double getLatitude () {
