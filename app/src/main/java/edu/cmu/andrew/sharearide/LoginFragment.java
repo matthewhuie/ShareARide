@@ -44,7 +44,7 @@ public class LoginFragment extends Fragment {
       public void onClick (View v) {
         username = ((EditText) mLayout.findViewById (R.id.username)).getText ().toString ();
         secret = computeMD5 (((EditText) mLayout.findViewById (R.id.password)).getText ().toString ());
-        userType = ((Spinner) mLayout.findViewById (R.id.userType)).getSelectedItem ().toString ();
+        userType = (((Spinner) mLayout.findViewById (R.id.userType)).getSelectedItem ().toString ()).split (" ") [3];
 
         disableButton ();
         new LoginTask ().execute (username, secret,
@@ -109,7 +109,7 @@ public class LoginFragment extends Fragment {
     protected void onPostExecute (UserBean result) {
       if (result != null) {
         message = "Authentication successful!";
-        if (userType.endsWith ("Passenger")) {
+        if (userType.equals ("Passenger")) {
           mContext.initPassenger ();
         } else {
           mContext.initDriver ();
