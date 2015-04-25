@@ -46,7 +46,6 @@ public class PassengerInputFragment extends Fragment {
   //for autocomplete
   AutoCompleteTextView atvPlaces;
   ParserTask parserTask;
-  private static final String GOOGLE_AUTOCOMPLETE_URL = "https://maps.googleapis.com/maps/api/place/autocomplete/";
 
   @Override
   public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -179,7 +178,7 @@ public class PassengerInputFragment extends Fragment {
       String types = "types=address";
 
       // Sensor enabled
-      String sensor = "sensor=false";
+      String sensor = "sensor=true";
 
       // Building the parameters to the web service
       String parameters = input + "&" + types + "&" + sensor + "&key=" + getString (R.string.google_maps_places_key);
@@ -188,7 +187,7 @@ public class PassengerInputFragment extends Fragment {
       String output = "json";
 
       // Building the url to the web service
-      String url = GOOGLE_AUTOCOMPLETE_URL + output + "?" + parameters;
+      String url = mContext.GOOGLE_AUTOCOMPLETE_URL + output + "?" + parameters;
       System.out.println (url + " url");
       try {
         // Fetching the data from we service
