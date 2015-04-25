@@ -90,62 +90,16 @@ public class PassengerMapFragment extends Fragment {
   private static final String DIRECTION_BASE_URL = "https://maps.googleapis.com/maps/api/directions/json?";
   private static final String GOOGLE_AUTOCOMPLETE_URL = "https://maps.googleapis.com/maps/api/place/autocomplete/";
 
-  //for autocomplete
-  AutoCompleteTextView atvPlaces;
-  PlacesTask placesTask;
-  ParserTask parserTask;
-
   @Override
   public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mContext = (SARActivity) super.getActivity ();
     mLayout = (RelativeLayout) inflater.inflate (R.layout.activity_passenger_map, container, false);
-    //buildGoogleApiClient ();
     setUpMapIfNeeded ();
-    //setupSpinner ();
-    //System.out.println("in on create");
-    buildAutoComplete ();
     gpsTracker = new GPSTracker (mContext);
     latitude = mContext.getLatitude ();
     longitude = mContext.getLongitude ();
 
     return mLayout;
-  }
-
-  /**public void setupSpinner () {
-    Spinner spinner = (Spinner) mLayout.findViewById (R.id.ridersInput);
-// Create an ArrayAdapter using the string array and a default spinner layout
-    ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource (mContext,
-        R.array.riderNumbers, android.R.layout.simple_spinner_item);
-// Specify the layout to use when the list of choices appears
-    adapter.setDropDownViewResource (android.R.layout.simple_spinner_dropdown_item);
-// Apply the adapter to the spinner
-    spinner.setAdapter (adapter);
-  }*/
-
-  private void buildAutoComplete () {
-    atvPlaces = (AutoCompleteTextView) mLayout.findViewById (R.id.whereToGoInput);
-    atvPlaces.setThreshold (1);
-
-    atvPlaces.addTextChangedListener (new TextWatcher () {
-
-      @Override
-      public void onTextChanged (CharSequence s, int start, int before, int count) {
-        System.out.println ("on text changed" + s);
-        placesTask = new PlacesTask ();
-        placesTask.execute (s.toString ());
-      }
-
-      @Override
-      public void beforeTextChanged (CharSequence s, int start, int count,
-                                     int after) {
-        // TODO Auto-generated method stub
-      }
-
-      @Override
-      public void afterTextChanged (Editable s) {
-        // TODO Auto-generated method stub
-      }
-    });
   }
 
   /**
@@ -189,59 +143,6 @@ public class PassengerMapFragment extends Fragment {
     return data;
   }
 
-  // Fetches all places from GooglePlaces AutoComplete Web Service
-  private class PlacesTask extends AsyncTask<String, Void, String> {
-
-    @Override
-    protected String doInBackground (String... place) {
-      // For storing data from web service
-      String data = "";
-
-      String input = "";
-
-      try {
-        input = "input=" + URLEncoder.encode (place[0], "utf-8");
-        System.out.println ("do in background input" + input);
-      } catch (UnsupportedEncodingException e1) {
-        e1.printStackTrace ();
-      }
-
-      // place type to be searched
-      String types = "types=address";
-
-      // Sensor enabled
-      String sensor = "sensor=false";
-
-      // Building the parameters to the web service
-      String parameters = input + "&" + types + "&" + sensor + "&key=" + getString (R.string.google_maps_places_key);
-
-      // Output format
-      String output = "json";
-
-      // Building the url to the web service
-      String url = GOOGLE_AUTOCOMPLETE_URL + output + "?" + parameters;
-
-      try {
-        // Fetching the data from we service
-        data = downloadUrl (url);
-      } catch (Exception e) {
-        Log.d ("Background Task", e.toString ());
-      }
-      return data;
-    }
-
-    @Override
-    protected void onPostExecute (String result) {
-      super.onPostExecute (result);
-
-      // Creating ParserTask
-      parserTask = new ParserTask ();
-
-      // Starting Parsing the JSON string returned by Web Service
-      parserTask.execute (result);
-    }
-  }
-
   /**
    * A class to parse the Google Places in JSON format
    */
@@ -278,7 +179,7 @@ public class PassengerMapFragment extends Fragment {
       SimpleAdapter adapter = new SimpleAdapter (mContext, result, android.R.layout.simple_list_item_1, from, to);
 
       // Setting the adapter
-      atvPlaces.setAdapter (adapter);
+      //atvPlaces.setAdapter (adapter);
     }
   }
 
