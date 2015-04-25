@@ -75,8 +75,6 @@ public class PassengerMapFragment extends Fragment {
   private double longitude;
   private double dest_latitude = 0;
   private double dest_longitude = 0;
-  private GPSTracker gpsTracker;
-  private EndPointManager endpointInstance;
   private RelativeLayout mLayout;
   private SARActivity mContext;
 
@@ -90,7 +88,6 @@ public class PassengerMapFragment extends Fragment {
     mContext = (SARActivity) super.getActivity ();
     mLayout = (RelativeLayout) inflater.inflate (R.layout.activity_passenger_map, container, false);
     
-    gpsTracker = new GPSTracker (mContext);
     latitude = mContext.getLatitude ();
     longitude = mContext.getLongitude ();
       setUpMapIfNeeded ();
@@ -189,8 +186,8 @@ public class PassengerMapFragment extends Fragment {
 
 
   public void selectDriver () {
-    String pickUpLocation = ((TextView) mLayout.findViewById (R.id.currentLocationText)).getText ().toString ();
-    String destinationTxt = ((EditText) mLayout.findViewById (R.id.whereToGoInput)).getText ().toString ();
+    String pickUpLocation = mContext.getLocationName ();
+    String destinationTxt = mContext.getDestination ();
 
     //cannot make http request in main thread, has to create a asyn helper thread
     //calculatePriceAndTime(destinationTxt);
@@ -203,7 +200,7 @@ public class PassengerMapFragment extends Fragment {
     String userName = myIntent.getStringExtra ("userName");
 
       try {
-          myApiService.createNewRequest (userName, gpsTracker.getLatitude (), gpsTracker.getLongitude (), dest_latitude, dest_longitude);
+          myApiService.createNewRequest (userName, latitude, longitude, dest_latitude, dest_longitude);
       } catch (IOException e) {
           e.printStackTrace();
       }
@@ -395,12 +392,7 @@ public class PassengerMapFragment extends Fragment {
     @Override
     protected String[] doInBackground (String... urls) {
 
-      if (endpointInstance == null) {  // Only do this once
-
-       // endpointInstance = new EndPointManager ();
-        myApiService = EndPointManager.getEndpointInstance ();
-
-      }
+      myApiService = EndPointManager.getEndpointInstance ();
 
       pickUpLocation = urls[0];
       userName = urls[1];

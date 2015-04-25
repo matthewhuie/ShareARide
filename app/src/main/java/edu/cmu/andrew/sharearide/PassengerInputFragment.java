@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.SimpleAdapter;
@@ -83,7 +84,8 @@ public class PassengerInputFragment extends Fragment {
       public void onClick (View v) {
 
         // *** NEED TO VERIFY INPUT FIELD HERE
-        mContext.nextFragment ();
+        mContext.setDestination (atvPlaces.getText ().toString ());
+            mContext.nextFragment ();
       }
     });
 

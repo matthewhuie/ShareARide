@@ -25,6 +25,7 @@ public class SARActivity extends FragmentActivity {
   private List<Fragment> fragments;
   private int position;
   private GPSTracker mGPS;
+  private String destination;
 
   @Override
   protected void onCreate (Bundle savedInstanceState) {
@@ -73,6 +74,14 @@ public class SARActivity extends FragmentActivity {
     } catch (IOException ioe) {
     }
     return (places.isEmpty () ? null : places.get (0).getAddressLine (0));
+  }
+
+  public void setDestination (String destination) {
+    this.destination = destination;
+  }
+
+  public String getDestination () {
+    return destination;
   }
 
   @Override
