@@ -1,7 +1,6 @@
 package edu.cmu.andrew.sharearide;
 
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -16,23 +15,23 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SARActivity extends FragmentActivity
-    implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+import edu.cmu.andrew.utilities.GPSTracker;
+
+public class SARActivity extends FragmentActivity {
+    //implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
   private GoogleApiClient mGoogleApiClient;
-  private Location mLastLocation;
-  private double latitude;
-  private double longitude;
   private String locationName;
   private List<Fragment> fragments;
   private int position;
+  private GPSTracker mGPS;
 
   @Override
   protected void onCreate (Bundle savedInstanceState) {
     super.onCreate (savedInstanceState);
     setContentView (R.layout.activity_passenger);
 
-    buildGoogleApiClient ();
+    mGPS = new GPSTracker (this);
 
     position = 0;
     fragments = new ArrayList<> ();
@@ -46,7 +45,7 @@ public class SARActivity extends FragmentActivity
   private void setFragment (int position) {
     getFragmentManager ().beginTransaction ()
         .replace (R.id.fragmentLayout, fragments.get (position))
-        .addToBackStack ("")
+        .addToBackStack (null)
         .commit ();
   }
 
@@ -54,69 +53,30 @@ public class SARActivity extends FragmentActivity
     setFragment (++position);
   }
 
-  protected synchronized void buildGoogleApiClient () {
-    mGoogleApiClient = new GoogleApiClient.Builder (this)
-        .addConnectionCallbacks (this)
-        .addOnConnectionFailedListener (this)
-        .addApi (LocationServices.API)
-        .build ();
-  }
-
-  @Override
-  public void onConnectionSuspended (int cause) {
-    // The connection has been interrupted.
-    // Disable any UI components that depend on Google APIs
-    // until onConnected() is called.
-  }
-
-  @Override
-  public void onConnectionFailed (ConnectionResult result) {
-    // This callback is important for handling errors that
-    // may occur while attempting to connect with Google.
-    //
-    // More about this in the next section.
-  }
-
-  @Override
-  public void onConnected (Bundle connectionHint) {
-    mLastLocation = LocationServices.FusedLocationApi.getLastLocation (
-        mGoogleApiClient);
-    if (mLastLocation != null) {
-      latitude = mLastLocation.getLatitude ();
-      longitude = mLastLocation.getLongitude ();
-
-      // Gets the current location place name
-      Geocoder geoCoder = new Geocoder (this);
-      List<Address> places = null;
-      try {
-        places = geoCoder.getFromLocation (latitude, longitude, 1);
-      } catch (IOException ioe) {
-      }
-      locationName = (places.isEmpty () ? null : places.get (0).getAddressLine (0));
-    }
+  public void previousFragment () {
+    setFragment (--position);
   }
 
   public double getLatitude () {
-    return latitude;
+    return mGPS.getLatitude ();
   }
 
   public double getLongitude () {
-    return longitude;
+    return mGPS.getLongitude ();
   }
 
   public String getLocationName () {
-    return locationName;
+    Geocoder geoCoder = new Geocoder (this);
+    List<Address> places = null;
+    try {
+      places = geoCoder.getFromLocation (getLatitude (), getLongitude (), 1);
+    } catch (IOException ioe) {
+    }
+    return (places.isEmpty () ? null : places.get (0).getAddressLine (0));
   }
 
   @Override
-  public void onStart () {
-    super.onStart ();
-    mGoogleApiClient.connect ();
-  }
-
-  @Override
-  public void onStop () {
-    mGoogleApiClient.disconnect ();
-    super.onStop ();
+  public void onBackPressed () {
+    previousFragment ();
   }
 }

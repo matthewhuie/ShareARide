@@ -94,10 +94,12 @@ public class PassengerMapFragment extends Fragment {
   public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mContext = (SARActivity) super.getActivity ();
     mLayout = (RelativeLayout) inflater.inflate (R.layout.activity_passenger_map, container, false);
-    setUpMapIfNeeded ();
+
     gpsTracker = new GPSTracker (mContext);
     latitude = mContext.getLatitude ();
     longitude = mContext.getLongitude ();
+
+    setUpMapIfNeeded ();
 
     return mLayout;
   }
