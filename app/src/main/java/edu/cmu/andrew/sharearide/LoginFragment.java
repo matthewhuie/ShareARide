@@ -109,7 +109,7 @@ public class LoginFragment extends Fragment {
       //System.out.println(result[1]);
       if (result != null) {
         message = "Authentication successful!";
-        mContext.setFragment (new PassengerInputFragment ());
+        mContext.nextFragment ();
       } else {
         message = "Invalid username/password!";
         resetButton ();

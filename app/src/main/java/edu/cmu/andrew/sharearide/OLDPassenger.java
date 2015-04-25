@@ -80,7 +80,7 @@ public class OLDPassenger extends FragmentActivity
       } catch (IOException ioe) {
       }
       String thisPlace = (places.isEmpty () ? null : places.get (0).getAddressLine (0));
-      pif.setLocation (thisPlace);
+      //pif.setLocation (thisPlace);
     }
   }
 

@@ -83,7 +83,7 @@ public class PassengerInputFragment extends Fragment {
       public void onClick (View v) {
 
         // *** NEED TO VERIFY INPUT FIELD HERE
-        mContext.nextPFragment ();
+        mContext.nextFragment ();
       }
     });
 

@@ -82,7 +82,7 @@ public class PassengerMapFragment extends Fragment {
   private GPSTracker gpsTracker;
   private EndPointManager endpointInstance;
   private RelativeLayout mLayout;
-  private OLDPassenger mContext;
+  private SARActivity mContext;
 
   private static final String GEOCODE_BASE_URL = "https://maps.googleapis.com/maps/api/geocode/xml?address=";
   private static final String REV_GEOCODE_BASE_URL = "https://maps.googleapis.com/maps/api/geocode/json?latlng=";
@@ -97,11 +97,11 @@ public class PassengerMapFragment extends Fragment {
 
   @Override
   public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    mContext = (OLDPassenger) super.getActivity ();
+    mContext = (SARActivity) super.getActivity ();
     mLayout = (RelativeLayout) inflater.inflate (R.layout.activity_passenger_map, container, false);
     //buildGoogleApiClient ();
     setUpMapIfNeeded ();
-    setupSpinner ();
+    //setupSpinner ();
     //System.out.println("in on create");
     buildAutoComplete ();
     gpsTracker = new GPSTracker (mContext);
@@ -111,7 +111,7 @@ public class PassengerMapFragment extends Fragment {
     return mLayout;
   }
 
-  public void setupSpinner () {
+  /**public void setupSpinner () {
     Spinner spinner = (Spinner) mLayout.findViewById (R.id.ridersInput);
 // Create an ArrayAdapter using the string array and a default spinner layout
     ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource (mContext,
@@ -120,7 +120,7 @@ public class PassengerMapFragment extends Fragment {
     adapter.setDropDownViewResource (android.R.layout.simple_spinner_dropdown_item);
 // Apply the adapter to the spinner
     spinner.setAdapter (adapter);
-  }
+  }*/
 
   private void buildAutoComplete () {
     atvPlaces = (AutoCompleteTextView) mLayout.findViewById (R.id.whereToGoInput);

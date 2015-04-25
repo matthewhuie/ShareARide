@@ -24,7 +24,8 @@ public class SARActivity extends FragmentActivity
   private double latitude;
   private double longitude;
   private String locationName;
-  private List<Fragment> pFragments;
+  private List<Fragment> fragments;
+  private int position;
 
   @Override
   protected void onCreate (Bundle savedInstanceState) {
@@ -33,24 +34,24 @@ public class SARActivity extends FragmentActivity
 
     buildGoogleApiClient ();
 
-    pFragments = new ArrayList<> ();
-    pFragments.add (new LoginFragment ());
-    pFragments.add (new PassengerInputFragment ());
-    pFragments.add (new PassengerMapFragment ());
+    position = 0;
+    fragments = new ArrayList<> ();
+    fragments.add (new LoginFragment ());
+    fragments.add (new PassengerInputFragment ());
+    fragments.add (new PassengerMapFragment ());
 
-    setFragment (pFragments.get (0));
+    setFragment (position);
   }
 
-  public void setFragment (Fragment fragment) {
+  private void setFragment (int position) {
     getFragmentManager ().beginTransaction ()
-        .replace (R.id.fragmentLayout, fragment)
+        .replace (R.id.fragmentLayout, fragments.get (position))
         .addToBackStack ("")
         .commit ();
   }
 
-  public void nextPFragment () {
-    int position = pFragments.indexOf (getFragmentManager ().findFragmentById (R.id.fragmentLayout));
-    setFragment (pFragments.get (position + 1));
+  public void nextFragment () {
+    setFragment (++position);
   }
 
   protected synchronized void buildGoogleApiClient () {
