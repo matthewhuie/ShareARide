@@ -45,7 +45,6 @@ public class PassengerInputFragment extends Fragment {
 
   //for autocomplete
   AutoCompleteTextView atvPlaces;
-  PlacesTask placesTask;
   ParserTask parserTask;
   private static final String GOOGLE_AUTOCOMPLETE_URL = "https://maps.googleapis.com/maps/api/place/autocomplete/";
 
@@ -103,8 +102,7 @@ public class PassengerInputFragment extends Fragment {
       @Override
       public void onTextChanged (CharSequence s, int start, int before, int count) {
         System.out.println ("on text changed" + s);
-        placesTask = new PlacesTask ();
-        placesTask.execute (s.toString ());
+        new PlacesTask ().execute (s.toString ());
       }
 
       @Override
