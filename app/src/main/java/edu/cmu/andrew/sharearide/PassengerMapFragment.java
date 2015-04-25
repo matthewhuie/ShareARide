@@ -89,13 +89,12 @@ public class PassengerMapFragment extends Fragment {
   public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mContext = (SARActivity) super.getActivity ();
     mLayout = (RelativeLayout) inflater.inflate (R.layout.activity_passenger_map, container, false);
-
+    
     gpsTracker = new GPSTracker (mContext);
     latitude = mContext.getLatitude ();
     longitude = mContext.getLongitude ();
-
-    setUpMapIfNeeded ();
-
+      setUpMapIfNeeded ();
+      selectDriver();
     return mLayout;
   }
 
@@ -189,7 +188,7 @@ public class PassengerMapFragment extends Fragment {
   }
 
 
-  public void selectDriver (View view) throws IOException {
+  public void selectDriver () {
     String pickUpLocation = ((TextView) mLayout.findViewById (R.id.currentLocationText)).getText ().toString ();
     String destinationTxt = ((EditText) mLayout.findViewById (R.id.whereToGoInput)).getText ().toString ();
 
@@ -203,7 +202,11 @@ public class PassengerMapFragment extends Fragment {
     Intent myIntent = mContext.getIntent (); // gets the previously created intent
     String userName = myIntent.getStringExtra ("userName");
 
-    myApiService.createNewRequest (userName, gpsTracker.getLatitude (), gpsTracker.getLongitude (), dest_latitude, dest_longitude);
+      try {
+          myApiService.createNewRequest (userName, gpsTracker.getLatitude (), gpsTracker.getLongitude (), dest_latitude, dest_longitude);
+      } catch (IOException e) {
+          e.printStackTrace();
+      }
       new EndpointsAsyncTask ().execute (pickUpLocation, userName);
 
     //Intent intent = new Intent(this,DriverSelected.class);
