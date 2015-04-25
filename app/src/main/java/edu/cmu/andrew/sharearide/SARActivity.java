@@ -50,6 +50,16 @@ public class SARActivity extends FragmentActivity {
         .commit ();
   }
 
+  private String geocode (double latitude, double longitude) {
+    Geocoder geoCoder = new Geocoder (this);
+    List<Address> places = null;
+    try {
+      places = geoCoder.getFromLocation (latitude, longitude, 1);
+    } catch (IOException ioe) {
+    }
+    return (places.isEmpty () ? null : places.get (0).getAddressLine (0));
+  }
+
   public void nextFragment () {
     setFragment (++position);
   }
@@ -67,13 +77,7 @@ public class SARActivity extends FragmentActivity {
   }
 
   public String getLocationName () {
-    Geocoder geoCoder = new Geocoder (this);
-    List<Address> places = null;
-    try {
-      places = geoCoder.getFromLocation (getLatitude (), getLongitude (), 1);
-    } catch (IOException ioe) {
-    }
-    return (places.isEmpty () ? null : places.get (0).getAddressLine (0));
+    return geocode (getLatitude (), getLongitude ());
   }
 
   public void setDestination (String destination) {
