@@ -12,8 +12,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
@@ -68,13 +66,11 @@ import edu.cmu.andrew.sharearide.backend.shareARideApi.model.RequestBean;
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.UserBeanCollection;
 import edu.cmu.andrew.utilities.EndPointManager;
 import edu.cmu.andrew.utilities.GPSTracker;
-import edu.cmu.andrew.utilities.PlaceJSONParser;
 
 public class PassengerMapFragment extends Fragment {
 
   private GoogleMap mMap; // Might be null if Google Play services APK is not available.
   private static ShareARideApi myApiService = null;
-  private Location mLastLocation;
   private double latitude;
   private double longitude;
   private double dest_latitude = 0;
@@ -88,7 +84,6 @@ public class PassengerMapFragment extends Fragment {
   private static final String REV_GEOCODE_BASE_URL = "https://maps.googleapis.com/maps/api/geocode/json?latlng=";
   private static final String UBER_PRICE_BASE_URL = "https://api.uber.com/v1/estimates/price?";
   private static final String DIRECTION_BASE_URL = "https://maps.googleapis.com/maps/api/directions/json?";
-  private static final String GOOGLE_AUTOCOMPLETE_URL = "https://maps.googleapis.com/maps/api/place/autocomplete/";
 
   @Override
   public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -101,88 +96,6 @@ public class PassengerMapFragment extends Fragment {
 
     return mLayout;
   }
-
-  /**
-   * A method to download json data from url
-   */
-  private String downloadUrl (String strUrl) throws IOException {
-    String data = "";
-    InputStream iStream = null;
-    HttpURLConnection urlConnection = null;
-    try {
-      URL url = new URL (strUrl);
-
-      // Creating an http connection to communicate with url
-      urlConnection = (HttpURLConnection) url.openConnection ();
-
-      // Connecting to url
-      urlConnection.connect ();
-
-      // Reading data from url
-      iStream = urlConnection.getInputStream ();
-
-      BufferedReader br = new BufferedReader (new InputStreamReader (iStream));
-
-      StringBuffer sb = new StringBuffer ();
-
-      String line = "";
-      while ((line = br.readLine ()) != null) {
-        sb.append (line);
-      }
-
-      data = sb.toString ();
-      System.out.println ("json" + sb);
-      br.close ();
-
-    } catch (Exception e) {
-      Log.d ("Exception while downloading url", e.toString ());
-    } finally {
-      iStream.close ();
-      urlConnection.disconnect ();
-    }
-    return data;
-  }
-
-  /**
-   * A class to parse the Google Places in JSON format
-   */
-  private class ParserTask extends AsyncTask<String, Integer, List<HashMap<String, String>>> {
-
-    JSONObject jObject;
-
-    @Override
-    protected List<HashMap<String, String>> doInBackground (String... jsonData) {
-
-      List<HashMap<String, String>> places = null;
-
-      PlaceJSONParser placeJsonParser = new PlaceJSONParser ();
-
-      try {
-        jObject = new JSONObject (jsonData[0]);
-
-        // Getting the parsed data as a List construct
-        places = placeJsonParser.parse (jObject);
-        System.out.println ("places" + places.size ());
-      } catch (Exception e) {
-        Log.d ("Exception", e.toString ());
-      }
-      return places;
-    }
-
-    @Override
-    protected void onPostExecute (List<HashMap<String, String>> result) {
-
-      String[] from = new String[] {"description"};
-      int[] to = new int[] {android.R.id.text1};
-
-      // Creating a SimpleAdapter for the AutoCompleteTextView
-      SimpleAdapter adapter = new SimpleAdapter (mContext, result, android.R.layout.simple_list_item_1, from, to);
-
-      // Setting the adapter
-      //atvPlaces.setAdapter (adapter);
-    }
-  }
-
 
   @Override
   public void onResume () {
