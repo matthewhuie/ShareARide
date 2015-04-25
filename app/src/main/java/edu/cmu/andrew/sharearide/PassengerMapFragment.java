@@ -78,11 +78,6 @@ public class PassengerMapFragment extends Fragment {
   private RelativeLayout mLayout;
   private SARActivity mContext;
 
-  private static final String GEOCODE_BASE_URL = "https://maps.googleapis.com/maps/api/geocode/xml?address=";
-  private static final String REV_GEOCODE_BASE_URL = "https://maps.googleapis.com/maps/api/geocode/json?latlng=";
-  private static final String UBER_PRICE_BASE_URL = "https://api.uber.com/v1/estimates/price?";
-  private static final String DIRECTION_BASE_URL = "https://maps.googleapis.com/maps/api/directions/json?";
-
   @Override
   public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mContext = (SARActivity) super.getActivity ();
@@ -247,7 +242,7 @@ public class PassengerMapFragment extends Fragment {
         getDirection (originTxt, destinationTxt);
         Log.d ("coordinates", dest_latitude + " " + dest_longitude);
         //Then calculate price for the whole journey and the time for the uber driver to pick up the passenger
-        String url = UBER_PRICE_BASE_URL + "start_latitude=" + latitude + "&start_longitude=" + longitude + "&end_latitude=" + dest_latitude + "&end_longitude=" + dest_longitude + "&server_token=" + getString (R.string.uber_api_key);
+        String url = mContext.UBER_PRICE_BASE_URL + "start_latitude=" + latitude + "&start_longitude=" + longitude + "&end_latitude=" + dest_latitude + "&end_longitude=" + dest_longitude + "&server_token=" + getString (R.string.uber_api_key);
         Log.i ("URL for Uber API", url);
         //String url = "https://api.uber.com/v1/estimates/price?start_latitude=37.625732&start_longitude=-122.377807&end_latitude=37.785114&end_longitude=-122.406677&server_token=" + getString(R.string.uber_api_key);
 
@@ -296,7 +291,7 @@ public class PassengerMapFragment extends Fragment {
 
     private void getLocation (String destinationTxt) {
 
-      String url = GEOCODE_BASE_URL + destinationTxt.replaceAll (" ", "+") + "&key=" + getString (R.string.google_maps_places_key);
+      String url = mContext.GEOCODE_BASE_URL + destinationTxt.replaceAll (" ", "+") + "&key=" + getString (R.string.google_maps_places_key);
       //String url = "https://maps.googleapis.com/maps/api/geocode/xml?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key="+ R.string.google_maps_key;
       Document doc = getRemoteXML (url);
 
@@ -318,7 +313,7 @@ public class PassengerMapFragment extends Fragment {
 
 
     private void getDirection (String originTxt, String destinationTxt) {
-      String url = DIRECTION_BASE_URL + "origin=" + originTxt.replaceAll (" ", "+") + "&destination=" + destinationTxt.replaceAll (" ", "+") + "&key=" + getString (R.string.google_maps_places_key);
+      String url = mContext.DIRECTION_BASE_URL + "origin=" + originTxt.replaceAll (" ", "+") + "&destination=" + destinationTxt.replaceAll (" ", "+") + "&key=" + getString (R.string.google_maps_places_key);
       Log.i ("URL for Direction", url);
 
       LatLng origin = new LatLng (latitude, longitude);
@@ -459,7 +454,7 @@ public class PassengerMapFragment extends Fragment {
 
           LatLng currTaxi = new LatLng (taxiLatitude, taxiLongitude);
 
-          String place_url = REV_GEOCODE_BASE_URL + taxiLatitude + "," + taxiLongitude + "&key=" + getString (R.string.google_maps_places_key);
+          String place_url = mContext.REV_GEOCODE_BASE_URL + taxiLatitude + "," + taxiLongitude + "&key=" + getString (R.string.google_maps_places_key);
 
           Log.i ("url: ", place_url.toString ());
 
@@ -482,7 +477,7 @@ public class PassengerMapFragment extends Fragment {
 
           if (!taxiPlaceTxt.equals ("")) {
 
-            String url = DIRECTION_BASE_URL + "origin=" + pickUpLocation.replaceAll (" ", "+") + "&destination=" + taxiPlaceTxt.replaceAll (" ", "+") + "&key=" + getString (R.string.google_maps_places_key);
+            String url = mContext.DIRECTION_BASE_URL + "origin=" + pickUpLocation.replaceAll (" ", "+") + "&destination=" + taxiPlaceTxt.replaceAll (" ", "+") + "&key=" + getString (R.string.google_maps_places_key);
 
 
             try {

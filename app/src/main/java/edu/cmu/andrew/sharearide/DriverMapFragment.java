@@ -60,11 +60,6 @@ public class DriverMapFragment extends Fragment {
   private RelativeLayout mLayout;
   private SARActivity mContext;
 
-  private static final String GEOCODE_BASE_URL = "https://maps.googleapis.com/maps/api/geocode/xml?address=";
-  private static final String REV_GEOCODE_BASE_URL = "https://maps.googleapis.com/maps/api/geocode/json?latlng=";
-  private static final String UBER_PRICE_BASE_URL = "https://api.uber.com/v1/estimates/price?";
-  private static final String DIRECTION_BASE_URL = "https://maps.googleapis.com/maps/api/directions/json?";
-
   @Override
   public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mContext = (SARActivity) super.getActivity ();

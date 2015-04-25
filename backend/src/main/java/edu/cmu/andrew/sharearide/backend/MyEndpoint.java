@@ -39,11 +39,11 @@ public class MyEndpoint {
   }
 
 
-    @ApiMethod (name = "pollMessage")
-    public MessageBean pollMessage (@Named ("userName") String userName) {
-        MessageBean mb = getMessage (userName);
-        return mb;
-    }
+  @ApiMethod (name = "pollMessage")
+  public MessageBean pollMessage (@Named ("userName") String userName) {
+    MessageBean mb = getMessage (userName);
+    return mb;
+  }
 
   /**
    * adds a new request in the request table and returns true for successful inserts
@@ -76,26 +76,24 @@ public class MyEndpoint {
     return mb;
   }
 
-    @ApiMethod (name = "fulfillRequest")
-    public MessageBean fulfillRequest (@Named ("passenger") String passenger) {
-        Date startTime = calendar.getTime ();
+  @ApiMethod (name = "fulfillRequest")
+  public MessageBean fulfillRequest (@Named ("passenger") String passenger) {
+    Date startTime = calendar.getTime ();
 
-        RequestBean rb = new RequestBean (getPassenger (passenger).getUserID (), true);
-        int result = updateRequest (rb);
-        MessageBean mb = new MessageBean ();
-        if (result == 0)
-            mb.setStatus (false);
-        else {
-            mb.setStatus (true);
-            mb.setMessage ("Fulfill Request");
-            mb.setUser_name (passenger);
-            updateMessage (mb);
-        }
-
-        return mb;
+    RequestBean rb = new RequestBean (getPassenger (passenger).getUserID (), true);
+    int result = updateRequest (rb);
+    MessageBean mb = new MessageBean ();
+    if (result == 0)
+      mb.setStatus (false);
+    else {
+      mb.setStatus (true);
+      mb.setMessage ("Fulfill Request");
+      mb.setUser_name (passenger);
+      updateMessage (mb);
     }
 
-
+    return mb;
+  }
 
 
   @ApiMethod (name = "getUser")
@@ -111,16 +109,14 @@ public class MyEndpoint {
       @Named ("latitude") double latitude,
       @Named ("longitude") double longitude,
       @Named ("user_type") String userType) {
-    if (! username.equals ("") && ! secret.equals ("")) {
-      List<UserBean> users = queryUser ("user_name='" + username + "' AND secret='" + secret + "'");
-      if (users != null && users.size () > 0) {
-        UserBean ub = users.get (0);
-        ub.setLatitude (latitude);
-        ub.setLongitude (longitude);
-        ub.setUserType (userType);
-        updateUser (ub);
-        return ub;
-      }
+    List<UserBean> users = queryUser ("user_name='" + username + "' AND secret='" + secret + "'");
+    if (users != null && users.size () > 0) {
+      UserBean ub = users.get (0);
+      ub.setLatitude (latitude);
+      ub.setLongitude (longitude);
+      ub.setUserType (userType);
+      updateUser (ub);
+      return ub;
     }
     return null;
   }
@@ -130,15 +126,15 @@ public class MyEndpoint {
     return null;
   }
 
-  private MessageBean getMessage(String userName){
-    MessageBean mb = new MessageBean();
-      List<MessageBean> al = new ArrayList<>();
-      al = queryMessage("user_name='" +userName +"'");
+  private MessageBean getMessage (String userName) {
+    MessageBean mb = new MessageBean ();
+    List<MessageBean> al = new ArrayList<> ();
+    al = queryMessage ("user_name='" + userName + "'");
 
-      if(al.size()>0){
-          mb = al.get(0);
-      }
-      return mb;
+    if (al.size () > 0) {
+      mb = al.get (0);
+    }
+    return mb;
   }
 
   private UserBean getPassenger (String userId) {
@@ -185,17 +181,15 @@ public class MyEndpoint {
     return al;
   }
 
-    @ApiMethod (name = "getTrip")
-    public TripBean getTrip (@Named ("driverId") int driverId) {
-        TripBean trip = new TripBean ();
-        List<TripBean> trips = queryTrip ("driver_user_id='" + driverId + "' AND hasEnded='false'");
-        if (trips != null && trips.size () > 0) {
-            trip = trips.get (0);
-        }
-        return trip;
+  @ApiMethod (name = "getTrip")
+  public TripBean getTrip (@Named ("driverId") int driverId) {
+    TripBean trip = new TripBean ();
+    List<TripBean> trips = queryTrip ("driver_user_id='" + driverId + "' AND hasEnded='false'");
+    if (trips != null && trips.size () > 0) {
+      trip = trips.get (0);
     }
-
-
+    return trip;
+  }
 
 
   private List<TripBean> queryTrip (String where) {
@@ -225,17 +219,15 @@ public class MyEndpoint {
   }
 
 
-    @ApiMethod (name = "getRequest")
-    public RequestBean getRequest (@Named ("passenger") String passenger) {
-        RequestBean request = new RequestBean ();
-        List<RequestBean> requests = queryRequest ("pass_user_id='" + getPassenger (passenger).getUserID () + "' AND is_served=FALSE");
-        if (requests != null && requests.size () > 0) {
-            request = requests.get (0);
-        }
-        return request;
+  @ApiMethod (name = "getRequest")
+  public RequestBean getRequest (@Named ("passenger") String passenger) {
+    RequestBean request = new RequestBean ();
+    List<RequestBean> requests = queryRequest ("pass_user_id='" + getPassenger (passenger).getUserID () + "' AND is_served=FALSE");
+    if (requests != null && requests.size () > 0) {
+      request = requests.get (0);
     }
-
-
+    return request;
+  }
 
 
   private List<RequestBean> queryRequest (String where) {
@@ -295,30 +287,30 @@ public class MyEndpoint {
     return al;
   }
 
-    private List<MessageBean> queryMessage (String where) {
-        ArrayList<MessageBean> al = new ArrayList<> ();
-        try {
-            Connection conn = connect ();
-            Statement statement = conn.createStatement ();
-            ResultSet rs = statement.executeQuery ("SELECT * FROM Message WHERE " + where);
-            while (rs.next ()) {
-                MessageBean mb = new MessageBean ();
-                mb.setUser_name(rs.getString(1));
-                mb.setMessage(rs.getString(2));
-                mb.setMessage_id(rs.getInt(3));
-                mb.setIs_read(rs.getBoolean(4));
-                al.add (mb);
-            }
-            disconnect (conn);
-        } catch (Exception e) {
-            StringWriter sw = new StringWriter ();
-            PrintWriter pw = new PrintWriter (sw);
-            e.printStackTrace (pw);
-            log.severe (sw.toString ());
-        }
-
-        return al;
+  private List<MessageBean> queryMessage (String where) {
+    ArrayList<MessageBean> al = new ArrayList<> ();
+    try {
+      Connection conn = connect ();
+      Statement statement = conn.createStatement ();
+      ResultSet rs = statement.executeQuery ("SELECT * FROM Message WHERE " + where);
+      while (rs.next ()) {
+        MessageBean mb = new MessageBean ();
+        mb.setUser_name (rs.getString (1));
+        mb.setMessage (rs.getString (2));
+        mb.setMessage_id (rs.getInt (3));
+        mb.setIs_read (rs.getBoolean (4));
+        al.add (mb);
+      }
+      disconnect (conn);
+    } catch (Exception e) {
+      StringWriter sw = new StringWriter ();
+      PrintWriter pw = new PrintWriter (sw);
+      e.printStackTrace (pw);
+      log.severe (sw.toString ());
     }
+
+    return al;
+  }
 
 
   private int updateUser (UserBean ub) {
@@ -375,9 +367,9 @@ public class MyEndpoint {
 
   @ApiMethod (name = "updateTrip")
   public TripBean updateTrip (@Named ("tripId") int tripId, @Named ("numOfRiders") int numOfRiders) {
-      TripBean tb =  new TripBean(tripId, numOfRiders);
-      updateTrip (tb);
-      return null;
+    TripBean tb = new TripBean (tripId, numOfRiders);
+    updateTrip (tb);
+    return null;
   }
 
   private int updateTrip (TripBean tb) {
@@ -402,11 +394,10 @@ public class MyEndpoint {
 
   @ApiMethod (name = "updateTripRequest")
   public TripRequestBean updateTripRequest (@Named ("tripId") int tripId, @Named ("requestId") int requestId) {
-      TripRequestBean trb =  new TripRequestBean(tripId, requestId);
-      updateTripRequest (trb);
-      return null;
+    TripRequestBean trb = new TripRequestBean (tripId, requestId);
+    updateTripRequest (trb);
+    return null;
   }
-
 
 
   private int updateTripRequest (TripRequestBean trb) {

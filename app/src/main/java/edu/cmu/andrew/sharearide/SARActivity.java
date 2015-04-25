@@ -23,6 +23,11 @@ public class SARActivity extends FragmentActivity {
   private GPSTracker mGPS;
   private String destination;
 
+  public final String GEOCODE_BASE_URL = "https://maps.googleapis.com/maps/api/geocode/xml?address=";
+  public final String REV_GEOCODE_BASE_URL = "https://maps.googleapis.com/maps/api/geocode/json?latlng=";
+  public final String UBER_PRICE_BASE_URL = "https://api.uber.com/v1/estimates/price?";
+  public final String DIRECTION_BASE_URL = "https://maps.googleapis.com/maps/api/directions/json?";
+
   @Override
   protected void onCreate (Bundle savedInstanceState) {
     super.onCreate (savedInstanceState);
