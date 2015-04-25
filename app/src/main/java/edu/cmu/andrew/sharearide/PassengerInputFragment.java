@@ -45,7 +45,6 @@ public class PassengerInputFragment extends Fragment {
 
   //for autocomplete
   AutoCompleteTextView atvPlaces;
-  ParserTask parserTask;
 
   @Override
   public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -203,11 +202,8 @@ public class PassengerInputFragment extends Fragment {
     protected void onPostExecute (String result) {
       super.onPostExecute (result);
 
-      // Creating ParserTask
-      parserTask = new ParserTask ();
-
       // Starting Parsing the JSON string returned by Web Service
-      parserTask.execute (result);
+      new ParserTask().execute (result);
     }
   }
 
