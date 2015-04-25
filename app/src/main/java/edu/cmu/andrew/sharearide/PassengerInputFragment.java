@@ -43,7 +43,6 @@ public class PassengerInputFragment extends Fragment {
   private Button mNext;
   private TextView mLocation;
 
-  //for autocomplete
   AutoCompleteTextView atvPlaces;
 
   @Override
@@ -153,6 +152,7 @@ public class PassengerInputFragment extends Fragment {
 
       // Setting the adapter
       atvPlaces.setAdapter (adapter);
+      atvPlaces.showDropDown ();
     }
   }
 
