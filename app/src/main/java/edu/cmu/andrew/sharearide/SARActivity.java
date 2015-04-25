@@ -22,6 +22,7 @@ public class SARActivity extends FragmentActivity {
   private int position;
   private GPSTracker mGPS;
   private String destination;
+  private String username;
 
   public final String GEOCODE_BASE_URL = "https://maps.googleapis.com/maps/api/geocode/xml?address=";
   public final String REV_GEOCODE_BASE_URL = "https://maps.googleapis.com/maps/api/geocode/json?latlng=";
@@ -102,6 +103,14 @@ public class SARActivity extends FragmentActivity {
 
   public String getDestination () {
     return destination;
+  }
+
+  public String getUsername () {
+    return username;
+  }
+
+  public void setUsername (String username) {
+    this.username = username;
   }
 
   @Override

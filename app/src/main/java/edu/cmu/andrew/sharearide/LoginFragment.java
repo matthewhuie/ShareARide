@@ -28,7 +28,6 @@ public class LoginFragment extends Fragment {
   private RelativeLayout mLayout;
   private String userType;
   private Button mButton;
-  private String username;
   private String secret;
   private ShareARideApi apiInstance = null;
   private String message = "";
@@ -42,12 +41,12 @@ public class LoginFragment extends Fragment {
     mButton.setOnClickListener (new View.OnClickListener () {
       @Override
       public void onClick (View v) {
-        username = ((EditText) mLayout.findViewById (R.id.username)).getText ().toString ();
+        mContext.setUsername (((EditText) mLayout.findViewById (R.id.username)).getText ().toString ());
         secret = computeMD5 (((EditText) mLayout.findViewById (R.id.password)).getText ().toString ());
         userType = (((Spinner) mLayout.findViewById (R.id.userType)).getSelectedItem ().toString ()).split (" ") [3];
 
         disableButton ();
-        new LoginTask ().execute (username, secret,
+        new LoginTask ().execute (mContext.getUsername (), secret,
             String.valueOf (mContext.getLatitude ()),
             String.valueOf (mContext.getLongitude ()), userType);
       }
