@@ -131,7 +131,6 @@ public class PassengerMapFragment extends Fragment {
    * This should only be called once and when we are sure that {@link #mMap} is not null.
    */
   private void setUpMap () {
-    mMap.setMyLocationEnabled (true);
     mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (new LatLng (latitude, longitude), 13));
   }
 
