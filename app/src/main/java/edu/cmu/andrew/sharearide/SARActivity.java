@@ -68,6 +68,7 @@ public class SARActivity extends FragmentActivity {
   }
 
   public void previousFragment () {
+    fragments.remove (position);
     setFragment (--position);
   }
 
@@ -93,6 +94,10 @@ public class SARActivity extends FragmentActivity {
 
   @Override
   public void onBackPressed () {
-    previousFragment ();
+    if (position != 0) {
+      previousFragment ();
+    } else {
+      super.onBackPressed ();
+    }
   }
 }
