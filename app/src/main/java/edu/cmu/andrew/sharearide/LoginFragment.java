@@ -104,9 +104,6 @@ public class LoginFragment extends Fragment {
 
     @Override
     protected void onPostExecute (UserBean result) {
-      //Toast.makeText(context, result, Toast.LENGTH_LONG).show();
-      //  System.out.println(result[0]);
-      //System.out.println(result[1]);
       if (result != null) {
         message = "Authentication successful!";
         mContext.nextFragment ();

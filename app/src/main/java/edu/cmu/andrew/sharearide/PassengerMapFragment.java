@@ -91,7 +91,7 @@ public class PassengerMapFragment extends Fragment {
     latitude = mContext.getLatitude ();
     longitude = mContext.getLongitude ();
       setUpMapIfNeeded ();
-      selectDriver();
+      //selectDriver();
     return mLayout;
   }
 

@@ -37,8 +37,6 @@ public class SARActivity extends FragmentActivity {
     position = 0;
     fragments = new ArrayList<> ();
     fragments.add (new LoginFragment ());
-    fragments.add (new PassengerInputFragment ());
-    fragments.add (new PassengerMapFragment ());
 
     setFragment (position);
   }
@@ -50,7 +48,16 @@ public class SARActivity extends FragmentActivity {
         .commit ();
   }
 
-  private String geocode (double latitude, double longitude) {
+  public void initPassenger () {
+    fragments.add (new PassengerInputFragment ());
+    fragments.add (new PassengerMapFragment ());
+  }
+
+  public void initDriver () {
+
+  }
+
+  public String geocode (double latitude, double longitude) {
     Geocoder geoCoder = new Geocoder (this);
     List<Address> places = null;
     try {
