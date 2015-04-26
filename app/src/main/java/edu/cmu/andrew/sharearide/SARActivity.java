@@ -20,8 +20,6 @@ import edu.cmu.andrew.utilities.GPSTracker;
 
 public class SARActivity extends FragmentActivity {
 
-  private GoogleApiClient mGoogleApiClient;
-  private String locationName;
   private List<Fragment> fragments;
   private int position;
   private GPSTracker mGPS;
@@ -174,5 +172,5 @@ public class SARActivity extends FragmentActivity {
       handler.postDelayed(call,20*1000);
     }
   };
-  
+
 }
