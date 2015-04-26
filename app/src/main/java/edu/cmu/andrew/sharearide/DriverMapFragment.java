@@ -60,6 +60,7 @@ public class DriverMapFragment extends Fragment {
   private SARActivity mContext;
   private List<LatLng> directions;
   private List<TripSegment> trip;
+  private int[] currentPassengers;
 
   @Override
   public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -119,8 +120,17 @@ public class DriverMapFragment extends Fragment {
     getDirections (40, -80);
   }
 
-  private void getNextDestination () {
+  private void acceptRequest (RequestBean rb) {
+    int requestID = rb.getRequestId ();
+    LatLng rSrc = new LatLng (rb.getSrcLatitude (), rb.getSrcLongitude ());
+    LatLng rDst = new LatLng (rb.getDstLatitude (), rb.getDstLongitude ());
 
+  }
+
+  private void setNextDestination () {
+    if (currentPassengers.length != 1) {
+
+    }
   }
 
   private void getDirections (double dLatitude, double dLongitude) {
@@ -150,7 +160,6 @@ public class DriverMapFragment extends Fragment {
       String url = mContext.DIRECTION_BASE_URL + origin + destination + key;
 
       return mContext.getRemoteJSON (url);
-
     }
 
     @Override
@@ -165,6 +174,8 @@ public class DriverMapFragment extends Fragment {
         JSONArray steps = leg.getJSONArray ("steps");
 
         String polyline;
+        String duration = leg.getJSONObject ("duration").get ("value").toString ();
+        String distance = leg.getJSONObject ("distance").get ("value").toString ();
 
         for (int i = 0; i < steps.length (); i++) {
           JSONObject step = (JSONObject) steps.get (i);
