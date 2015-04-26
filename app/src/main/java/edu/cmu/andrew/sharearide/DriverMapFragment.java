@@ -113,9 +113,14 @@ public class DriverMapFragment extends Fragment {
    */
   private void setUpMap () {
     mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (new LatLng (sLatitude, sLongitude), 13));
+    getDirections (-80, 40.6975);
+    mMap.addPolyline (new PolylineOptions ()
+        .addAll (directions)
+        .width (10)
+        .color (Color.rgb (1, 169, 212)));
   }
 
-  private void setUpDestination (double dLatitude, double dLongitude) {
+  private void getDirections (double dLatitude, double dLongitude) {
     Log.i ("add marker", "method executed");
     if (mMap != null) {
       Log.i ("map not null", "method executed");
@@ -125,7 +130,7 @@ public class DriverMapFragment extends Fragment {
       String destination = "destination=" + dLatitude + "," + dLongitude + "&";
       String key = "key=" + getString (R.string.google_maps_places_key);
 
-      String url = mContext.DIRECTION_BASE_URL + origin + destination;
+      String url = mContext.DIRECTION_BASE_URL + origin + destination + key;
 
       directions.add (new LatLng (sLatitude, sLongitude));
       try {
@@ -157,17 +162,5 @@ public class DriverMapFragment extends Fragment {
           .title ("Destination: " + destination));
     }
   }
-
-  private void setUpDirection () {
-    if (mMap != null) {
-      for (int i = 0; i < directions.size () - 1; i++) {
-        Polyline line = mMap.addPolyline (new PolylineOptions ()
-            .add (directions.get (i), directions.get (i + 1))
-            .width (10)
-            .color (Color.rgb (1, 169, 212)));
-      }
-    }
-  }
-
 
 }
