@@ -2,6 +2,8 @@ package edu.cmu.andrew.utilities;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.List;
+
 /**
  * Created by matthewhuie on 15-04-26.
  */
@@ -12,10 +14,10 @@ public class TripSegment {
   private LatLng destination;
   private int distance;
   private int duration;
-  private int[] passengers;
+  private List<Integer> passengers;
   private boolean isCompleted;
 
-  public TripSegment (int segmentID, LatLng source, LatLng destination, int distance, int duration, int[] passengers, boolean isCompleted) {
+  public TripSegment (int segmentID, LatLng source, LatLng destination, int distance, int duration, List<Integer> passengers, boolean isCompleted) {
     this.segmentID = segmentID;
     this.source = source;
     this.destination = destination;
@@ -65,11 +67,11 @@ public class TripSegment {
     this.duration = duration;
   }
 
-  public int[] getPassengers () {
+  public List<Integer> getPassengers () {
     return passengers;
   }
 
-  public void setPassengers (int[] passengers) {
+  public void setPassengers (List<Integer> passengers) {
     this.passengers = passengers;
   }
 
