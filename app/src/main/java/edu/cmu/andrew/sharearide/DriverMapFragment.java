@@ -54,21 +54,16 @@ import edu.cmu.andrew.utilities.TripSegment;
 public class DriverMapFragment extends Fragment {
 
   private GoogleMap mMap; // Might be null if Google Play services APK is not available.
-  private double sLatitude;
-  private double sLongitude;
   private RelativeLayout mLayout;
   private SARActivity mContext;
   private List<LatLng> directions;
   private List<TripSegment> trip;
-  private int[] currentPassengers;
 
   @Override
   public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mContext = (SARActivity) super.getActivity ();
     mLayout = (RelativeLayout) inflater.inflate (R.layout.activity_passenger_map, container, false);
 
-    sLatitude = mContext.getLatitude ();
-    sLongitude = mContext.getLongitude ();
     directions = new ArrayList<> ();
     setUpMapIfNeeded ();
 
@@ -116,66 +111,103 @@ public class DriverMapFragment extends Fragment {
    * This should only be called once and when we are sure that {@link #mMap} is not null.
    */
   private void setUpMap () {
-    mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (new LatLng (sLatitude, sLongitude), 13));
-    getDirections (40, -80);
+    mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (
+        new LatLng (mContext.getLatitude (), mContext.getLongitude ()), 13));
+    //getDirections (new LatLng (40, -80), new LatLng (40.1, -80.1));
+  }
+
+  private void readMessage () {
+
   }
 
   private void acceptRequest (RequestBean rb) {
-    int requestID = rb.getRequestId ();
     LatLng rSrc = new LatLng (rb.getSrcLatitude (), rb.getSrcLongitude ());
     LatLng rDst = new LatLng (rb.getDstLatitude (), rb.getDstLongitude ());
 
-  }
+    List<LatLng> paths = new ArrayList<> ();
+    paths.add (rSrc);
+    paths.add (rDst);
 
-  private void setNextDestination () {
-    if (currentPassengers.length != 1) {
-
+    if (trip.size () > 0) {
+      TripSegment previous = trip.get (trip.size () - 1);
+      paths.add (previous.getDestination ());
+      previous.setDestination (rSrc);
+      previous.setCompleted (true);
     }
-  }
 
-  private void getDirections (double dLatitude, double dLongitude) {
-    Log.i ("add marker", "method executed");
-    if (mMap != null) {
-      Log.i ("map not null", "method executed");
-      System.out.println ("In setUpDestination" + dLatitude + dLongitude);
-
-      new DirectionsTask ().execute (String.valueOf (dLatitude), String.valueOf (dLongitude));
-
-      mMap.addMarker (new MarkerOptions ()
-          .position (new LatLng (sLatitude, sLongitude)));
-
-      mMap.addMarker (new MarkerOptions ()
-          .position (new LatLng (dLatitude, dLongitude)));
-
+    for (TripSegment ts : trip) {
+      if (! ts.isCompleted ()) {
+        paths.add (ts.getDestination ());
+      }
     }
+
+    LatLng[] ll = new LatLng[paths.size ()];
+    ll = paths.toArray (ll);
+    new NextRouteTask (rb).execute (ll);
   }
 
-  class DirectionsTask extends AsyncTask<String, Void, String> {
+  private void fulfillRequest (RequestBean rb) {
+
+  }
+
+  class NextRouteTask extends AsyncTask <LatLng, Void, JSONArray> {
+
+    RequestBean rb;
+
+    public NextRouteTask (RequestBean rb) {
+      this.rb = rb;
+    }
 
     @Override
-    protected String doInBackground (String... data) {
-      String origin = "origin=" + sLatitude + "," + sLongitude + "&";
-      String destination = "destination=" + data[0] + "," + data[1] + "&";
+    protected JSONArray doInBackground (LatLng... data) {
       String key = "key=" + getString (R.string.google_maps_places_key);
-      String url = mContext.DIRECTION_BASE_URL + origin + destination + key;
+      int minTimeDistance = Integer.MAX_VALUE;
+      int minDistance = 0;
+      int minTime = 0;
+      LatLng minDestination = null;
+      JSONArray minSteps = null;
+      String origin = "origin=" + data[0].latitude + "," + data[0].longitude + "&";
 
-      return mContext.getRemoteJSON (url);
+      for (int i = 1; i < data.length; i++) {
+        String destination = "destination=" + data[i].latitude + "," + data[i].longitude + "&";
+        String json = mContext.getRemoteJSON (mContext.DIRECTION_BASE_URL + origin + destination + key);
+
+        try {
+          JSONObject routeObject = new JSONObject (json);
+          JSONObject route = (JSONObject) routeObject.getJSONArray ("routes").get (0);
+          JSONObject leg = (JSONObject) route.getJSONArray ("legs").get (0);
+
+          int distance = Integer.parseInt (leg.getJSONObject ("distance").get ("value").toString ());
+          int duration = Integer.parseInt (leg.getJSONObject ("duration").get ("value").toString ());
+
+          int timeDistance = distance * duration;
+          if (timeDistance < minTimeDistance) {
+            minTimeDistance = timeDistance;
+            minDistance = distance;
+            minTime = duration;
+            minDestination = data[i];
+            minSteps = leg.getJSONArray ("steps");
+          }
+        } catch (JSONException jsone) {
+          Log.i ("Hit the JSON error: ", jsone.toString ());
+        }
+      }
+
+      List<Integer> passengers = new ArrayList<> ();
+      if (trip.size () != 0) {
+        passengers.addAll (trip.get (trip.size () - 1).getPassengers ());
+      }
+      passengers.add (rb.getPassUserId ());
+      trip.add (new TripSegment (trip.size (), data [0], minDestination, minDistance, minTime,
+          passengers, false));
+
+      return minSteps;
     }
 
     @Override
-    protected void onPostExecute (String json) {
+    protected void onPostExecute (JSONArray steps) {
       try {
-        JSONObject routeObject = new JSONObject (json);
-        JSONArray routes = routeObject.getJSONArray ("routes");
-        JSONObject route = (JSONObject) routes.get (0);
-        System.out.println (route.toString ());
-        JSONArray legs = route.getJSONArray ("legs");
-        JSONObject leg = (JSONObject) legs.get (0);
-        JSONArray steps = leg.getJSONArray ("steps");
-
         String polyline;
-        String duration = leg.getJSONObject ("duration").get ("value").toString ();
-        String distance = leg.getJSONObject ("distance").get ("value").toString ();
 
         for (int i = 0; i < steps.length (); i++) {
           JSONObject step = (JSONObject) steps.get (i);

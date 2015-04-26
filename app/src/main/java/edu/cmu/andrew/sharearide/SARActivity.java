@@ -187,9 +187,9 @@ public class SARActivity extends FragmentActivity {
       HttpResponse httpResult = httpClient.execute (priceRequest);
       json = EntityUtils.toString (httpResult.getEntity (), "UTF-8");
     } catch (MalformedURLException e) {
-      Log.i ("Hit the malformedURLerror: ", e.toString ());
+      Log.i ("MalformedURLerror: ", e.toString ());
     } catch (IOException ioe) {
-      Log.i ("Hit the IO error: ", ioe.toString ());
+      Log.i ("IOerror: ", ioe.toString ());
     }
 
     return json;

@@ -1,49 +1,54 @@
 package edu.cmu.andrew.utilities;
 
+import com.google.android.gms.maps.model.LatLng;
+
+import java.util.List;
+
 /**
  * Created by matthewhuie on 15-04-26.
  */
 public class TripSegment {
 
-  private double sLatitude;
-  private double sLongitude;
-  private double dLatitude;
-  private double dLongitude;
+  private int segmentID;
+  private LatLng source;
+  private LatLng destination;
   private int distance;
   private int duration;
-  private int[] passengers;
+  private List<Integer> passengers;
   private boolean isCompleted;
 
-  public double getsLatitude () {
-    return sLatitude;
+  public TripSegment (int segmentID, LatLng source, LatLng destination, int distance, int duration, List<Integer> passengers, boolean isCompleted) {
+    this.segmentID = segmentID;
+    this.source = source;
+    this.destination = destination;
+    this.distance = distance;
+    this.duration = duration;
+    this.passengers = passengers;
+    this.isCompleted = isCompleted;
   }
 
-  public void setsLatitude (double sLatitude) {
-    this.sLatitude = sLatitude;
+  public int getSegmentID () {
+    return segmentID;
   }
 
-  public double getsLongitude () {
-    return sLongitude;
+  public void setSegmentID (int segmentID) {
+    this.segmentID = segmentID;
   }
 
-  public void setsLongitude (double sLongitude) {
-    this.sLongitude = sLongitude;
+  public LatLng getSource () {
+    return source;
   }
 
-  public double getdLatitude () {
-    return dLatitude;
+  public void setSource (LatLng source) {
+    this.source = source;
   }
 
-  public void setdLatitude (double dLatitude) {
-    this.dLatitude = dLatitude;
+  public LatLng getDestination () {
+    return destination;
   }
 
-  public double getdLongitude () {
-    return dLongitude;
-  }
-
-  public void setdLongitude (double dLongitude) {
-    this.dLongitude = dLongitude;
+  public void setDestination (LatLng destination) {
+    this.destination = destination;
   }
 
   public int getDistance () {
@@ -62,11 +67,11 @@ public class TripSegment {
     this.duration = duration;
   }
 
-  public int[] getPassengers () {
+  public List<Integer> getPassengers () {
     return passengers;
   }
 
-  public void setPassengers (int[] passengers) {
+  public void setPassengers (List<Integer> passengers) {
     this.passengers = passengers;
   }
 
