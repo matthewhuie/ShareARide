@@ -66,6 +66,7 @@ public class DriverMapFragment extends Fragment {
 
     directions = new ArrayList<> ();
     setUpMapIfNeeded ();
+    initTrip ();
 
     return mLayout;
   }
@@ -116,6 +117,14 @@ public class DriverMapFragment extends Fragment {
     //getDirections (new LatLng (40, -80), new LatLng (40.1, -80.1));
   }
 
+  private void initTrip () {
+    // endpoint to create trip
+  }
+
+  private void endTrip () {
+    // endpoint to finish trip
+  }
+
   private void readMessage () {
 
   }
@@ -147,7 +156,26 @@ public class DriverMapFragment extends Fragment {
   }
 
   private void fulfillRequest (RequestBean rb) {
+    LatLng rDst = new LatLng (rb.getDstLatitude (), rb.getDstLongitude ());
 
+    List<LatLng> paths = new ArrayList<> ();
+    paths.add (rDst);
+    TripSegment previous = trip.get (trip.size () - 1);
+    previous.setCompleted (true);
+
+    if (previous.getPassengers ().size () == 1) {
+     // end the trip
+    } else {
+      for (TripSegment ts : trip) {
+        if (! ts.isCompleted ()) {
+          paths.add (ts.getDestination ());
+        }
+      }
+
+      LatLng[] ll = new LatLng[paths.size ()];
+      ll = paths.toArray (ll);
+      new NextRouteTask (rb).execute (ll);
+    }
   }
 
   class NextRouteTask extends AsyncTask <LatLng, Void, JSONArray> {
