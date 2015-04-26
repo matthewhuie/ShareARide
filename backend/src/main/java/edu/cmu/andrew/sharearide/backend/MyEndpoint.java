@@ -60,7 +60,7 @@ public class MyEndpoint {
   public MessageBean createNewRequest (@Named ("passenger") String passenger, @Named ("srcLat") double srcLat,
                                        @Named ("srcLong") double srcLong, @Named ("destLat") double destLat,
                                        @Named ("destLong") double destLong) {
-    Date startTime = calendar.getTime ();
+    //Date startTime = calendar.getTime ();
 
     RequestBean rb = new RequestBean (getPassenger (passenger).getUserID (), srcLat, srcLong, destLat, destLong);
     int result = updateRequest (rb);

@@ -48,7 +48,7 @@ public class RequestBean {
         this.srcLatitude = srcLatitude;
         this.dstLongitude = dstLongitude;
         this.dstLatitude = dstLatitude;
-        //this.startTime = startTime;
+        this.startTime = startTime;
         this.isServed = false;
     }
 

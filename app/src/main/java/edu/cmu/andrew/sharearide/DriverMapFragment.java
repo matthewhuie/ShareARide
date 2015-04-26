@@ -58,7 +58,6 @@ public class DriverMapFragment extends Fragment {
   private SARActivity mContext;
   private List<LatLng> directions;
   private List<TripSegment> trip;
-  private int currentSegment;
 
   @Override
   public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -66,8 +65,8 @@ public class DriverMapFragment extends Fragment {
     mLayout = (RelativeLayout) inflater.inflate (R.layout.activity_passenger_map, container, false);
 
     directions = new ArrayList<> ();
-    currentSegment = -1;
     setUpMapIfNeeded ();
+    initTrip ();
 
     return mLayout;
   }
@@ -118,6 +117,14 @@ public class DriverMapFragment extends Fragment {
     //getDirections (new LatLng (40, -80), new LatLng (40.1, -80.1));
   }
 
+  private void initTrip () {
+    // endpoint to create trip
+  }
+
+  private void endTrip () {
+    // endpoint to finish trip
+  }
+
   private void readMessage () {
 
   }
@@ -130,8 +137,8 @@ public class DriverMapFragment extends Fragment {
     paths.add (rSrc);
     paths.add (rDst);
 
-    if (currentSegment > -1) {
-      TripSegment previous = trip.get (0);
+    if (trip.size () > 0) {
+      TripSegment previous = trip.get (trip.size () - 1);
       paths.add (previous.getDestination ());
       previous.setDestination (rSrc);
       previous.setCompleted (true);
@@ -145,14 +152,39 @@ public class DriverMapFragment extends Fragment {
 
     LatLng[] ll = new LatLng[paths.size ()];
     ll = paths.toArray (ll);
-    new NextRouteTask ().execute (ll);
+    new NextRouteTask (rb).execute (ll);
   }
 
-  private void dropPassenger () {
+  private void fulfillRequest (RequestBean rb) {
+    LatLng rDst = new LatLng (rb.getDstLatitude (), rb.getDstLongitude ());
 
+    List<LatLng> paths = new ArrayList<> ();
+    paths.add (rDst);
+    TripSegment previous = trip.get (trip.size () - 1);
+    previous.setCompleted (true);
+
+    if (previous.getPassengers ().size () == 1) {
+     // end the trip
+    } else {
+      for (TripSegment ts : trip) {
+        if (! ts.isCompleted ()) {
+          paths.add (ts.getDestination ());
+        }
+      }
+
+      LatLng[] ll = new LatLng[paths.size ()];
+      ll = paths.toArray (ll);
+      new NextRouteTask (rb).execute (ll);
+    }
   }
 
   class NextRouteTask extends AsyncTask <LatLng, Void, JSONArray> {
+
+    RequestBean rb;
+
+    public NextRouteTask (RequestBean rb) {
+      this.rb = rb;
+    }
 
     @Override
     protected JSONArray doInBackground (LatLng... data) {
@@ -189,7 +221,13 @@ public class DriverMapFragment extends Fragment {
         }
       }
 
-      trip.add (new TripSegment (trip.size (), data [0], minDestination, minDistance, minTime, null, false));
+      List<Integer> passengers = new ArrayList<> ();
+      if (trip.size () != 0) {
+        passengers.addAll (trip.get (trip.size () - 1).getPassengers ());
+      }
+      passengers.add (rb.getPassUserId ());
+      trip.add (new TripSegment (trip.size (), data [0], minDestination, minDistance, minTime,
+          passengers, false));
 
       return minSteps;
     }
