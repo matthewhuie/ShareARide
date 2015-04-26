@@ -46,6 +46,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import edu.cmu.andrew.sharearide.backend.shareARideApi.ShareARideApi;
+import edu.cmu.andrew.sharearide.backend.shareARideApi.model.MessageBean;
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.TripBean;
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.UserBean;
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.RequestBean;
@@ -188,8 +189,8 @@ public class PassengerMapFragment extends Fragment {
 
           if(myApiService==null)
               myApiService = EndPointManager.getEndpointInstance();
-          myApiService.createNewRequest (userName, latitude, longitude, dest_latitude, dest_longitude);
-      } catch (IOException e) {
+
+      } catch (Exception e) {
           e.printStackTrace();
       }
       new EndpointsAsyncTask ().execute (pickUpLocation, userName);
@@ -379,17 +380,21 @@ public class PassengerMapFragment extends Fragment {
 
     @Override
     protected String[] doInBackground (String... urls) {
-
+      String[] taxiSearchingResult = new String[3];
+      int request_id = 0;
+        pickUpLocation = urls[0];
+        userName = urls[1];
+        try {
       myApiService = EndPointManager.getEndpointInstance ();
+      MessageBean request = myApiService.createNewRequest (userName, latitude, longitude, dest_latitude, dest_longitude).execute();
+      request_id = request.getRequestId();
 
-      pickUpLocation = urls[0];
-      userName = urls[1];
       //change the 0 to slider
       UserBeanCollection taxis = queryTaxi (0);
       Log.i ("Taxi list: ", taxis.toString ());
 
-      String[] taxiSearchingResult = new String[3];
-        try {
+
+
             taxiSearchingResult = taxiSearching(taxis, request_id, 0);
             System.out.println(taxiSearchingResult + " taxiSearchingResult");
         }
@@ -512,9 +517,9 @@ public class PassengerMapFragment extends Fragment {
       //RequestBean request = myApiService.getRequest(userName).execute();
       //int requestId = request.getRequestId();
       //insert a new row into trip table
-      myApiService.updateTripRequest(tripId, requestId);
+      myApiService.updateTripRequest(tripId, request_id);
       //update the request in request table
-      myApiService.fulfillRequest(requestId);
+      myApiService.fulfillRequest(request_id);
       //update the trip in trip table
       myApiService.updateTrip(minDriverID, numOfRiders);
 
