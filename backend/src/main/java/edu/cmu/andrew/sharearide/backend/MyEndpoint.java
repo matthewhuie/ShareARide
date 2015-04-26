@@ -64,6 +64,7 @@ public class MyEndpoint {
     RequestBean rb = new RequestBean (getPassenger (passenger).getUserID (), srcLat, srcLong, destLat, destLong, new Timestamp (startTime.getTime ()));
     int result = updateRequest (rb);
     MessageBean mb = new MessageBean ();
+      System.out.println(result + "----result");
     if (result == 0)
       mb.setStatus (false);
     else {
@@ -184,7 +185,7 @@ public class MyEndpoint {
   @ApiMethod (name = "getTrip")
   public TripBean getTrip (@Named ("driverId") int driverId) {
     TripBean trip = new TripBean ();
-    List<TripBean> trips = queryTrip ("driver_user_id='" + driverId + "' AND isEnded='false'");
+    List<TripBean> trips = queryTrip ("driver_user_id='" + driverId + "' AND is_ended='false'");
     if (trips != null && trips.size () > 0) {
       trip = trips.get (0);
     }
