@@ -12,6 +12,7 @@ public class TripSegment {
   private int distance;
   private int duration;
   private int[] passengers;
+  private boolean isCompleted;
 
   public double getsLatitude () {
     return sLatitude;
@@ -67,5 +68,13 @@ public class TripSegment {
 
   public void setPassengers (int[] passengers) {
     this.passengers = passengers;
+  }
+
+  public boolean isCompleted () {
+    return isCompleted;
+  }
+
+  public void setCompleted (boolean isCompleted) {
+    this.isCompleted = isCompleted;
   }
 }

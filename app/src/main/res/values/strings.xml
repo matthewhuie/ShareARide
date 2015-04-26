@@ -23,6 +23,12 @@
         <item>I am a Driver</item>
     </string-array>
 
+    <string-array name="mood">
+        <item>I would like to save money!</item>
+        <item>I am indifferent.</item>
+        <item>I am in a rush!</item>
+    </string-array>
+
     <string name="title_activity_passenger">Passenger</string>
 
     <string name="pickUp">pickupPassenger</string>
