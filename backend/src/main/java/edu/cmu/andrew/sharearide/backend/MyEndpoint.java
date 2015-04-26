@@ -62,7 +62,7 @@ public class MyEndpoint {
                                        @Named ("destLong") double destLong) {
     Date startTime = calendar.getTime ();
 
-    RequestBean rb = new RequestBean (getPassenger (passenger).getUserID (), srcLat, srcLong, destLat, destLong, new Timestamp (startTime.getTime ()));
+    RequestBean rb = new RequestBean (getPassenger (passenger).getUserID (), srcLat, srcLong, destLat, destLong);
     int result = updateRequest (rb);
     MessageBean mb = new MessageBean ();
       System.out.println(result + "----result");
@@ -343,7 +343,7 @@ public class MyEndpoint {
           "VALUES (" + rb.getRequestId () + ", " + rb.getPassUserId () + ", " + rb.getSrcLongitude () +
           ", " + rb.getSrcLatitude () + ", " + rb.getDstLongitude () + ", " + rb.getDstLatitude () +
           ", " + rb.getFare () + ", " + rb.getLatestTime () + ", " + rb.getPassRating () + ", " +
-          rb.getDriverRating () + ", " + rb.getStartTime () + ", " + rb.getEndTime () + ", " +
+          rb.getDriverRating () + ", now(), " + rb.getEndTime () + ", " +
           rb.isServed () + ", " + rb.getDistanceEstimated () + ", " + rb.getActualDistance () + ") " +
           "ON DUPLICATE KEY UPDATE pass_user_id=VALUES(pass_user_id), " +
           "src_longitude=VALUES(src_longitude), src_latitude=VALUES(src_latitude), dest_longitude=VALUES(dest_longitude), " +
