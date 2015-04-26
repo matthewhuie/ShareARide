@@ -66,6 +66,7 @@ public class DriverMapFragment extends Fragment {
 
     sLatitude = mContext.getLatitude ();
     sLongitude = mContext.getLongitude ();
+    directions = new ArrayList<> ();
     setUpMapIfNeeded ();
 
     return mLayout;
@@ -113,11 +114,7 @@ public class DriverMapFragment extends Fragment {
    */
   private void setUpMap () {
     mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (new LatLng (sLatitude, sLongitude), 13));
-    getDirections (-80, 40.6975);
-    mMap.addPolyline (new PolylineOptions ()
-        .addAll (directions)
-        .width (10)
-        .color (Color.rgb (1, 169, 212)));
+    getDirections (40, -80);
   }
 
   private void getDirections (double dLatitude, double dLongitude) {
@@ -126,41 +123,90 @@ public class DriverMapFragment extends Fragment {
       Log.i ("map not null", "method executed");
       System.out.println ("In setUpDestination" + dLatitude + dLongitude);
 
-      String origin = "origin=" + sLatitude + "," + sLongitude + "&";
-      String destination = "destination=" + dLatitude + "," + dLongitude + "&";
-      String key = "key=" + getString (R.string.google_maps_places_key);
+      new DirectionsTask ().execute (String.valueOf (dLatitude), String.valueOf (dLongitude));
 
+      mMap.addMarker (new MarkerOptions ()
+          .position (new LatLng (sLatitude, sLongitude)));
+
+      mMap.addMarker (new MarkerOptions ()
+          .position (new LatLng (dLatitude, dLongitude)));
+
+    }
+  }
+
+  class DirectionsTask extends AsyncTask<String, Void, String> {
+
+    @Override
+    protected String doInBackground (String... data) {
+      String origin = "origin=" + sLatitude + "," + sLongitude + "&";
+      String destination = "destination=" + data[0] + "," + data[1] + "&";
+      String key = "key=" + getString (R.string.google_maps_places_key);
       String url = mContext.DIRECTION_BASE_URL + origin + destination + key;
 
-      directions.add (new LatLng (sLatitude, sLongitude));
+      return mContext.getRemoteJSON (url);
+
+    }
+
+    @Override
+    protected void onPostExecute (String json) {
       try {
-        String json = mContext.getRemoteJSON (url);
         JSONObject routeObject = new JSONObject (json);
         JSONArray routes = routeObject.getJSONArray ("routes");
         JSONObject route = (JSONObject) routes.get (0);
+        System.out.println (route.toString ());
         JSONArray legs = route.getJSONArray ("legs");
         JSONObject leg = (JSONObject) legs.get (0);
         JSONArray steps = leg.getJSONArray ("steps");
 
-        double latitude = 0;
-        double longitude = 0;
+        String polyline;
 
         for (int i = 0; i < steps.length (); i++) {
           JSONObject step = (JSONObject) steps.get (i);
-          latitude = Double.valueOf (step.get ("lat").toString ());
-          longitude = Double.valueOf (step.get ("lng").toString ());
-          directions.add (new LatLng (latitude, longitude));
-        }
-        directions.add (new LatLng (dLatitude, dLongitude));
+          polyline = ((JSONObject) step.get ("polyline")).get ("points").toString ();
 
+          directions.addAll (decodePoly (polyline));
+        }
       } catch (JSONException jsone) {
         Log.i ("Hit the JSON error: ", jsone.toString ());
       }
 
-      mMap.addMarker (new MarkerOptions ()
-          .position (new LatLng (dLatitude, dLongitude))
-          .title ("Destination: " + destination));
+      mMap.addPolyline (new PolylineOptions ()
+          .addAll (directions)
+          .width (10)
+          .color (Color.rgb (1, 169, 212)));
     }
+
   }
 
+  private List<LatLng> decodePoly (String encoded) {
+    List<LatLng> poly = new ArrayList<LatLng> ();
+    int index = 0, len = encoded.length ();
+    int lat = 0, lng = 0;
+
+    while (index < len) {
+      int b, shift = 0, result = 0;
+      do {
+        b = encoded.charAt (index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+      lat += dlat;
+
+      shift = 0;
+      result = 0;
+      do {
+        b = encoded.charAt (index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+      lng += dlng;
+
+      LatLng ll = new LatLng((((double) lat / 1E5)),(((double) lng / 1E5)));
+      poly.add (ll);
+    }
+
+    return poly;
+  }
 }
