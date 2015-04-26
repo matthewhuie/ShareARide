@@ -81,7 +81,7 @@ public class AbstractFactory {
     public boolean createNewRequest(String passenger,double srcLat,double srcLong,double destLat,double destLong){
         Date startTime = calendar.getTime();
 
-        RequestBean rb = new RequestBean(getPassenger(passenger).getUserID(),srcLat,srcLong,destLat,destLong,new Timestamp(startTime.getTime()));
+        RequestBean rb = new RequestBean(getPassenger(passenger).getUserID(),srcLat,srcLong,destLat,destLong);
         //insert query to request
         boolean result = false;
         return result;
