@@ -35,7 +35,8 @@ public class MyEndpoint {
   //change!!!
   @ApiMethod (name = "getAvailableDrivers")
   public List<UserBean> getAvailableDrivers (@Named ("numOfRiders") int numOfRiders) {
-    return queryUser ("user_type='Driver'");
+    int maxInCurr = 4 - numOfRiders;
+    return queryUser ("user_type='Driver' AND num_riders<=" + maxInCurr);
   }
 
 
@@ -78,22 +79,15 @@ public class MyEndpoint {
   }
 
   @ApiMethod (name = "fulfillRequest")
-  public MessageBean fulfillRequest (@Named ("passenger") String passenger) {
-    Date startTime = calendar.getTime ();
+  public RequestBean fulfillRequest (@Named ("request_id") int request_id) {
 
-    RequestBean rb = new RequestBean (getPassenger (passenger).getUserID (), true);
-    int result = updateRequest (rb);
-    MessageBean mb = new MessageBean ();
-    if (result == 0)
-      mb.setStatus (false);
-    else {
-      mb.setStatus (true);
-      mb.setMessage ("Fulfill Request");
-      mb.setUser_name (passenger);
-      updateMessage (mb);
-    }
-
-    return mb;
+      RequestBean rb = getRequest(request_id);
+      if (rb != null) {
+          rb.setServed(true);
+          updateRequest (rb);
+          return rb;
+      }
+      return null;
   }
 
 
@@ -221,9 +215,9 @@ public class MyEndpoint {
 
 
   @ApiMethod (name = "getRequest")
-  public RequestBean getRequest (@Named ("passenger") String passenger) {
+  public RequestBean getRequest (@Named ("request_id") int request_id) {
     RequestBean request = new RequestBean ();
-    List<RequestBean> requests = queryRequest ("pass_user_id='" + getPassenger (passenger).getUserID () + "' AND is_served=FALSE");
+    List<RequestBean> requests = queryRequest ("request_id=" + request_id);
     if (requests != null && requests.size () > 0) {
       request = requests.get (0);
     }
@@ -367,10 +361,18 @@ public class MyEndpoint {
 
 
   @ApiMethod (name = "updateTrip")
-  public TripBean updateTrip (@Named ("tripId") int tripId, @Named ("numOfRiders") int numOfRiders) {
-    TripBean tb = new TripBean (tripId, numOfRiders);
-    updateTrip (tb);
-    return null;
+  public TripBean updateTrip (@Named ("driverId") int driverId, @Named ("numOfRiders") int numOfRiders) {
+
+
+      TripBean tb = getTrip(driverId);
+      if (tb != null) {
+          int currRider = tb.getNumOfRiders();
+          tb.setNumOfRiders(currRider+numOfRiders);
+          updateTrip (tb);
+          return tb;
+      }
+      return null;
+
   }
 
   private int updateTrip (TripBean tb) {
