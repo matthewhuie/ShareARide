@@ -36,7 +36,9 @@
             android:text="here!"
             android:textColor="@android:color/white"
             android:textSize="32sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:gravity="center"
+            android:textAlignment="center"/>
 
         <RelativeLayout
             android:layout_width="match_parent"
