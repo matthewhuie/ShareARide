@@ -49,6 +49,7 @@ import edu.cmu.andrew.sharearide.backend.shareARideApi.model.TripBean;
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.UserBean;
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.UserBeanCollection;
 import edu.cmu.andrew.utilities.EndPointManager;
+import edu.cmu.andrew.utilities.TripSegment;
 
 public class DriverMapFragment extends Fragment {
 
@@ -58,6 +59,7 @@ public class DriverMapFragment extends Fragment {
   private RelativeLayout mLayout;
   private SARActivity mContext;
   private List<LatLng> directions;
+  private List<TripSegment> trip;
 
   @Override
   public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -115,6 +117,10 @@ public class DriverMapFragment extends Fragment {
   private void setUpMap () {
     mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (new LatLng (sLatitude, sLongitude), 13));
     getDirections (40, -80);
+  }
+
+  private void getNextDestination () {
+
   }
 
   private void getDirections (double dLatitude, double dLongitude) {
