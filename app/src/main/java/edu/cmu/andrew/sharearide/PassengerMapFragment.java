@@ -384,13 +384,13 @@ public class PassengerMapFragment extends Fragment {
 
       pickUpLocation = urls[0];
       userName = urls[1];
-
+      //change the 0 to slider
       UserBeanCollection taxis = queryTaxi (0);
       Log.i ("Taxi list: ", taxis.toString ());
 
       String[] taxiSearchingResult = new String[3];
         try {
-            taxiSearchingResult = taxiSearching(taxis, userName);
+            taxiSearchingResult = taxiSearching(taxis, request_id, 0);
             System.out.println(taxiSearchingResult + " taxiSearchingResult");
         }
         catch (IOException ioe) {
@@ -422,7 +422,7 @@ public class PassengerMapFragment extends Fragment {
 
     }
 
-    private String[] taxiSearching (UserBeanCollection taxis, String userName) throws IOException {
+    private String[] taxiSearching (UserBeanCollection taxis, int request_id, int numOfRiders) throws IOException {
       double taxiLatitude = 0;
       double taxiLongitude = 0;
       double minTaxiLatitude = 0;
@@ -509,14 +509,14 @@ public class PassengerMapFragment extends Fragment {
       TripBean trip = myApiService.getTrip(minDriverID).execute();
       int tripId = trip.getTripId();
       //get requestId related to a user
-      RequestBean request = myApiService.getRequest(userName).execute();
-      int requestId = request.getRequestId();
+      //RequestBean request = myApiService.getRequest(userName).execute();
+      //int requestId = request.getRequestId();
       //insert a new row into trip table
       myApiService.updateTripRequest(tripId, requestId);
       //update the request in request table
-      myApiService.fulfillRequest(userName);
+      myApiService.fulfillRequest(requestId);
       //update the trip in trip table
-      //myApiService.updateTrip(tripId, numOfRiders);
+      myApiService.updateTrip(minDriverID, numOfRiders);
 
       Log.i ("minDriver Location ", String.valueOf (minTaxiLatitude) + String.valueOf (minTaxiLongitude) + minDurTxt);
       return new String[] {String.valueOf (minTaxiLatitude), String.valueOf (minTaxiLongitude), minDurTxt};
