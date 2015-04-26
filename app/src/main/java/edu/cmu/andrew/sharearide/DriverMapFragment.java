@@ -27,6 +27,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -52,21 +53,19 @@ import edu.cmu.andrew.utilities.EndPointManager;
 public class DriverMapFragment extends Fragment {
 
   private GoogleMap mMap; // Might be null if Google Play services APK is not available.
-  private static ShareARideApi myApiService = null;
-  private double latitude;
-  private double longitude;
-  private double dest_latitude = 0;
-  private double dest_longitude = 0;
+  private double sLatitude;
+  private double sLongitude;
   private RelativeLayout mLayout;
   private SARActivity mContext;
+  private List<LatLng> directions;
 
   @Override
   public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mContext = (SARActivity) super.getActivity ();
     mLayout = (RelativeLayout) inflater.inflate (R.layout.activity_passenger_map, container, false);
 
-    latitude = mContext.getLatitude ();
-    longitude = mContext.getLongitude ();
+    sLatitude = mContext.getLatitude ();
+    sLongitude = mContext.getLongitude ();
     setUpMapIfNeeded ();
 
     return mLayout;
@@ -113,31 +112,57 @@ public class DriverMapFragment extends Fragment {
    * This should only be called once and when we are sure that {@link #mMap} is not null.
    */
   private void setUpMap () {
-    mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (new LatLng (latitude, longitude), 13));
+    mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (new LatLng (sLatitude, sLongitude), 13));
   }
 
-  private void setUpDestination (double dest_latitude, double dest_longitude, String pickUpLocation, String destination) {
+  private void setUpDestination (double dLatitude, double dLongitude) {
     Log.i ("add marker", "method executed");
     if (mMap != null) {
       Log.i ("map not null", "method executed");
-      System.out.println ("In setUpDestionation" + dest_latitude + dest_longitude);
-      mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (new LatLng (dest_latitude, dest_longitude), 13));
-      //Marker marker_origin = mMap.addMarker(new MarkerOptions()
-      //      .position(new LatLng(latitude, longitude))
-      //    .title("Your pickup location: " + pickUpLocation));
-      Marker marker_destination = mMap.addMarker (new MarkerOptions ()
-          .position (new LatLng (dest_latitude, dest_longitude))
-          .title ("Your destination: " + destination));
+      System.out.println ("In setUpDestination" + dLatitude + dLongitude);
+
+      String origin = "origin=" + sLatitude + "," + sLongitude + "&";
+      String destination = "destination=" + dLatitude + "," + dLongitude + "&";
+      String key = "key=" + getString (R.string.google_maps_places_key);
+
+      String url = mContext.DIRECTION_BASE_URL + origin + destination;
+
+      directions.add (new LatLng (sLatitude, sLongitude));
+      try {
+        String json = mContext.getRemoteJSON (url);
+        JSONObject routeObject = new JSONObject (json);
+        JSONArray routes = routeObject.getJSONArray ("routes");
+        JSONObject route = (JSONObject) routes.get (0);
+        JSONArray legs = route.getJSONArray ("legs");
+        JSONObject leg = (JSONObject) legs.get (0);
+        JSONArray steps = leg.getJSONArray ("steps");
+
+        double latitude = 0;
+        double longitude = 0;
+
+        for (int i = 0; i < steps.length (); i++) {
+          JSONObject step = (JSONObject) steps.get (i);
+          latitude = Double.valueOf (step.get ("lat").toString ());
+          longitude = Double.valueOf (step.get ("lng").toString ());
+          directions.add (new LatLng (latitude, longitude));
+        }
+        directions.add (new LatLng (dLatitude, dLongitude));
+
+      } catch (JSONException jsone) {
+        Log.i ("Hit the JSON error: ", jsone.toString ());
+      }
+
+      mMap.addMarker (new MarkerOptions ()
+          .position (new LatLng (dLatitude, dLongitude))
+          .title ("Destination: " + destination));
     }
   }
 
-  private void setUpDirection (List<LatLng> latlngRoute) {
-    Log.i ("add polyline", "method executed");
+  private void setUpDirection () {
     if (mMap != null) {
-      Log.i ("map not null", "method executed");
-      for (int i = 0; i < latlngRoute.size () - 1; i++) {
+      for (int i = 0; i < directions.size () - 1; i++) {
         Polyline line = mMap.addPolyline (new PolylineOptions ()
-            .add (latlngRoute.get (i), latlngRoute.get (i + 1))
+            .add (directions.get (i), directions.get (i + 1))
             .width (10)
             .color (Color.rgb (1, 169, 212)));
       }

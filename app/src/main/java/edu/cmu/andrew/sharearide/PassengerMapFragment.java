@@ -247,7 +247,7 @@ public class PassengerMapFragment extends Fragment {
 
         try {
 
-          String json = getRemoteJSON (url);
+          String json = mContext.getRemoteJSON (url);
           JSONObject priceObject = new JSONObject (json);
           //System.out.println(priceObject.get("prices"));
           JSONArray allPrice = priceObject.getJSONArray ("prices");
@@ -320,7 +320,7 @@ public class PassengerMapFragment extends Fragment {
 
       try {
 
-        String json = getRemoteJSON (url);
+        String json = mContext.getRemoteJSON (url);
         JSONObject routeObject = new JSONObject (json);
         //System.out.println(priceObject.get("prices"));
         JSONArray routes = routeObject.getJSONArray ("routes");
@@ -459,7 +459,7 @@ public class PassengerMapFragment extends Fragment {
 
           try {
 
-            String json = getRemoteJSON (place_url);
+            String json = mContext.getRemoteJSON (place_url);
             JSONObject routeObject = new JSONObject (json);
             //System.out.println(priceObject.get("prices"));
             JSONArray results = routeObject.getJSONArray ("results");
@@ -481,7 +481,7 @@ public class PassengerMapFragment extends Fragment {
 
             try {
 
-              String json = getRemoteJSON (url);
+              String json = mContext.getRemoteJSON (url);
               JSONObject routeObject = new JSONObject (json);
               //System.out.println(priceObject.get("prices"));
               JSONArray routes = routeObject.getJSONArray ("routes");
@@ -530,23 +530,6 @@ public class PassengerMapFragment extends Fragment {
     }
 
 
-  }
-
-
-  private String getRemoteJSON (String url) {
-    String json = null;
-    try {
-      HttpClient httpClient = new DefaultHttpClient ();
-      HttpGet priceRequest = new HttpGet (url);
-      HttpResponse httpResult = httpClient.execute (priceRequest);
-      json = EntityUtils.toString (httpResult.getEntity (), "UTF-8");
-    } catch (MalformedURLException e) {
-      Log.i ("Hit the malformedURLerror: ", e.toString ());
-    } catch (IOException ioe) {
-      Log.i ("Hit the IO error: ", ioe.toString ());
-    }
-
-    return json;
   }
 
 
