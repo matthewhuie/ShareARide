@@ -337,19 +337,19 @@ public class MyEndpoint {
     try {
       Connection conn = connect ();
       Statement statement = conn.createStatement ();
-      result = statement.executeUpdate ("INSERT INTO Request (request_id, pass_user_id, src_longitude, src_latitude, " +
-          "dest_longitude, dest_latitude, fare, latestTime, passRating, driverRating, startTime, endTime," +
-          "isServed, distanceEstimated, actualDistance) " +
+      result = statement.executeUpdate ("INSERT INTO Request (request_id, pass_user_id, source_longitude, source_latitude, " +
+          "dest_longitude, dest_latitude, fare, latest_time, pass_rating, driver_rating, start_time, end_time," +
+          "is_served, estimated_distance) " +
           "VALUES (" + rb.getRequestId () + ", " + rb.getPassUserId () + ", " + rb.getSrcLongitude () +
           ", " + rb.getSrcLatitude () + ", " + rb.getDstLongitude () + ", " + rb.getDstLatitude () +
           ", " + rb.getFare () + ", " + rb.getLatestTime () + ", " + rb.getPassRating () + ", " +
           rb.getDriverRating () + ", now(), " + rb.getEndTime () + ", " +
-          rb.isServed () + ", " + rb.getDistanceEstimated () + ", " + rb.getActualDistance () + ") " +
+          rb.isServed () + ", " + rb.getDistanceEstimated () + ") " +
           "ON DUPLICATE KEY UPDATE pass_user_id=VALUES(pass_user_id), " +
-          "src_longitude=VALUES(src_longitude), src_latitude=VALUES(src_latitude), dest_longitude=VALUES(dest_longitude), " +
-          "dest_latitude=VALUES(dest_latitude), fare=VALUES(fares), latestTime=VALUES(latestTime), passRating=VALUES(passRating), " +
-          "driverRating=VALUES(driverRating), startTime=VALUES(startTime), endTime=VALUES(endTime), isServed=VALUES(isServed), " +
-          "distanceEstimated=VALUES(distanceEstimated), actualDistance=VALUES(actualDistance)");
+          "source_longitude=VALUES(source_longitude), source_latitude=VALUES(source_latitude), dest_longitude=VALUES(dest_longitude), " +
+          "dest_latitude=VALUES(dest_latitude), fare=VALUES(fare), latest_time=VALUES(latest_time), pass_rating=VALUES(pass_rating), " +
+          "driver_rating=VALUES(driver_rating), start_time=VALUES(start_time), end_time=VALUES(end_time), is_served=VALUES(is_served), " +
+          "estimated_distance=VALUES(estimated_distance)");
     } catch (Exception e) {
       StringWriter sw = new StringWriter ();
       PrintWriter pw = new PrintWriter (sw);
@@ -408,8 +408,8 @@ public class MyEndpoint {
     try {
       Connection conn = connect ();
       Statement statement = conn.createStatement ();
-      result = statement.executeUpdate ("INSERT INTO Trip_Request (trip_id, request_id) " +
-          "VALUES (" + trb.getTripId () + ", " + trb.getRequestId () + ")");
+      result = statement.executeUpdate ("INSERT INTO Trip_Request (trip_id, request_id,actual_distance) " +
+          "VALUES (" + trb.getTripId () + ", " + trb.getRequestId () + ","+trb.getActualDistance() +")");
     } catch (Exception e) {
       StringWriter sw = new StringWriter ();
       PrintWriter pw = new PrintWriter (sw);
@@ -425,11 +425,11 @@ public class MyEndpoint {
     try {
       Connection conn = connect ();
       Statement statement = conn.createStatement ();
-      result = statement.executeUpdate ("INSERT INTO Message (user_name, message, message_id, is_read)" +
+      result = statement.executeUpdate ("INSERT INTO Message (user_name, message, message_id, is_read,Request_id)" +
           " VALUES (" + mb.getUser_name () + ", \"" +
-          mb.getMessage () + "\", \"" + mb.getMessage_id () + "\", \"" + mb.isIs_read () + "\")" +
+          mb.getMessage () + "\", \"" + mb.getMessage_id () + "\", \"" + mb.isIs_read () + "\",\""+mb.getRequest_id()+"\")" +
           "ON DUPLICATE KEY UPDATE user_name=VALUES(user_name), " +
-          "message=VALUES(message), message_id=VALUES(message_id), is_read=VALUES(is_read)");
+          "message=VALUES(message), message_id=VALUES(message_id), is_read=VALUES(is_read), Request_id=VALUES(Request_id)");
 
     } catch (Exception e) {
       StringWriter sw = new StringWriter ();
