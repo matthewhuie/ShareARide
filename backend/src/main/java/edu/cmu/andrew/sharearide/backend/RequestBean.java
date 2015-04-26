@@ -39,6 +39,7 @@ public class RequestBean {
         this.requestId = requestId;
         //this.fare = fare;
         this.driverRating = driverRating;
+        this.isServed = false;
     }
 
     public RequestBean(int passUserId, double srcLongitude, double srcLatitude, double dstLongitude, double dstLatitude, Timestamp startTime) {
@@ -48,6 +49,7 @@ public class RequestBean {
         this.dstLongitude = dstLongitude;
         this.dstLatitude = dstLatitude;
         this.startTime = startTime;
+        this.isServed = false;
     }
 
 
