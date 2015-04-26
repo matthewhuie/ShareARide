@@ -7,10 +7,18 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,8 +28,6 @@ import edu.cmu.andrew.utilities.GPSTracker;
 
 public class SARActivity extends FragmentActivity {
 
-  private GoogleApiClient mGoogleApiClient;
-  private String locationName;
   private List<Fragment> fragments;
   private int position;
   private GPSTracker mGPS;
@@ -141,17 +147,16 @@ public class SARActivity extends FragmentActivity {
         e.printStackTrace ();
       }
       return mb;
-
     }
 
     @Override
     protected void onPostExecute (MessageBean result) {
-      //Toast.makeText(DriverHome.this, result.getMessage(), Toast.LENGTH_LONG).show ();
+      System.out.println (result.getMessage ());
     }
 
   }
 
-  private void pollForMessages() {
+  public void pollForMessages() {
     Sync sync = new Sync(call,60*1000);
 
   }
@@ -174,5 +179,21 @@ public class SARActivity extends FragmentActivity {
       handler.postDelayed(call,20*1000);
     }
   };
-  
+
+
+  public String getRemoteJSON (String url) {
+    String json = null;
+    try {
+      HttpClient httpClient = new DefaultHttpClient ();
+      HttpGet priceRequest = new HttpGet (url);
+      HttpResponse httpResult = httpClient.execute (priceRequest);
+      json = EntityUtils.toString (httpResult.getEntity (), "UTF-8");
+    } catch (MalformedURLException e) {
+      Log.i ("Hit the malformedURLerror: ", e.toString ());
+    } catch (IOException ioe) {
+      Log.i ("Hit the IO error: ", ioe.toString ());
+    }
+
+    return json;
+  }
 }

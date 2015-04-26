@@ -27,6 +27,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -48,25 +49,26 @@ import edu.cmu.andrew.sharearide.backend.shareARideApi.model.TripBean;
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.UserBean;
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.UserBeanCollection;
 import edu.cmu.andrew.utilities.EndPointManager;
+import edu.cmu.andrew.utilities.TripSegment;
 
 public class DriverMapFragment extends Fragment {
 
   private GoogleMap mMap; // Might be null if Google Play services APK is not available.
-  private static ShareARideApi myApiService = null;
-  private double latitude;
-  private double longitude;
-  private double dest_latitude = 0;
-  private double dest_longitude = 0;
+  private double sLatitude;
+  private double sLongitude;
   private RelativeLayout mLayout;
   private SARActivity mContext;
+  private List<LatLng> directions;
+  private List<TripSegment> trip;
 
   @Override
   public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mContext = (SARActivity) super.getActivity ();
     mLayout = (RelativeLayout) inflater.inflate (R.layout.activity_passenger_map, container, false);
 
-    latitude = mContext.getLatitude ();
-    longitude = mContext.getLongitude ();
+    sLatitude = mContext.getLatitude ();
+    sLongitude = mContext.getLongitude ();
+    directions = new ArrayList<> ();
     setUpMapIfNeeded ();
 
     return mLayout;
@@ -113,36 +115,104 @@ public class DriverMapFragment extends Fragment {
    * This should only be called once and when we are sure that {@link #mMap} is not null.
    */
   private void setUpMap () {
-    mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (new LatLng (latitude, longitude), 13));
+    mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (new LatLng (sLatitude, sLongitude), 13));
+    getDirections (40, -80);
   }
 
-  private void setUpDestination (double dest_latitude, double dest_longitude, String pickUpLocation, String destination) {
+  private void getNextDestination () {
+
+  }
+
+  private void getDirections (double dLatitude, double dLongitude) {
     Log.i ("add marker", "method executed");
     if (mMap != null) {
       Log.i ("map not null", "method executed");
-      System.out.println ("In setUpDestionation" + dest_latitude + dest_longitude);
-      mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (new LatLng (dest_latitude, dest_longitude), 13));
-      //Marker marker_origin = mMap.addMarker(new MarkerOptions()
-      //      .position(new LatLng(latitude, longitude))
-      //    .title("Your pickup location: " + pickUpLocation));
-      Marker marker_destination = mMap.addMarker (new MarkerOptions ()
-          .position (new LatLng (dest_latitude, dest_longitude))
-          .title ("Your destination: " + destination));
+      System.out.println ("In setUpDestination" + dLatitude + dLongitude);
+
+      new DirectionsTask ().execute (String.valueOf (dLatitude), String.valueOf (dLongitude));
+
+      mMap.addMarker (new MarkerOptions ()
+          .position (new LatLng (sLatitude, sLongitude)));
+
+      mMap.addMarker (new MarkerOptions ()
+          .position (new LatLng (dLatitude, dLongitude)));
+
     }
   }
 
-  private void setUpDirection (List<LatLng> latlngRoute) {
-    Log.i ("add polyline", "method executed");
-    if (mMap != null) {
-      Log.i ("map not null", "method executed");
-      for (int i = 0; i < latlngRoute.size () - 1; i++) {
-        Polyline line = mMap.addPolyline (new PolylineOptions ()
-            .add (latlngRoute.get (i), latlngRoute.get (i + 1))
-            .width (10)
-            .color (Color.rgb (1, 169, 212)));
+  class DirectionsTask extends AsyncTask<String, Void, String> {
+
+    @Override
+    protected String doInBackground (String... data) {
+      String origin = "origin=" + sLatitude + "," + sLongitude + "&";
+      String destination = "destination=" + data[0] + "," + data[1] + "&";
+      String key = "key=" + getString (R.string.google_maps_places_key);
+      String url = mContext.DIRECTION_BASE_URL + origin + destination + key;
+
+      return mContext.getRemoteJSON (url);
+
+    }
+
+    @Override
+    protected void onPostExecute (String json) {
+      try {
+        JSONObject routeObject = new JSONObject (json);
+        JSONArray routes = routeObject.getJSONArray ("routes");
+        JSONObject route = (JSONObject) routes.get (0);
+        System.out.println (route.toString ());
+        JSONArray legs = route.getJSONArray ("legs");
+        JSONObject leg = (JSONObject) legs.get (0);
+        JSONArray steps = leg.getJSONArray ("steps");
+
+        String polyline;
+
+        for (int i = 0; i < steps.length (); i++) {
+          JSONObject step = (JSONObject) steps.get (i);
+          polyline = ((JSONObject) step.get ("polyline")).get ("points").toString ();
+
+          directions.addAll (decodePoly (polyline));
+        }
+      } catch (JSONException jsone) {
+        Log.i ("Hit the JSON error: ", jsone.toString ());
       }
+
+      mMap.addPolyline (new PolylineOptions ()
+          .addAll (directions)
+          .width (10)
+          .color (Color.rgb (1, 169, 212)));
     }
+
   }
 
+  private List<LatLng> decodePoly (String encoded) {
+    List<LatLng> poly = new ArrayList<LatLng> ();
+    int index = 0, len = encoded.length ();
+    int lat = 0, lng = 0;
 
+    while (index < len) {
+      int b, shift = 0, result = 0;
+      do {
+        b = encoded.charAt (index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+      lat += dlat;
+
+      shift = 0;
+      result = 0;
+      do {
+        b = encoded.charAt (index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+      lng += dlng;
+
+      LatLng ll = new LatLng((((double) lat / 1E5)),(((double) lng / 1E5)));
+      poly.add (ll);
+    }
+
+    return poly;
+  }
 }
