@@ -406,7 +406,7 @@ public class MyEndpoint {
     try {
       Connection conn = connect ();
       Statement statement = conn.createStatement ();
-      result = statement.executeUpdate ("INSERT INTO TripRequest (trip_id, request_id) " +
+      result = statement.executeUpdate ("INSERT INTO Trip_Request (trip_id, request_id) " +
           "VALUES (" + trb.getTripId () + ", " + trb.getRequestId () + ")");
     } catch (Exception e) {
       StringWriter sw = new StringWriter ();
