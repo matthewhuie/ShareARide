@@ -337,7 +337,7 @@ public class MyEndpoint {
     try {
       Connection conn = connect ();
       Statement statement = conn.createStatement ();
-      result = statement.executeUpdate ("INSERT INTO User (request_id, pass_user_id, src_longitude, src_latitude, " +
+      result = statement.executeUpdate ("INSERT INTO Request (request_id, pass_user_id, src_longitude, src_latitude, " +
           "dest_longitude, dest_latitude, fare, latestTime, passRating, driverRating, startTime, endTime," +
           "isServed, distanceEstimated, actualDistance) " +
           "VALUES (" + rb.getRequestId () + ", " + rb.getPassUserId () + ", " + rb.getSrcLongitude () +
@@ -380,7 +380,7 @@ public class MyEndpoint {
     try {
       Connection conn = connect ();
       Statement statement = conn.createStatement ();
-      result = statement.executeUpdate ("INSERT INTO User (trip_id, driver_user_id, num_riders, is_active, is_ended) " +
+      result = statement.executeUpdate ("INSERT INTO Trip (trip_id, driver_user_id, num_riders, is_active, is_ended) " +
           "VALUES (" + tb.getTripId () + ", " + tb.getDriverUserId () + ", " + tb.getNumOfRiders () +
           ", " + tb.isActive () + ", " + tb.isHasEnded () + ") " +
           "ON DUPLICATE KEY UPDATE driver_user_id=VALUES(driver_user_id), " +
@@ -408,7 +408,7 @@ public class MyEndpoint {
     try {
       Connection conn = connect ();
       Statement statement = conn.createStatement ();
-      result = statement.executeUpdate ("INSERT INTO User (trip_id, request_id) " +
+      result = statement.executeUpdate ("INSERT INTO Trip_Request (trip_id, request_id) " +
           "VALUES (" + trb.getTripId () + ", " + trb.getRequestId () + ")");
     } catch (Exception e) {
       StringWriter sw = new StringWriter ();
