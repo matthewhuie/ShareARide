@@ -3,26 +3,13 @@ package edu.cmu.andrew.sharearide;
 import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.Color;
-import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
-import android.widget.SimpleAdapter;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.EditText;
-
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -84,9 +71,9 @@ public class PassengerMapFragment extends Fragment {
     mLayout = (RelativeLayout) inflater.inflate (R.layout.activity_passenger_map, container, false);
     
     latitude = mContext.getLatitude ();
-    longitude = mContext.getLongitude ();
+    longitude = mContext.getLongitude();
       setUpMapIfNeeded ();
-      //selectDriver();
+        selectDriver();
     return mLayout;
   }
 
@@ -180,8 +167,11 @@ public class PassengerMapFragment extends Fragment {
 
 
   public void selectDriver () {
-    String pickUpLocation = mContext.getLocationName ();
-    String destinationTxt = mContext.getDestination ();
+    String pickUpLocation = mContext.getLocationName();
+    String destinationTxt = mContext.getDestination();
+
+      System.out.println(pickUpLocation+ " pickUpLocation");
+      System.out.println(destinationTxt+ " destinationTxt");
 
     //cannot make http request in main thread, has to create a asyn helper thread
     //calculatePriceAndTime(destinationTxt);
@@ -191,9 +181,13 @@ public class PassengerMapFragment extends Fragment {
 
     //aditi code for inserting request in request table
     Intent myIntent = mContext.getIntent (); // gets the previously created intent
-    String userName = myIntent.getStringExtra ("userName");
+    String userName = mContext.getUsername();
 
+      System.out.println(userName+ " username");
       try {
+
+          if(myApiService==null)
+              myApiService = EndPointManager.getEndpointInstance();
           myApiService.createNewRequest (userName, latitude, longitude, dest_latitude, dest_longitude);
       } catch (IOException e) {
           e.printStackTrace();
@@ -397,6 +391,7 @@ public class PassengerMapFragment extends Fragment {
       String[] taxiSearchingResult = new String[3];
         try {
             taxiSearchingResult = taxiSearching(taxis, userName);
+            System.out.println(taxiSearchingResult + " taxiSearchingResult");
         }
         catch (IOException ioe) {
             Log.i ("Hit the IO error: ", ioe.toString ());
