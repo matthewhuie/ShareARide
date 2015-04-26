@@ -184,7 +184,7 @@ public class MyEndpoint {
   @ApiMethod (name = "getTrip")
   public TripBean getTrip (@Named ("driverId") int driverId) {
     TripBean trip = new TripBean ();
-    List<TripBean> trips = queryTrip ("driver_user_id='" + driverId + "' AND hasEnded='false'");
+    List<TripBean> trips = queryTrip ("driver_user_id='" + driverId + "' AND isEnded='false'");
     if (trips != null && trips.size () > 0) {
       trip = trips.get (0);
     }
