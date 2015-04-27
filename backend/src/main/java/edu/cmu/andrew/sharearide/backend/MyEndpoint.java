@@ -206,6 +206,13 @@ public class MyEndpoint {
     return trip;
   }
 
+  @ApiMethod (name = "endTrip")
+  public void endTrip (@Named ("driverId") int driverId) {
+    TripBean tb = getTrip (driverId);
+    tb.setActive (false);
+    tb.setHasEnded (true);
+    updateTrip (tb);
+  }
 
   private List<TripBean> queryTrip (String where) {
     ArrayList<TripBean> al = new ArrayList<> ();

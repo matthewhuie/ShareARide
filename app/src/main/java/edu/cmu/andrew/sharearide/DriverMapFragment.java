@@ -58,6 +58,7 @@ public class DriverMapFragment extends Fragment {
   private SARActivity mContext;
   private List<LatLng> directions;
   private List<TripSegment> trip;
+  private int currentTrip;
 
   @Override
   public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -65,6 +66,7 @@ public class DriverMapFragment extends Fragment {
     mLayout = (RelativeLayout) inflater.inflate (R.layout.activity_passenger_map, container, false);
 
     directions = new ArrayList<> ();
+    currentTrip = -1;
     setUpMapIfNeeded ();
     return mLayout;
   }
@@ -126,6 +128,9 @@ public class DriverMapFragment extends Fragment {
         } catch (IOException e) {
           e.printStackTrace ();
         }
+
+        currentTrip = trip.getTripId ();
+
         return null;
       }
     }.execute (mContext.getUserID (), numOfRiders);
@@ -140,6 +145,9 @@ public class DriverMapFragment extends Fragment {
         } catch (IOException e) {
           e.printStackTrace ();
         }
+
+        currentTrip = -1;
+
         return null;
       }
     }.execute (mContext.getUserID ());
@@ -184,6 +192,7 @@ public class DriverMapFragment extends Fragment {
     LatLng[] ll = new LatLng[paths.size ()];
     ll = paths.toArray (ll);
     new NextRouteTask (passengers).execute (ll);
+    new AddTRTask ().execute (rb.getRequestId ());
   }
 
   private void fulfillRequest (RequestBean rb) {
@@ -314,4 +323,17 @@ public class DriverMapFragment extends Fragment {
 
     return poly;
   }
+
+  class AddTRTask extends AsyncTask<Integer, Void, Void> {
+
+    @Override
+    protected Void doInBackground (Integer... data) {
+      try {
+        EndPointManager.getEndpointInstance ().pollMessage("asdf").execute ();
+      } catch (IOException e) {
+        e.printStackTrace ();
+      }
+      return null;
+    }
+
 }
