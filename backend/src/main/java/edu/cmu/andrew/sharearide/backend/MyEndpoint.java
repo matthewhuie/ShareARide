@@ -41,7 +41,7 @@ public class MyEndpoint {
         List<UserBean> validDrivers = new ArrayList<>();
         for(UserBean driver : drivers)  {
             int driver_user_id = driver.getUserID();
-            List<TripBean> validTrips = queryTrip ("driver_user_id=" + driver_user_id + "AND num_riders<=" + maxInCurr + " AND is_ended=0" );
+            List<TripBean> validTrips = queryTrip ("driver_user_id=" + driver_user_id + " AND num_riders<=" + maxInCurr + " AND is_ended=0" );
             if (validTrips != null && validTrips.size () > 0) {
                 TripBean validTrip = validTrips.get (0);
                 validDriverIds.add(validTrip.getDriverUserId());

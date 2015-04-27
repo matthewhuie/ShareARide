@@ -68,6 +68,7 @@ public class DriverMapFragment extends Fragment {
     directions = new ArrayList<> ();
     currentTrip = -1;
     setUpMapIfNeeded ();
+    initTrip ();
     return mLayout;
   }
 
@@ -114,11 +115,14 @@ public class DriverMapFragment extends Fragment {
   private void setUpMap () {
     mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (
         new LatLng (mContext.getLatitude (), mContext.getLongitude ()), 13));
-    //getDirections (new LatLng (40, -80), new LatLng (40.1, -80.1));
   }
 
-  private void initTrip (int numOfRiders) {
+  private void initTrip () {
     trip = new ArrayList<TripSegment> ();
+    updateTripRiders (0);
+  }
+
+  private void updateTripRiders (int numOfRiders) {
     new AsyncTask<Integer, Void, Void> (){
       @Override
       protected Void doInBackground(Integer... params) {
@@ -133,7 +137,7 @@ public class DriverMapFragment extends Fragment {
 
         return null;
       }
-    }.execute (mContext.getUserID (), numOfRiders);
+    }.execute (mContext.getUserID (), 0);
   }
 
   private void endTrip () {
@@ -169,10 +173,6 @@ public class DriverMapFragment extends Fragment {
     paths.add (rDst);
 
     List<Integer> passengers = new ArrayList<> ();
-    if (trip == null) {
-      initTrip (rb.getNumOfRiders ());
-    }
-
     if (trip.size () > 0) {
       TripSegment previous = trip.get (trip.size () - 1);
       paths.add (previous.getDestination ());
