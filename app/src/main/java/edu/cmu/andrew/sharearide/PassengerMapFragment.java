@@ -382,14 +382,14 @@ public class PassengerMapFragment extends Fragment {
 
     @Override
     protected String[] doInBackground (String... urls) {
-      String[] taxiSearchingResult = new String[3];
+      String[] taxiSearchingResult = new String[4];
       int request_id = 0;
         pickUpLocation = urls[0];
         userName = urls[1];
         try {
       myApiService = EndPointManager.getEndpointInstance ();
-      MessageBean request = myApiService.createNewRequest (userName, latitude, longitude, dest_latitude, dest_longitude,numOfRiders).execute();
-      request_id = request.getRequestId();
+      MessageBean mb = myApiService.createNewRequest (userName, latitude, longitude, dest_latitude, dest_longitude,numOfRiders).execute();
+      request_id = mb.getRequestId();
 
       //change the 0 to slider
       UserBeanCollection taxis = queryTaxi (0);
@@ -398,6 +398,8 @@ public class PassengerMapFragment extends Fragment {
 
 
             taxiSearchingResult = taxiSearching(taxis, request_id, 0);
+
+            myApiService.createMessage(Integer.parseInt(taxiSearchingResult[3]),mb.getMessage(),mb.getRequestId()).execute();
             System.out.println(taxiSearchingResult + " taxiSearchingResult");
         }
         catch (IOException ioe) {
@@ -526,7 +528,7 @@ public class PassengerMapFragment extends Fragment {
       myApiService.updateTrip(minDriverID, numOfRiders);
 
       Log.i ("minDriver Location ", String.valueOf (minTaxiLatitude) + String.valueOf (minTaxiLongitude) + minDurTxt);
-      return new String[] {String.valueOf (minTaxiLatitude), String.valueOf (minTaxiLongitude), minDurTxt};
+      return new String[] {String.valueOf (minTaxiLatitude), String.valueOf (minTaxiLongitude), minDurTxt,String.valueOf(minDriverID)};
 
 
     }
