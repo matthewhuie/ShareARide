@@ -20,6 +20,16 @@ public class RequestBean {
     private double distanceEstimated;
     private double actualDistance;
 
+    public int getNumOfRiders() {
+        return numOfRiders;
+    }
+
+    public void setNumOfRiders(int numOfRiders) {
+        this.numOfRiders = numOfRiders;
+    }
+
+    private int numOfRiders;
+
     public RequestBean(){
 
     }
