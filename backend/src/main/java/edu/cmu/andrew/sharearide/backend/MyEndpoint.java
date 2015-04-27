@@ -48,16 +48,16 @@ public class MyEndpoint {
       }
     }
 
-        for(Integer validDriverId : validDriverIds) {
-            List<UserBean> validDriversById = queryUser("user_id=" + validDriverId);
-            if (validDriversById != null && validDriversById.size () > 0) {
-                UserBean validDriver = validDriversById.get (0);
-                validDrivers.add(validDriver);
-            }
-        }
-
-        return validDrivers;
+    for (Integer validDriverId : validDriverIds) {
+      List<UserBean> validDriversById = queryUser ("user_id=" + validDriverId);
+      if (validDriversById != null && validDriversById.size () > 0) {
+        UserBean validDriver = validDriversById.get (0);
+        validDrivers.add (validDriver);
+      }
     }
+
+    return validDrivers;
+  }
 
 
     @ApiMethod (name = "createMessage")
@@ -71,8 +71,8 @@ public class MyEndpoint {
     }
 
   @ApiMethod (name = "pollMessage")
-  public MessageBean pollMessage (@Named ("userName") String userName) {
-    MessageBean mb = getMessage (userName);
+  public MessageBean pollMessage (@Named ("userID") int userID) {
+    MessageBean mb = getMessage (userID);
     return mb;
   }
 
@@ -152,10 +152,10 @@ public class MyEndpoint {
     return null;
   }
 
-  private MessageBean getMessage (String userName) {
+  private MessageBean getMessage (int userID) {
     MessageBean mb = new MessageBean ();
     List<MessageBean> al = new ArrayList<> ();
-    al = queryMessage ("user_name='" + userName + "'");
+    al = queryMessage ("user_name='" + userID + "'");
 
     if (al.size () > 0) {
       mb = al.get (0);
@@ -420,7 +420,7 @@ public class MyEndpoint {
       Statement statement = conn.createStatement ();
       result = statement.executeUpdate ("INSERT INTO Trip (trip_id, driver_user_id, num_riders, is_active, is_ended) " +
           "VALUES (" + tb.getTripId () + ", " + tb.getDriverUserId () + ", " + tb.getNumOfRiders () +
-          ", " + tb.getIsActive() + ", " + tb.getHasEnded () + ") " +
+          ", " + tb.getIsActive () + ", " + tb.getHasEnded () + ") " +
           "ON DUPLICATE KEY UPDATE driver_user_id=VALUES(driver_user_id), " +
           "num_riders=VALUES(num_riders), is_active=VALUES(is_active), is_ended=VALUES(is_ended)");
     } catch (Exception e) {

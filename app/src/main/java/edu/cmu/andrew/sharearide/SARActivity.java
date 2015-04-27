@@ -152,10 +152,10 @@ public class SARActivity extends FragmentActivity {
   /**
    * async task to poll message table
    */
-  class PollTask extends AsyncTask<String, Void, MessageBean> {
+  class PollTask extends AsyncTask<Integer, Void, MessageBean> {
 
     @Override
-    protected MessageBean doInBackground (String... data) {
+    protected MessageBean doInBackground (Integer... data) {
       MessageBean mb = new MessageBean ();
       try {
         EndPointManager.getEndpointInstance ().pollMessage(data[0]).execute ();
@@ -191,7 +191,7 @@ public class SARActivity extends FragmentActivity {
     public void run() {
       //This is where my sync code will be, but for testing purposes I only have a Log statement
       //will run every 20 seconds
-      new PollTask().execute (username);
+      new PollTask().execute (userID);
       handler.postDelayed(call,20*1000);
     }
   };
