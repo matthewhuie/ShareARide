@@ -31,6 +31,7 @@ public class SARActivity extends FragmentActivity {
   private GPSTracker mGPS;
   private String destination;
   private String username;
+  private int userID;
   public final Handler handler = new Handler ();
 
   public final String GEOCODE_BASE_URL = "https://maps.googleapis.com/maps/api/geocode/xml?address=";
@@ -120,6 +121,14 @@ public class SARActivity extends FragmentActivity {
 
   public void setUsername (String username) {
     this.username = username;
+  }
+
+  public int getUserID () {
+    return userID;
+  }
+
+  public void setUserID (int userID) {
+    this.userID = userID;
   }
 
   @Override

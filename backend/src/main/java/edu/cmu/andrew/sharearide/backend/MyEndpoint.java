@@ -65,7 +65,7 @@ public class MyEndpoint {
     RequestBean rb = new RequestBean (getPassenger (passenger).getUserID (), srcLat, srcLong, destLat, destLong);
     int result = updateRequest (rb);
     MessageBean mb = new MessageBean ();
-      System.out.println(result + "----result");
+    System.out.println (result + "----result");
     if (result == 0)
       mb.setStatus (false);
     else {
@@ -81,13 +81,13 @@ public class MyEndpoint {
   @ApiMethod (name = "fulfillRequest")
   public RequestBean fulfillRequest (@Named ("request_id") int request_id) {
 
-      RequestBean rb = getRequest(request_id);
-      if (rb != null) {
-          rb.setServed(true);
-          updateRequest (rb);
-          return rb;
-      }
-      return null;
+    RequestBean rb = getRequest (request_id);
+    if (rb != null) {
+      rb.setServed (true);
+      updateRequest (rb);
+      return rb;
+    }
+    return null;
   }
 
 
@@ -113,11 +113,6 @@ public class MyEndpoint {
       updateUser (ub);
       return ub;
     }
-    return null;
-  }
-
-  @ApiMethod (name = "startTrip")
-  public TripBean startTrip (@Named ("driver_username") String driverUsername) {
     return null;
   }
 
@@ -362,17 +357,21 @@ public class MyEndpoint {
 
   @ApiMethod (name = "updateTrip")
   public TripBean updateTrip (@Named ("driverId") int driverId, @Named ("numOfRiders") int numOfRiders) {
+    TripBean tb = getTrip (driverId);
+    if (tb == null) tb = new TripBean (driverId);
 
+    int currRider = tb.getNumOfRiders ();
+    tb.setNumOfRiders (currRider + numOfRiders);
+    updateTrip (tb);
+    return tb;
+  }
 
-      TripBean tb = getTrip(driverId);
-      if (tb != null) {
-          int currRider = tb.getNumOfRiders();
-          tb.setNumOfRiders(currRider+numOfRiders);
-          updateTrip (tb);
-          return tb;
-      }
-      return null;
-
+  @ApiMethod (name = "endTrip")
+  public void endTrip (@Named ("driverId") int driverId) {
+    TripBean tb = getTrip (driverId);
+    tb.setActive (false);
+    tb.setHasEnded (true);
+    updateTrip (tb);
   }
 
   private int updateTrip (TripBean tb) {
@@ -409,7 +408,7 @@ public class MyEndpoint {
       Connection conn = connect ();
       Statement statement = conn.createStatement ();
       result = statement.executeUpdate ("INSERT INTO Trip_Request (trip_id, request_id,actual_distance) " +
-          "VALUES (" + trb.getTripId () + ", " + trb.getRequestId () + ","+trb.getActualDistance() +")");
+          "VALUES (" + trb.getTripId () + ", " + trb.getRequestId () + "," + trb.getActualDistance () + ")");
     } catch (Exception e) {
       StringWriter sw = new StringWriter ();
       PrintWriter pw = new PrintWriter (sw);
@@ -427,7 +426,7 @@ public class MyEndpoint {
       Statement statement = conn.createStatement ();
       result = statement.executeUpdate ("INSERT INTO Message (user_name, message, message_id, is_read,Request_id)" +
           " VALUES (" + mb.getUser_name () + ", \"" +
-          mb.getMessage () + "\", \"" + mb.getMessage_id () + "\", \"" + mb.isIs_read () + "\",\""+mb.getRequest_id()+"\")" +
+          mb.getMessage () + "\", \"" + mb.getMessage_id () + "\", \"" + mb.isIs_read () + "\",\"" + mb.getRequest_id () + "\")" +
           "ON DUPLICATE KEY UPDATE user_name=VALUES(user_name), " +
           "message=VALUES(message), message_id=VALUES(message_id), is_read=VALUES(is_read), Request_id=VALUES(Request_id)");
 

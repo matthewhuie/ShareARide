@@ -91,10 +91,7 @@ public class LoginFragment extends Fragment {
     protected UserBean doInBackground (String... data) {
       UserBean user = new UserBean ();
       try {
-        if (apiInstance == null) {  // Only do this once
-          apiInstance = EndPointManager.getEndpointInstance ();
-        }
-        user = apiInstance.userLogin (data[0], data[1],
+        user = EndPointManager.getEndpointInstance ().userLogin (data[0], data[1],
             Double.parseDouble (data[2]),
             Double.parseDouble (data[3]), data[4]).execute ();
       } catch (IOException e) {
@@ -113,6 +110,9 @@ public class LoginFragment extends Fragment {
         } else {
           mContext.initDriver ();
         }
+
+        mContext.setUserID (result.getUserID ());
+
         mContext.nextFragment ();
       } else {
         message = "Invalid username/password!";

@@ -1,7 +1,5 @@
 package edu.cmu.andrew.sharearide.backend;
 
-import java.sql.Timestamp;
-
 public class TripBean {
 
     private int tripId;
@@ -14,12 +12,14 @@ public class TripBean {
 
     }
 
-    public TripBean(int tripId, int numOfRiders){
-        this.tripId = tripId;
-        this.numOfRiders = numOfRiders;
-    }
+  public TripBean (int driverUserId) {
+    this.driverUserId = driverUserId;
+    numOfRiders = 0;
+    isActive = true;
+    hasEnded = false;
+  }
 
-    public int getTripId() {
+  public int getTripId() {
         return tripId;
     }
 

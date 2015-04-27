@@ -66,8 +66,6 @@ public class DriverMapFragment extends Fragment {
 
     directions = new ArrayList<> ();
     setUpMapIfNeeded ();
-    initTrip ();
-
     return mLayout;
   }
 
@@ -117,12 +115,35 @@ public class DriverMapFragment extends Fragment {
     //getDirections (new LatLng (40, -80), new LatLng (40.1, -80.1));
   }
 
-  private void initTrip () {
-    // endpoint to create trip
+  private void initTrip (int numOfRiders) {
+    new AsyncTask<Integer, Void, Void> (){
+      @Override
+      protected Void doInBackground(Integer... params) {
+        TripBean trip = new TripBean ();
+        try {
+          trip = EndPointManager.getEndpointInstance ().updateTrip(params[0], params[1]).execute ();
+        } catch (IOException e) {
+          e.printStackTrace ();
+        }
+        return null;
+      }
+    }.execute (mContext.getUserID (), numOfRiders);
   }
 
   private void endTrip () {
+    new AsyncTask<Integer, Void, Void> (){
+      @Override
+      protected Void doInBackground(Integer... params) {
+        try {
+          EndPointManager.getEndpointInstance ().endTrip(params[0]).execute ();
+        } catch (IOException e) {
+          e.printStackTrace ();
+        }
+        return null;
+      }
+    }.execute (mContext.getUserID ());
     // endpoint to finish trip
+    // calculate remaining fare
   }
 
   private void readMessage () {
@@ -137,11 +158,17 @@ public class DriverMapFragment extends Fragment {
     paths.add (rSrc);
     paths.add (rDst);
 
+    List<Integer> passengers = new ArrayList<> ();
     if (trip.size () > 0) {
       TripSegment previous = trip.get (trip.size () - 1);
       paths.add (previous.getDestination ());
       previous.setDestination (rSrc);
       previous.setCompleted (true);
+
+      passengers.addAll (previous.getPassengers ());
+      passengers.add (new Integer (rb.getPassUserId ()));
+    } else {
+      initTrip (rb.getNumOfRiders ());
     }
 
     for (TripSegment ts : trip) {
@@ -152,7 +179,7 @@ public class DriverMapFragment extends Fragment {
 
     LatLng[] ll = new LatLng[paths.size ()];
     ll = paths.toArray (ll);
-    new NextRouteTask (rb).execute (ll);
+    new NextRouteTask (passengers).execute (ll);
   }
 
   private void fulfillRequest (RequestBean rb) {
@@ -163,8 +190,10 @@ public class DriverMapFragment extends Fragment {
     TripSegment previous = trip.get (trip.size () - 1);
     previous.setCompleted (true);
 
-    if (previous.getPassengers ().size () == 1) {
-     // end the trip
+    List<Integer> passengers = previous.getPassengers ();
+    passengers.remove (new Integer (rb.getPassUserId ()));
+    if (passengers.size () == 0) {
+      endTrip ();
     } else {
       for (TripSegment ts : trip) {
         if (! ts.isCompleted ()) {
@@ -174,16 +203,16 @@ public class DriverMapFragment extends Fragment {
 
       LatLng[] ll = new LatLng[paths.size ()];
       ll = paths.toArray (ll);
-      new NextRouteTask (rb).execute (ll);
+      new NextRouteTask (passengers).execute (ll);
     }
   }
 
   class NextRouteTask extends AsyncTask <LatLng, Void, JSONArray> {
 
-    RequestBean rb;
+    List<Integer> passengers;
 
-    public NextRouteTask (RequestBean rb) {
-      this.rb = rb;
+    public NextRouteTask (List<Integer> passengers) {
+      this.passengers = passengers;
     }
 
     @Override
@@ -221,13 +250,7 @@ public class DriverMapFragment extends Fragment {
         }
       }
 
-      List<Integer> passengers = new ArrayList<> ();
-      if (trip.size () != 0) {
-        passengers.addAll (trip.get (trip.size () - 1).getPassengers ());
-      }
-      passengers.add (rb.getPassUserId ());
-      trip.add (new TripSegment (trip.size (), data [0], minDestination, minDistance, minTime,
-          passengers, false));
+      trip.add (new TripSegment (trip.size (), data [0], minDestination, minDistance, minTime, passengers));
 
       return minSteps;
     }
@@ -247,6 +270,7 @@ public class DriverMapFragment extends Fragment {
         Log.i ("Hit the JSON error: ", jsone.toString ());
       }
 
+      mMap.clear ();
       mMap.addPolyline (new PolylineOptions ()
           .addAll (directions)
           .width (10)

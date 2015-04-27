@@ -17,14 +17,14 @@ public class TripSegment {
   private List<Integer> passengers;
   private boolean isCompleted;
 
-  public TripSegment (int segmentID, LatLng source, LatLng destination, int distance, int duration, List<Integer> passengers, boolean isCompleted) {
+  public TripSegment (int segmentID, LatLng source, LatLng destination, int distance, int duration, List<Integer> passengers) {
     this.segmentID = segmentID;
     this.source = source;
     this.destination = destination;
     this.distance = distance;
     this.duration = duration;
     this.passengers = passengers;
-    this.isCompleted = isCompleted;
+    isCompleted = false;
   }
 
   public int getSegmentID () {
