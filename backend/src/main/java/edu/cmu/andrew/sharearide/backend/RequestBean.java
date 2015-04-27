@@ -16,7 +16,7 @@ public class RequestBean {
     private float driverRating;
     private Timestamp startTime;
     private Timestamp endTime;
-    private boolean isServed;
+    private int isServed;
     private double distanceEstimated;
     private double actualDistance;
 
@@ -34,7 +34,7 @@ public class RequestBean {
 
     }
 
-    public RequestBean(int passUserId, boolean isServed){
+    public RequestBean(int passUserId, int isServed){
         this.passUserId = passUserId;
         this.isServed = isServed;
     }
@@ -49,7 +49,7 @@ public class RequestBean {
         this.requestId = requestId;
         //this.fare = fare;
         this.driverRating = driverRating;
-        this.isServed = false;
+        this.isServed = 0;
     }
 
     public RequestBean(int passUserId, double srcLongitude, double srcLatitude, double dstLongitude, double dstLatitude,int riders) {
@@ -60,7 +60,7 @@ public class RequestBean {
         this.dstLatitude = dstLatitude;
         this.startTime = startTime;
         this.numOfRiders = riders;
-        this.isServed = false;
+        this.isServed = 0;
     }
 
 
@@ -162,11 +162,11 @@ public class RequestBean {
         this.endTime = endTime;
     }
 
-    public boolean isServed() {
+    public int isServed() {
         return isServed;
     }
 
-    public void setServed(boolean isServed) {
+    public void setServed(int isServed) {
         this.isServed = isServed;
     }
 
