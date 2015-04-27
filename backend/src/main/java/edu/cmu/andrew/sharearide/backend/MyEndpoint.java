@@ -32,12 +32,32 @@ public class MyEndpoint {
   private static final Logger log = Logger.getLogger (MyEndpoint.class.getName ());
   private static final Calendar calendar = Calendar.getInstance ();
 
-  //change!!!
-  @ApiMethod (name = "getAvailableDrivers")
-  public List<UserBean> getAvailableDrivers (@Named ("numOfRiders") int numOfRiders) {
-    int maxInCurr = 4 - numOfRiders;
-    return queryUser ("user_type='Driver' AND num_riders<=" + maxInCurr);
-  }
+    //change!!!
+    @ApiMethod (name = "getAvailableDrivers")
+    public List<UserBean> getAvailableDrivers (@Named ("numOfRiders") int numOfRiders) {
+        int maxInCurr = 4 - numOfRiders;
+        List<Integer> validDriverIds = new ArrayList<>();
+        List<UserBean> drivers = queryUser ("user_type='Driver'");
+        List<UserBean> validDrivers = new ArrayList<>();
+        for(UserBean driver : drivers)  {
+            int driver_user_id = driver.getUserID();
+            List<TripBean> validTrips = queryTrip ("driver_user_id=" + driver_user_id + "AND num_riders<=" + maxInCurr + "AND is_ended='false'" );
+            if (validTrips != null && validTrips.size () > 0) {
+                TripBean validTrip = validTrips.get (0);
+                validDriverIds.add(validTrip.getDriverUserId());
+            }
+        }
+
+        for(Integer validDriverId : validDriverIds) {
+            List<UserBean> validDriversById = queryUser("user_id=" + validDriverId);
+            if (validDriversById != null && validDriversById.size () > 0) {
+                UserBean validDriver = validDriversById.get (0);
+                validDrivers.add(validDriver);
+            }
+        }
+
+        return validDrivers;
+    }
 
 
   @ApiMethod (name = "pollMessage")
