@@ -402,8 +402,7 @@ public class MyEndpoint {
   public TripBean updateTrip (@Named ("driverId") int driverId, @Named ("numOfRiders") int numOfRiders) {
     TripBean tb = getTrip(driverId);
     if (tb == null) {
-      tb = new TripBean ();
-      tb.setDriverUserId (driverId);
+      tb = new TripBean (driverId);
     }
     int currRider = tb.getNumOfRiders();
     tb.setNumOfRiders(currRider+numOfRiders);
