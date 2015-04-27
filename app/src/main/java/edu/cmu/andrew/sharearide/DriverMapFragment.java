@@ -192,7 +192,7 @@ public class DriverMapFragment extends Fragment {
     LatLng[] ll = new LatLng[paths.size ()];
     ll = paths.toArray (ll);
     new NextRouteTask (passengers).execute (ll);
-    new AddTRTask ().execute (rb.getRequestId ());
+    new AddTRTask ().execute (currentTrip, rb.getRequestId ());
   }
 
   private void fulfillRequest (RequestBean rb) {
@@ -329,7 +329,7 @@ public class DriverMapFragment extends Fragment {
     @Override
     protected Void doInBackground (Integer... data) {
       try {
-        EndPointManager.getEndpointInstance ().pollMessage("asdf").execute ();
+        EndPointManager.getEndpointInstance ().updateTripRequest(data[0],data[1]).execute ();
       } catch (IOException e) {
         e.printStackTrace ();
       }

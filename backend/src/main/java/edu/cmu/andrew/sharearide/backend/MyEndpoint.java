@@ -429,7 +429,6 @@ public class MyEndpoint {
     return null;
   }
 
-
   private int updateTripRequest (TripRequestBean trb) {
     int result = -1;
     try {
