@@ -32,7 +32,6 @@ public class SARActivity extends FragmentActivity {
   private String destination;
   private String username;
   private int userID;
-  public final Handler handler = new Handler ();
   public int numOfRiders;
 
   public final String GEOCODE_BASE_URL = "https://maps.googleapis.com/maps/api/geocode/xml?address=";
@@ -148,53 +147,6 @@ public class SARActivity extends FragmentActivity {
       super.onBackPressed ();
     }
   }
-
-  /**
-   * async task to poll message table
-   */
-  class PollTask extends AsyncTask<Integer, Void, MessageBean> {
-
-    @Override
-    protected MessageBean doInBackground (Integer... data) {
-      MessageBean mb = new MessageBean ();
-      try {
-        EndPointManager.getEndpointInstance ().pollMessage(data[0]).execute ();
-      } catch (IOException e) {
-        e.printStackTrace ();
-      }
-      return mb;
-    }
-
-    @Override
-    protected void onPostExecute (MessageBean result) {
-      System.out.println (result.getMessage ());
-    }
-
-  }
-
-  public void pollForMessages() {
-    Sync sync = new Sync(call,60*1000);
-
-  }
-
-  public class Sync {
-    Runnable task;
-
-    public Sync(Runnable task, long time) {
-      this.task = task;
-      handler.removeCallbacks(task);
-      handler.postDelayed(task, time);
-    }
-  }
-
-  final private Runnable call = new Runnable() {
-    public void run() {
-      //This is where my sync code will be, but for testing purposes I only have a Log statement
-      //will run every 20 seconds
-      new PollTask().execute (userID);
-      handler.postDelayed(call,20*1000);
-    }
-  };
 
 
   public String getRemoteJSON (String url) {

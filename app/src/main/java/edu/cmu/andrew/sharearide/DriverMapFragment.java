@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,6 +61,8 @@ public class DriverMapFragment extends Fragment {
   private List<LatLng> directions;
   private List<TripSegment> trip;
   private int currentTrip;
+  public final Handler handler = new Handler ();
+
 
   @Override
   public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -121,7 +124,22 @@ public class DriverMapFragment extends Fragment {
 
   private void initTrip () {
     trip = new ArrayList<TripSegment> ();
-    updateTripRiders (0);
+    new AsyncTask<Integer, Void, Void> (){
+      @Override
+      protected Void doInBackground(Integer... params) {
+        try {
+          EndPointManager.getEndpointInstance ().endPreviousTrips(params[0]).execute ();
+        } catch (IOException e) {
+          e.printStackTrace ();
+        }
+        return null;
+      }
+
+      @Override
+      protected void onPostExecute (Void v) {
+        updateTripRiders (0);
+      }
+    }.execute (mContext.getUserID ());
   }
 
   private void updateTripRiders (int numOfRiders) {
@@ -138,6 +156,11 @@ public class DriverMapFragment extends Fragment {
         currentTrip = trip.getTripId ();
 
         return null;
+      }
+
+      @Override
+      protected void onPostExecute (Void v) {
+        pollForMessages ();
       }
     }.execute (mContext.getUserID (), numOfRiders);
   }
@@ -163,7 +186,7 @@ public class DriverMapFragment extends Fragment {
   }
 
   private void readMessage (MessageBean mb) {
-
+    System.out.println (mb.getMessage ());
   }
 
   private void startRequest (RequestBean rb) {
@@ -339,4 +362,51 @@ public class DriverMapFragment extends Fragment {
       return null;
     }
   }
+
+  /**
+   * async task to poll message table
+   */
+  class PollTask extends AsyncTask<Integer, Void, MessageBean> {
+
+    @Override
+    protected MessageBean doInBackground (Integer... data) {
+      MessageBean mb = new MessageBean ();
+      try {
+        EndPointManager.getEndpointInstance ().pollMessage(data[0]).execute ();
+      } catch (IOException e) {
+        e.printStackTrace ();
+      }
+      return mb;
+    }
+
+    @Override
+    protected void onPostExecute (MessageBean result) {
+      readMessage (result);
+    }
+
+  }
+
+  public void pollForMessages() {
+    Sync sync = new Sync(call,60*1000);
+
+  }
+
+  public class Sync {
+    Runnable task;
+
+    public Sync(Runnable task, long time) {
+      this.task = task;
+      handler.removeCallbacks(task);
+      handler.postDelayed(task, time);
+    }
+  }
+
+  final private Runnable call = new Runnable() {
+    public void run() {
+      //This is where my sync code will be, but for testing purposes I only have a Log statement
+      //will run every 20 seconds
+      new PollTask().execute (mContext.getUserID ());
+      handler.postDelayed(call,20*1000);
+    }
+  };
 }

@@ -217,6 +217,18 @@ public class MyEndpoint {
     return null;
   }
 
+  @ApiMethod (name = "endPreviousTrips")
+  public void endPreviousTrips (@Named ("driverId") int driverId) {
+    List<TripBean> trips = queryTrip ("driver_user_id='" + driverId + "' AND is_ended=0");
+    if (trips != null && trips.size () > 0) {
+      for (TripBean tb : trips) {
+        tb.setHasEnded (1);
+        tb.setIsActive (0);
+        updateTrip (tb);
+      }
+    }
+  }
+
   @ApiMethod (name = "endTrip")
   public void endTrip (@Named ("driverId") int driverId) {
     TripBean tb = getTrip (driverId);
@@ -401,9 +413,7 @@ public class MyEndpoint {
   @ApiMethod (name = "updateTrip")
   public TripBean updateTrip (@Named ("driverId") int driverId, @Named ("numOfRiders") int numOfRiders) {
     TripBean tb = getTrip(driverId);
-    if (tb == null) {
-      tb = new TripBean (driverId);
-    }
+    if (tb == null) tb = new TripBean (driverId);
     int currRider = tb.getNumOfRiders();
     tb.setNumOfRiders(currRider+numOfRiders);
     updateTrip (tb);
