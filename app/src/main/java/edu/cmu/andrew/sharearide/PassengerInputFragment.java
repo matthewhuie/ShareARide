@@ -81,6 +81,7 @@ public class PassengerInputFragment extends Fragment {
 
         // *** NEED TO VERIFY INPUT FIELD HERE
         mContext.setDestination (atvPlaces.getText ().toString ());
+          mContext.setNumOfRiders(mRiders.getProgress());
             mContext.nextFragment ();
       }
     });

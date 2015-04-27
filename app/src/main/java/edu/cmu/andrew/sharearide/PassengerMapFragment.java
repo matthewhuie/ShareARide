@@ -65,6 +65,7 @@ public class PassengerMapFragment extends Fragment {
   private double dest_longitude = 0;
   private RelativeLayout mLayout;
   private SARActivity mContext;
+    private int numOfRiders;
 
   @Override
   public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -170,6 +171,7 @@ public class PassengerMapFragment extends Fragment {
   public void selectDriver () {
     String pickUpLocation = mContext.getLocationName();
     String destinationTxt = mContext.getDestination();
+       numOfRiders = mContext.getNumOfRiders();
 
       System.out.println(pickUpLocation+ " pickUpLocation");
       System.out.println(destinationTxt+ " destinationTxt");
@@ -386,7 +388,7 @@ public class PassengerMapFragment extends Fragment {
         userName = urls[1];
         try {
       myApiService = EndPointManager.getEndpointInstance ();
-      MessageBean request = myApiService.createNewRequest (userName, latitude, longitude, dest_latitude, dest_longitude).execute();
+      MessageBean request = myApiService.createNewRequest (userName, latitude, longitude, dest_latitude, dest_longitude,numOfRiders).execute();
       request_id = request.getRequestId();
 
       //change the 0 to slider

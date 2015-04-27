@@ -79,10 +79,10 @@ public class MyEndpoint {
   @ApiMethod (name = "createNewRequest")
   public MessageBean createNewRequest (@Named ("passenger") String passenger, @Named ("srcLat") double srcLat,
                                        @Named ("srcLong") double srcLong, @Named ("destLat") double destLat,
-                                       @Named ("destLong") double destLong) {
+                                       @Named ("destLong") double destLong,@Named("riders") int riders) {
     //Date startTime = calendar.getTime ();
 
-    RequestBean rb = new RequestBean (getPassenger (passenger).getUserID (), srcLat, srcLong, destLat, destLong);
+    RequestBean rb = new RequestBean (getPassenger (passenger).getUserID (), srcLat, srcLong, destLat, destLong,riders);
     int result = updateRequest (rb);
     MessageBean mb = new MessageBean ();
       System.out.println(result + "----result");
