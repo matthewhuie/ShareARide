@@ -151,7 +151,7 @@ public class DriverMapFragment extends Fragment {
         return null;
       }
     }.execute (mContext.getUserID ());
-    // calculate remaining fare
+    // *** calculate remaining fare
 
     trip = null;
   }

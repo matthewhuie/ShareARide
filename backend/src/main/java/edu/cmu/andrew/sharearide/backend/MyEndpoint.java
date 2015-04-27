@@ -469,7 +469,7 @@ public class MyEndpoint {
       Connection conn = connect ();
       Statement statement = conn.createStatement ();
       result = statement.executeUpdate ("INSERT INTO Message (user_name, message, message_id, is_read)" +
-          " VALUES (" + mb.getUser_name () + ", \"" +
+          " VALUES (\"" + mb.getUser_name () + "\", \"" +
           mb.getMessage() + "\", \"" + mb.getMessage_id() + "\", \"" + mb.isIs_read() + "\")" +
           "ON DUPLICATE KEY UPDATE user_name=VALUES(user_name), " +
           "message=VALUES(message), message_id=VALUES(message_id), is_read=VALUES(is_read)");
