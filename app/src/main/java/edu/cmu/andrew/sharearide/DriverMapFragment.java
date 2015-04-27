@@ -139,7 +139,7 @@ public class DriverMapFragment extends Fragment {
 
         return null;
       }
-    }.execute (mContext.getUserID (), 0);
+    }.execute (mContext.getUserID (), numOfRiders);
   }
 
   private void endTrip () {
