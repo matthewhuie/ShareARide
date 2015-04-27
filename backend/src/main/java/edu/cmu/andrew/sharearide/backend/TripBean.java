@@ -5,8 +5,8 @@ public class TripBean {
     private int tripId;
     private int driverUserId;
     private int numOfRiders;
-    private boolean isActive;
-    private boolean hasEnded;
+    private int isActive;
+    private int hasEnded;
 
     public TripBean(){
 
@@ -15,8 +15,8 @@ public class TripBean {
   public TripBean (int driverUserId) {
     this.driverUserId = driverUserId;
     numOfRiders = 0;
-    isActive = true;
-    hasEnded = false;
+    isActive = 1;
+    hasEnded = 0;
   }
 
   public int getTripId() {
@@ -43,20 +43,19 @@ public class TripBean {
         this.numOfRiders = numOfRiders;
     }
 
-    public boolean isActive() {
-        return isActive;
-    }
+  public int getIsActive () {
+    return isActive;
+  }
 
-    public void setActive(boolean isActive) {
-        this.isActive = isActive;
-    }
+  public void setIsActive (int isActive) {
+    this.isActive = isActive;
+  }
 
-    public boolean isHasEnded() {
-        return hasEnded;
-    }
+  public int getHasEnded () {
+    return hasEnded;
+  }
 
-    public void setHasEnded(boolean hasEnded) {
-        this.hasEnded = hasEnded;
-    }
-
+  public void setHasEnded (int hasEnded) {
+    this.hasEnded = hasEnded;
+  }
 }
