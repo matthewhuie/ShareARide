@@ -69,24 +69,6 @@ public class AbstractFactory {
         return isupdated;
     }
 
-    /**
-     * adds a new request in the request table and returns true for successful inserts
-     * @param passenger
-     * @param srcLat
-     * @param srcLong
-     * @param destLat
-     * @param destLong
-     * @return
-     */
-    public boolean createNewRequest(String passenger,double srcLat,double srcLong,double destLat,double destLong){
-        Date startTime = calendar.getTime();
-
-        RequestBean rb = new RequestBean(getPassenger(passenger).getUserID(),srcLat,srcLong,destLat,destLong);
-        //insert query to request
-        boolean result = false;
-        return result;
-
-    }
 
     /**
      * gets the total num of riders for the trip
