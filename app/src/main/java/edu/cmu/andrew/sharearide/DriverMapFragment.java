@@ -115,6 +115,7 @@ public class DriverMapFragment extends Fragment {
   private void setUpMap () {
     mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (
         new LatLng (mContext.getLatitude (), mContext.getLongitude ()), 13));
+    mMap.setMyLocationEnabled(true);
   }
 
   private void initTrip () {
