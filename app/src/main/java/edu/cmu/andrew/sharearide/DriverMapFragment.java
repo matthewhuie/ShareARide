@@ -163,7 +163,7 @@ public class DriverMapFragment extends Fragment {
   }
 
   private void readMessage (MessageBean mb) {
-    
+
   }
 
   private void startRequest (RequestBean rb) {
