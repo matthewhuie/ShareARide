@@ -59,8 +59,16 @@ public class MyEndpoint {
         return validDrivers;
     }
 
-    return validDrivers;
-  }
+
+    @ApiMethod (name = "createMessage")
+    public void createMessage (@Named ("driverName") int driverId,@Named("message") String message,@Named("requestId") int request_id) {
+        MessageBean mb = new MessageBean();
+        mb.setMessage(message);
+        mb.setRequest_id(request_id);
+        mb.setUser_name(driverId);
+        mb.setIs_read(0);
+        updateMessage(mb);
+    }
 
   @ApiMethod (name = "pollMessage")
   public MessageBean pollMessage (@Named ("userName") String userName) {
@@ -212,8 +220,8 @@ public class MyEndpoint {
   @ApiMethod (name = "endTrip")
   public void endTrip (@Named ("driverId") int driverId) {
     TripBean tb = getTrip (driverId);
-    tb.setActive (false);
-    tb.setHasEnded (true);
+    tb.setIsActive (0);
+    tb.setHasEnded (1);
     updateTrip (tb);
   }
 
@@ -228,8 +236,8 @@ public class MyEndpoint {
         ub.setTripId (rs.getInt (1));
         ub.setDriverUserId (rs.getInt (2));
         ub.setNumOfRiders (rs.getInt (3));
-        ub.setActive (rs.getBoolean (4));
-        ub.setHasEnded (rs.getBoolean (5));
+        ub.setIsActive (rs.getInt (4));
+        ub.setHasEnded (rs.getInt (5));
         al.add (ub);
       }
       disconnect (conn);
@@ -320,10 +328,10 @@ public class MyEndpoint {
       ResultSet rs = statement.executeQuery ("SELECT * FROM Message WHERE " + where);
       while (rs.next ()) {
         MessageBean mb = new MessageBean ();
-        mb.setUser_name (rs.getString (1));
+        mb.setUser_name (rs.getInt (1));
         mb.setMessage (rs.getString (2));
         mb.setMessage_id (rs.getInt (3));
-        mb.setIs_read (rs.getBoolean (4));
+        mb.setIs_read (rs.getInt (4));
         al.add (mb);
       }
       disconnect (conn);
@@ -412,7 +420,7 @@ public class MyEndpoint {
       Statement statement = conn.createStatement ();
       result = statement.executeUpdate ("INSERT INTO Trip (trip_id, driver_user_id, num_riders, is_active, is_ended) " +
           "VALUES (" + tb.getTripId () + ", " + tb.getDriverUserId () + ", " + tb.getNumOfRiders () +
-          ", " + tb.isActive () + ", " + tb.isHasEnded () + ") " +
+          ", " + tb.getIsActive() + ", " + tb.getHasEnded () + ") " +
           "ON DUPLICATE KEY UPDATE driver_user_id=VALUES(driver_user_id), " +
           "num_riders=VALUES(num_riders), is_active=VALUES(is_active), is_ended=VALUES(is_ended)");
     } catch (Exception e) {
