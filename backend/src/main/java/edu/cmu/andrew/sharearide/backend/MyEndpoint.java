@@ -32,6 +32,24 @@ public class MyEndpoint {
   private static final Logger log = Logger.getLogger (MyEndpoint.class.getName ());
   private static final Calendar calendar = Calendar.getInstance ();
 
+  @ApiMethod (name = "reset")
+  public void reset () {
+    List<UserBean> users = queryUser ("user_type!=''");
+    for (UserBean ub : users) {
+      ub.setUserName ("");
+      ub.setLongitude (0);
+      ub.setLatitude (0);
+      updateUser (ub);
+      endPreviousTrips (ub.getUserID ());
+    }
+
+    List<MessageBean> messages = queryMessage ("is_read=0");
+    for (MessageBean mb : messages) {
+      mb.setIs_read (1);
+      updateMessage (mb);
+    }
+  }
+
   //change!!!
   @ApiMethod (name = "getAvailableDrivers")
   public List<UserBean> getAvailableDrivers (@Named ("numOfRiders") int numOfRiders) {
