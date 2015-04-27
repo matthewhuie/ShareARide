@@ -92,6 +92,7 @@ public class MyEndpoint {
       mb.setStatus (true);
       mb.setMessage ("New Request");
       mb.setUser_name (passenger);
+      mb.setRequest_id(getPrimaryKey());
       updateMessage (mb);
     }
 
@@ -294,8 +295,8 @@ public class MyEndpoint {
       ResultSet rs = statement.executeQuery ("SELECT * FROM Trip_Request WHERE " + where);
       while (rs.next ()) {
         TripRequestBean ub = new TripRequestBean ();
-        ub.setTripId (rs.getInt (1));
-        ub.setRequestId (rs.getInt (2));
+        ub.setTripId(rs.getInt(1));
+        ub.setRequestId(rs.getInt(2));
         al.add (ub);
       }
       disconnect (conn);
@@ -429,13 +430,29 @@ public class MyEndpoint {
     return null;
   }
 
+    private int getPrimaryKey(){
+        int result = -1;
+        try{
+            Connection conn = connect ();
+            Statement statement = conn.createStatement ();
+            ResultSet rs = statement.executeQuery ("SELECT LAST_INSERT_ID()");
+            while (rs.next ()) {
+
+               return rs.getInt(0);
+            }
+        }catch(Exception e){
+
+        }
+        return result;
+    }
+
   private int updateTripRequest (TripRequestBean trb) {
     int result = -1;
     try {
       Connection conn = connect ();
       Statement statement = conn.createStatement ();
       result = statement.executeUpdate ("INSERT INTO Trip_Request (trip_id, request_id) " +
-          "VALUES (" + trb.getTripId () + ", " + trb.getRequestId () + ")");
+          "VALUES (" + trb.getTripId() + ", " + trb.getRequestId() + ")");
     } catch (Exception e) {
       StringWriter sw = new StringWriter ();
       PrintWriter pw = new PrintWriter (sw);
@@ -453,7 +470,7 @@ public class MyEndpoint {
       Statement statement = conn.createStatement ();
       result = statement.executeUpdate ("INSERT INTO Message (user_name, message, message_id, is_read)" +
           " VALUES (" + mb.getUser_name () + ", \"" +
-          mb.getMessage () + "\", \"" + mb.getMessage_id () + "\", \"" + mb.isIs_read () + "\")" +
+          mb.getMessage() + "\", \"" + mb.getMessage_id() + "\", \"" + mb.isIs_read() + "\")" +
           "ON DUPLICATE KEY UPDATE user_name=VALUES(user_name), " +
           "message=VALUES(message), message_id=VALUES(message_id), is_read=VALUES(is_read)");
 
@@ -466,6 +483,8 @@ public class MyEndpoint {
 
     return result;
   }
+
+
 
   private Connection connect () throws ClassNotFoundException, SQLException {
     String url = null;
@@ -481,6 +500,8 @@ public class MyEndpoint {
 
     return conn;
   }
+
+
 
   private void disconnect (Connection conn) throws SQLException {
     conn.close ();
