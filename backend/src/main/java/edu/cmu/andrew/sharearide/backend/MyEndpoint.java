@@ -400,17 +400,15 @@ public class MyEndpoint {
 
   @ApiMethod (name = "updateTrip")
   public TripBean updateTrip (@Named ("driverId") int driverId, @Named ("numOfRiders") int numOfRiders) {
-
-
-      TripBean tb = getTrip(driverId);
-      if (tb != null) {
-          int currRider = tb.getNumOfRiders();
-          tb.setNumOfRiders(currRider+numOfRiders);
-          updateTrip (tb);
-          return tb;
-      }
-      return null;
-
+    TripBean tb = getTrip(driverId);
+    if (tb == null) {
+      tb = new TripBean ();
+      tb.setDriverUserId (driverId);
+    }
+    int currRider = tb.getNumOfRiders();
+    tb.setNumOfRiders(currRider+numOfRiders);
+    updateTrip (tb);
+    return tb;
   }
 
   private int updateTrip (TripBean tb) {
