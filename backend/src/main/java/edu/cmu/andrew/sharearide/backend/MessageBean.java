@@ -6,10 +6,10 @@ package edu.cmu.andrew.sharearide.backend;
 public class MessageBean {
 
     private boolean status;
-    private String user_name;
+    private int user_name;
     private String message;
     private int message_id;
-    private boolean is_read;
+    private int is_read;
     private int request_id;
 
     public int getRequest_id() {
@@ -20,11 +20,11 @@ public class MessageBean {
         this.request_id = request_id;
     }
 
-    public String getUser_name() {
+    public int getUser_name() {
         return user_name;
     }
 
-    public void setUser_name(String user_name) {
+    public void setUser_name(int user_name) {
         this.user_name = user_name;
     }
 
@@ -44,11 +44,11 @@ public class MessageBean {
         this.message_id = message_id;
     }
 
-    public boolean isIs_read() {
+    public int isIs_read() {
         return is_read;
     }
 
-    public void setIs_read(boolean is_read) {
+    public void setIs_read(int is_read) {
         this.is_read = is_read;
     }
 
