@@ -172,6 +172,7 @@ public class DriverMapFragment extends Fragment {
     paths.add (rSrc);
     paths.add (rDst);
 
+    updateTripRiders (rb.getNumOfRiders ());
     List<Integer> passengers = new ArrayList<> ();
     if (trip.size () > 0) {
       TripSegment previous = trip.get (trip.size () - 1);
