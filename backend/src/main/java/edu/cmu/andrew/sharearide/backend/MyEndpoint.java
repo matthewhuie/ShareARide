@@ -41,7 +41,7 @@ public class MyEndpoint {
         List<UserBean> validDrivers = new ArrayList<>();
         for(UserBean driver : drivers)  {
             int driver_user_id = driver.getUserID();
-            List<TripBean> validTrips = queryTrip ("driver_user_id=" + driver_user_id + "AND num_riders<=" + maxInCurr + "AND is_ended='false'" );
+            List<TripBean> validTrips = queryTrip ("driver_user_id=" + driver_user_id + "AND num_riders<=" + maxInCurr + "AND is_ended=0" );
             if (validTrips != null && validTrips.size () > 0) {
                 TripBean validTrip = validTrips.get (0);
                 validDriverIds.add(validTrip.getDriverUserId());
@@ -199,7 +199,7 @@ public class MyEndpoint {
   @ApiMethod (name = "getTrip")
   public TripBean getTrip (@Named ("driverId") int driverId) {
     TripBean trip = new TripBean ();
-    List<TripBean> trips = queryTrip ("driver_user_id='" + driverId + "' AND is_ended='false'");
+    List<TripBean> trips = queryTrip ("driver_user_id='" + driverId + "' AND is_ended=0");
     if (trips != null && trips.size () > 0) {
       trip = trips.get (0);
     }
