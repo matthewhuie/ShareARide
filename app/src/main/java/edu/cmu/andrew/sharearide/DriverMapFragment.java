@@ -44,6 +44,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import edu.cmu.andrew.sharearide.backend.shareARideApi.ShareARideApi;
+import edu.cmu.andrew.sharearide.backend.shareARideApi.model.MessageBean;
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.RequestBean;
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.TripBean;
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.UserBean;
@@ -161,11 +162,11 @@ public class DriverMapFragment extends Fragment {
     trip = null;
   }
 
-  private void readMessage () {
-
+  private void readMessage (MessageBean mb) {
+    
   }
 
-  private void acceptRequest (RequestBean rb) {
+  private void startRequest (RequestBean rb) {
     LatLng rSrc = new LatLng (rb.getSrcLatitude (), rb.getSrcLongitude ());
     LatLng rDst = new LatLng (rb.getDstLatitude (), rb.getDstLongitude ());
 
@@ -197,7 +198,7 @@ public class DriverMapFragment extends Fragment {
     new AddTRTask ().execute (currentTrip, rb.getRequestId ());
   }
 
-  private void fulfillRequest (RequestBean rb) {
+  private void finishRequest (RequestBean rb) {
     LatLng rDst = new LatLng (rb.getDstLatitude (), rb.getDstLongitude ());
 
     List<LatLng> paths = new ArrayList<> ();
