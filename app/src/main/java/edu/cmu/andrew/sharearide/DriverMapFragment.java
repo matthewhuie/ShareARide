@@ -116,6 +116,7 @@ public class DriverMapFragment extends Fragment {
   }
 
   private void initTrip (int numOfRiders) {
+    trip = new ArrayList<TripSegment> ();
     new AsyncTask<Integer, Void, Void> (){
       @Override
       protected Void doInBackground(Integer... params) {
@@ -142,8 +143,9 @@ public class DriverMapFragment extends Fragment {
         return null;
       }
     }.execute (mContext.getUserID ());
-    // endpoint to finish trip
     // calculate remaining fare
+
+    trip = null;
   }
 
   private void readMessage () {
@@ -159,6 +161,10 @@ public class DriverMapFragment extends Fragment {
     paths.add (rDst);
 
     List<Integer> passengers = new ArrayList<> ();
+    if (trip == null) {
+      initTrip (rb.getNumOfRiders ());
+    }
+
     if (trip.size () > 0) {
       TripSegment previous = trip.get (trip.size () - 1);
       paths.add (previous.getDestination ());
@@ -167,8 +173,6 @@ public class DriverMapFragment extends Fragment {
 
       passengers.addAll (previous.getPassengers ());
       passengers.add (new Integer (rb.getPassUserId ()));
-    } else {
-      initTrip (rb.getNumOfRiders ());
     }
 
     for (TripSegment ts : trip) {
