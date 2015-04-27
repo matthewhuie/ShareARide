@@ -36,7 +36,7 @@ public class MyEndpoint {
   public void reset () {
     List<UserBean> users = queryUser ("user_type!=''");
     for (UserBean ub : users) {
-      ub.setUserName ("");
+      ub.setUserType ("");
       ub.setLongitude (0);
       ub.setLatitude (0);
       updateUser (ub);
