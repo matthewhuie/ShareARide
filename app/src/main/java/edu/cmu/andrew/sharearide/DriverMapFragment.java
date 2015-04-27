@@ -329,11 +329,11 @@ public class DriverMapFragment extends Fragment {
     @Override
     protected Void doInBackground (Integer... data) {
       try {
-        EndPointManager.getEndpointInstance ().updateTripRequest(data[0],data[1]).execute ();
+        EndPointManager.getEndpointInstance ().updateTripRequest (data[0], data[1]).execute ();
       } catch (IOException e) {
         e.printStackTrace ();
       }
       return null;
     }
-
+  }
 }
