@@ -52,13 +52,14 @@ public class RequestBean {
         this.isServed = false;
     }
 
-    public RequestBean(int passUserId, double srcLongitude, double srcLatitude, double dstLongitude, double dstLatitude) {
+    public RequestBean(int passUserId, double srcLongitude, double srcLatitude, double dstLongitude, double dstLatitude,int riders) {
         this.passUserId = passUserId;
         this.srcLongitude = srcLongitude;
         this.srcLatitude = srcLatitude;
         this.dstLongitude = dstLongitude;
         this.dstLatitude = dstLatitude;
         this.startTime = startTime;
+        this.numOfRiders = riders;
         this.isServed = false;
     }
 
