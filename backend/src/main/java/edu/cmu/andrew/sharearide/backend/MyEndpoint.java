@@ -104,7 +104,7 @@ public class MyEndpoint {
 
       RequestBean rb = getRequest(request_id);
       if (rb != null) {
-          rb.setServed(true);
+          rb.setServed(1);
           updateRequest (rb);
           return rb;
       }
@@ -273,7 +273,7 @@ public class MyEndpoint {
         ub.setDriverRating (rs.getInt (10));
         ub.setStartTime (rs.getTimestamp (11));
         ub.setEndTime (rs.getTimestamp (12));
-        ub.setServed (rs.getBoolean (13));
+        ub.setServed (rs.getInt (13));
         al.add (ub);
       }
       disconnect (conn);
@@ -365,19 +365,19 @@ public class MyEndpoint {
     try {
       Connection conn = connect ();
       Statement statement = conn.createStatement ();
-      result = statement.executeUpdate ("INSERT INTO Request (request_id, pass_user_id, src_longitude, src_latitude, " +
-          "dest_longitude, dest_latitude, fare, latestTime, passRating, driverRating, startTime, endTime," +
-          "isServed, distanceEstimated, actualDistance) " +
+      result = statement.executeUpdate ("INSERT INTO Request (request_id, pass_user_id, source_longitude, source_latitude, " +
+          "dest_longitude, dest_latitude, fare, latest_time, pass_rating, driver_rating, start_time, end_time," +
+          "is_served, estimated_distance) " +
           "VALUES (" + rb.getRequestId () + ", " + rb.getPassUserId () + ", " + rb.getSrcLongitude () +
           ", " + rb.getSrcLatitude () + ", " + rb.getDstLongitude () + ", " + rb.getDstLatitude () +
           ", " + rb.getFare () + ", " + rb.getLatestTime () + ", " + rb.getPassRating () + ", " +
           rb.getDriverRating () + ", now(), " + rb.getEndTime () + ", " +
-          rb.isServed () + ", " + rb.getDistanceEstimated () + ", " + rb.getActualDistance () + ") " +
+          rb.isServed () + ", " + rb.getDistanceEstimated () + ") " +
           "ON DUPLICATE KEY UPDATE pass_user_id=VALUES(pass_user_id), " +
-          "src_longitude=VALUES(src_longitude), src_latitude=VALUES(src_latitude), dest_longitude=VALUES(dest_longitude), " +
-          "dest_latitude=VALUES(dest_latitude), fare=VALUES(fares), latestTime=VALUES(latestTime), passRating=VALUES(passRating), " +
-          "driverRating=VALUES(driverRating), startTime=VALUES(startTime), endTime=VALUES(endTime), isServed=VALUES(isServed), " +
-          "distanceEstimated=VALUES(distanceEstimated), actualDistance=VALUES(actualDistance)");
+          "source_longitude=VALUES(source_longitude), source_latitude=VALUES(source_latitude), dest_longitude=VALUES(dest_longitude), " +
+          "dest_latitude=VALUES(dest_latitude), fare=VALUES(fare), latest_time=VALUES(latest_time), pass_rating=VALUES(pass_rating), " +
+          "driver_rating=VALUES(driver_rating), start_time=VALUES(start_time), end_time=VALUES(end_time), is_served=VALUES(is_served), " +
+          "estimated_distance=VALUES(estimated_distance)");
     } catch (Exception e) {
       StringWriter sw = new StringWriter ();
       PrintWriter pw = new PrintWriter (sw);
