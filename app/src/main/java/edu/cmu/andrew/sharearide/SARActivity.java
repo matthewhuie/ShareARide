@@ -33,6 +33,7 @@ public class SARActivity extends FragmentActivity {
   private String username;
   private int userID;
   public final Handler handler = new Handler ();
+  public int numOfRiders;
 
   public final String GEOCODE_BASE_URL = "https://maps.googleapis.com/maps/api/geocode/xml?address=";
   public final String REV_GEOCODE_BASE_URL = "https://maps.googleapis.com/maps/api/geocode/json?latlng=";
@@ -114,6 +115,14 @@ public class SARActivity extends FragmentActivity {
   public String getDestination () {
     return destination;
   }
+
+    public void setNumOfRiders (int numOfRiders) {
+        this.numOfRiders = numOfRiders;
+    }
+
+    public int getNumOfRiders () {
+        return numOfRiders;
+    }
 
   public String getUsername () {
     return username;
