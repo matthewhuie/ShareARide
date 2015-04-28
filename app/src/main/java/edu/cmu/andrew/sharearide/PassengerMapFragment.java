@@ -66,8 +66,11 @@ public class PassengerMapFragment extends Fragment {
   private RelativeLayout mLayout;
   private SARActivity mContext;
   private int numOfRiders;
+    double estimatedDistance = 0.0;
+    double estimatedDuration = 0.0;
 
-  @Override
+
+    @Override
   public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mContext = (SARActivity) super.getActivity ();
     mLayout = (RelativeLayout) inflater.inflate (R.layout.activity_passenger_map, container, false);
@@ -330,8 +333,8 @@ public class PassengerMapFragment extends Fragment {
         JSONObject distance = leg.getJSONObject ("distance");
         JSONObject duration = leg.getJSONObject ("duration");
 
-        double estimatedDistance = Integer.valueOf (distance.get("value").toString())* mContext.MeterToMile;
-        double estimatedDuration = Integer.valueOf (duration.get("value").toString())/ mContext.SecToMin;
+        estimatedDistance = Integer.valueOf (distance.get("value").toString())* mContext.MeterToMile;
+        estimatedDuration = Integer.valueOf (duration.get("value").toString())/ mContext.SecToMin;
 
         double lat = 0;
         double lng = 0;
@@ -392,7 +395,7 @@ public class PassengerMapFragment extends Fragment {
         userName = urls[1];
         try {
       myApiService = EndPointManager.getEndpointInstance ();
-      MessageBean mb = myApiService.createNewRequest (userName, latitude, longitude, dest_latitude, dest_longitude,numOfRiders).execute();
+      MessageBean mb = myApiService.createNewRequest (userName, latitude, longitude, dest_latitude, dest_longitude,numOfRiders,estimatedDistance,estimatedDuration).execute();
       request_id = mb.getRequestId();
 
       //change the 0 to slider
@@ -400,8 +403,8 @@ public class PassengerMapFragment extends Fragment {
       Log.i ("Taxi list: ", taxis.toString ());
 
 
-
-            taxiSearchingResult = taxiSearching(taxis, request_id, 0);
+            System.out.println("number of riders " + numOfRiders);
+            taxiSearchingResult = taxiSearching(taxis, request_id, numOfRiders);
 
             myApiService.createMessage(Integer.parseInt(taxiSearchingResult[3]),mb.getMessage(),mb.getRequestId()).execute();
             System.out.println(taxiSearchingResult + " taxiSearchingResult");

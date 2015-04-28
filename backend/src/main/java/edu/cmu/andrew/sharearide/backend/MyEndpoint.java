@@ -107,10 +107,13 @@ public class MyEndpoint {
   @ApiMethod (name = "createNewRequest")
   public MessageBean createNewRequest (@Named ("passenger") String passenger, @Named ("srcLat") double srcLat,
                                        @Named ("srcLong") double srcLong, @Named ("destLat") double destLat,
-                                       @Named ("destLong") double destLong,@Named("riders") int riders) {
+                                       @Named ("destLong") double destLong,@Named("riders") int riders,
+                                       @Named ("estimatedDist") double estiDist, @Named ("estimatedTime") double estiTime) {
     //Date startTime = calendar.getTime ();
 
     RequestBean rb = new RequestBean (getPassenger (passenger).getUserID (), srcLat, srcLong, destLat, destLong,riders);
+      rb.setDistanceEstimated(estiDist);
+      rb.setEstimatedTime(estiTime);
     int result = updateRequest (rb);
     MessageBean mb = new MessageBean ();
       System.out.println(result + "----result");
@@ -410,17 +413,17 @@ public class MyEndpoint {
       Statement statement = conn.createStatement ();
       result = statement.executeUpdate ("INSERT INTO Request (request_id, pass_user_id, source_longitude, source_latitude, " +
           "dest_longitude, dest_latitude, fare, latest_time, pass_rating, driver_rating, start_time, end_time," +
-          "is_served, estimated_distance) " +
+          "is_served, estimated_distance,num_riders,estimated_time) " +
           "VALUES (" + rb.getRequestId () + ", " + rb.getPassUserId () + ", " + rb.getSrcLongitude () +
           ", " + rb.getSrcLatitude () + ", " + rb.getDstLongitude () + ", " + rb.getDstLatitude () +
           ", " + rb.getFare () + ", " + rb.getLatestTime () + ", " + rb.getPassRating () + ", " +
           rb.getDriverRating () + ", now(), " + rb.getEndTime () + ", " +
-          rb.isServed () + ", " + rb.getDistanceEstimated () + ") " +
+          rb.isServed () + ", " + rb.getDistanceEstimated () + ", " + rb.getNumOfRiders () + ", " + rb.getEstimatedTime() +") " +
           "ON DUPLICATE KEY UPDATE pass_user_id=VALUES(pass_user_id), " +
           "source_longitude=VALUES(source_longitude), source_latitude=VALUES(source_latitude), dest_longitude=VALUES(dest_longitude), " +
           "dest_latitude=VALUES(dest_latitude), fare=VALUES(fare), latest_time=VALUES(latest_time), pass_rating=VALUES(pass_rating), " +
           "driver_rating=VALUES(driver_rating), start_time=VALUES(start_time), end_time=VALUES(end_time), is_served=VALUES(is_served), " +
-          "estimated_distance=VALUES(estimated_distance)");
+          "estimated_distance=VALUES(estimated_distance), " + "num_riders=VALUES(num_riders)," + "estimated_time=VALUES(estimated_time)");
     } catch (Exception e) {
       StringWriter sw = new StringWriter ();
       PrintWriter pw = new PrintWriter (sw);

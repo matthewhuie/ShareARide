@@ -18,17 +18,9 @@ public class RequestBean {
     private Timestamp endTime;
     private int isServed;
     private double distanceEstimated;
-    private double actualDistance;
-
-    public int getNumOfRiders() {
-        return numOfRiders;
-    }
-
-    public void setNumOfRiders(int numOfRiders) {
-        this.numOfRiders = numOfRiders;
-    }
-
     private int numOfRiders;
+    private double estimatedTime;
+    private double actualDistance;
 
     public RequestBean(){
 
@@ -39,7 +31,7 @@ public class RequestBean {
         this.isServed = isServed;
     }
 
-      public RequestBean(int requestId,double fare,float passRating){
+    public RequestBean(int requestId,double fare,float passRating){
         this.requestId = requestId;
         this.fare = fare;
         this.passRating = passRating;
@@ -63,8 +55,22 @@ public class RequestBean {
         this.isServed = 0;
     }
 
+    public int getNumOfRiders() {
+        return numOfRiders;
+    }
+
+    public void setNumOfRiders(int numOfRiders) {
+        this.numOfRiders = numOfRiders;
+    }
 
 
+    public double getEstimatedTime() {
+        return estimatedTime;
+    }
+
+    public void setEstimatedTime(double estimatedTime) {
+        this.estimatedTime = estimatedTime;
+    }
 
     public int getRequestId() {
         return requestId;
