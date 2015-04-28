@@ -328,9 +328,10 @@ public class PassengerMapFragment extends Fragment {
         JSONObject leg = (JSONObject) legs.get (0);
         JSONArray steps = leg.getJSONArray ("steps");
         JSONObject distance = leg.getJSONObject ("distance");
-
+        JSONObject duration = leg.getJSONObject ("duration");
 
         double estimatedDistance = Integer.valueOf (distance.get("value").toString())* mContext.MeterToMile;
+        double estimatedDuration = Integer.valueOf (duration.get("value").toString())/ mContext.SecToMin;
 
         double lat = 0;
         double lng = 0;
