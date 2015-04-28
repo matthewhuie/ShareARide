@@ -377,7 +377,7 @@ public class DriverMapFragment extends Fragment {
     protected MessageBean doInBackground (Integer... data) {
       MessageBean mb = new MessageBean ();
       try {
-        EndPointManager.getEndpointInstance ().pollMessage(data[0]).execute ();
+        mb = EndPointManager.getEndpointInstance ().pollMessage(data[0]).execute ();
       } catch (IOException e) {
         e.printStackTrace ();
       }

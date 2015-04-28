@@ -178,6 +178,9 @@ public class MyEndpoint {
     if (al.size () > 0) {
       mb = al.get (0);
     }
+
+    mb.setIs_read (1);
+    updateMessage (mb);
     return mb;
   }
 
