@@ -60,6 +60,7 @@ public class DriverMapFragment extends Fragment {
   private RelativeLayout mLayout;
   private SARActivity mContext;
   private TextView mMapText;
+  private TextView mMapSecondaryText;
   private List<LatLng> directions;
   private List<TripSegment> trip;
   private int currentTrip;
@@ -71,6 +72,7 @@ public class DriverMapFragment extends Fragment {
     mContext = (SARActivity) super.getActivity ();
     mLayout = (RelativeLayout) inflater.inflate (R.layout.activity_driver_map, container, false);
     mMapText = (TextView) mLayout.findViewById (R.id.driver_map_text);
+    mMapSecondaryText = (TextView) mLayout.findViewById (R.id.driver_map_secondary_text);
 
     directions = new ArrayList<> ();
     currentTrip = -1;
@@ -189,7 +191,7 @@ public class DriverMapFragment extends Fragment {
   }
 
   private void readMessage (MessageBean mb) {
-    System.out.println (mb.getMessage ());
+    mMapSecondaryText.setText (mb.getMessage ());
   }
 
   private void startRequest (RequestBean rb) {
@@ -384,7 +386,7 @@ public class DriverMapFragment extends Fragment {
 
     @Override
     protected void onPostExecute (MessageBean result) {
-      readMessage (result);
+      if (result != null) readMessage (result);
     }
 
   }

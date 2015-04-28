@@ -173,7 +173,7 @@ public class MyEndpoint {
   private MessageBean getMessage (int userID) {
     MessageBean mb = new MessageBean ();
     List<MessageBean> al = new ArrayList<> ();
-    al = queryMessage ("user_name='" + userID + "'");
+    al = queryMessage ("user_name=" + userID);
 
     if (al.size () > 0) {
       mb = al.get (0);
