@@ -40,6 +40,7 @@ public class SARActivity extends FragmentActivity {
   public final String DIRECTION_BASE_URL = "https://maps.googleapis.com/maps/api/directions/json?";
   public final String GOOGLE_AUTOCOMPLETE_URL = "https://maps.googleapis.com/maps/api/place/autocomplete/";
   public final double MeterToMile = 0.000621371;
+  public final double SecToMin = 60;
 
 
   @Override
