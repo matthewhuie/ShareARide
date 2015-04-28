@@ -65,7 +65,7 @@ public class PassengerMapFragment extends Fragment {
   private double dest_longitude = 0;
   private RelativeLayout mLayout;
   private SARActivity mContext;
-    private int numOfRiders;
+  private int numOfRiders;
 
   @Override
   public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -327,7 +327,10 @@ public class PassengerMapFragment extends Fragment {
         //For routes that contain no waypoints, the route will consist of a single "leg
         JSONObject leg = (JSONObject) legs.get (0);
         JSONArray steps = leg.getJSONArray ("steps");
+        JSONObject distance = leg.getJSONObject ("distance");
 
+
+        double estimatedDistance = Integer.valueOf (distance.get("value").toString())* mContext.MeterToMile;
 
         double lat = 0;
         double lng = 0;
