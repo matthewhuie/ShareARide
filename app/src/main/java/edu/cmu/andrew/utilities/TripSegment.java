@@ -14,16 +14,16 @@ public class TripSegment {
   private LatLng destination;
   private int distance;
   private int duration;
-  private List<Integer> passengers;
+  private List<Integer> requests;
   private boolean isCompleted;
 
-  public TripSegment (int segmentID, LatLng source, LatLng destination, int distance, int duration, List<Integer> passengers) {
+  public TripSegment (int segmentID, LatLng source, LatLng destination, int distance, int duration, List<Integer> requests) {
     this.segmentID = segmentID;
     this.source = source;
     this.destination = destination;
     this.distance = distance;
     this.duration = duration;
-    this.passengers = passengers;
+    this.requests = requests;
     isCompleted = false;
   }
 
@@ -67,12 +67,12 @@ public class TripSegment {
     this.duration = duration;
   }
 
-  public List<Integer> getPassengers () {
-    return passengers;
+  public List<Integer> getRequests () {
+    return requests;
   }
 
-  public void setPassengers (List<Integer> passengers) {
-    this.passengers = passengers;
+  public void setRequests (List<Integer> requests) {
+    this.requests = requests;
   }
 
   public boolean isCompleted () {

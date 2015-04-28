@@ -203,15 +203,15 @@ public class DriverMapFragment extends Fragment {
     paths.add (rDst);
 
     updateTripRiders (rb.getNumOfRiders ());
-    List<Integer> passengers = new ArrayList<> ();
+    List<Integer> requests = new ArrayList<> ();
     if (trip.size () > 0) {
       TripSegment previous = trip.get (trip.size () - 1);
       paths.add (previous.getDestination ());
       previous.setDestination (rSrc);
       previous.setCompleted (true);
 
-      passengers.addAll (previous.getPassengers ());
-      passengers.add (new Integer (rb.getPassUserId ()));
+      requests.addAll (previous.getRequests ());
+      requests.add (new Integer (rb.getRequestId ()));
     }
 
     for (TripSegment ts : trip) {
@@ -222,7 +222,7 @@ public class DriverMapFragment extends Fragment {
 
     LatLng[] ll = new LatLng[paths.size ()];
     ll = paths.toArray (ll);
-    new NextRouteTask (passengers).execute (ll);
+    new NextRouteTask (requests).execute (ll);
     new AddTRTask ().execute (currentTrip, rb.getRequestId ());
   }
 
@@ -234,7 +234,7 @@ public class DriverMapFragment extends Fragment {
     TripSegment previous = trip.get (trip.size () - 1);
     previous.setCompleted (true);
 
-    List<Integer> passengers = previous.getPassengers ();
+    List<Integer> passengers = previous.getRequests ();
     passengers.remove (new Integer (rb.getPassUserId ()));
     if (passengers.size () == 0) {
       endTrip ();
@@ -253,10 +253,10 @@ public class DriverMapFragment extends Fragment {
 
   class NextRouteTask extends AsyncTask <LatLng, Void, JSONArray> {
 
-    List<Integer> passengers;
+    List<Integer> requests;
 
-    public NextRouteTask (List<Integer> passengers) {
-      this.passengers = passengers;
+    public NextRouteTask (List<Integer> requests) {
+      this.requests = requests;
     }
 
     @Override
@@ -294,7 +294,7 @@ public class DriverMapFragment extends Fragment {
         }
       }
 
-      trip.add (new TripSegment (trip.size (), data [0], minDestination, minDistance, minTime, passengers));
+      trip.add (new TripSegment (trip.size (), data [0], minDestination, minDistance, minTime, requests));
 
       return minSteps;
     }
