@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -58,6 +59,7 @@ public class DriverMapFragment extends Fragment {
   private GoogleMap mMap; // Might be null if Google Play services APK is not available.
   private RelativeLayout mLayout;
   private SARActivity mContext;
+  private TextView mMapText;
   private List<LatLng> directions;
   private List<TripSegment> trip;
   private int currentTrip;
@@ -67,7 +69,8 @@ public class DriverMapFragment extends Fragment {
   @Override
   public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mContext = (SARActivity) super.getActivity ();
-    mLayout = (RelativeLayout) inflater.inflate (R.layout.activity_passenger_map, container, false);
+    mLayout = (RelativeLayout) inflater.inflate (R.layout.activity_driver_map, container, false);
+    mMapText = (TextView) mLayout.findViewById (R.id.driver_map_text);
 
     directions = new ArrayList<> ();
     currentTrip = -1;
@@ -101,7 +104,7 @@ public class DriverMapFragment extends Fragment {
     // Do a null check to confirm that we have not already instantiated the map.
     if (mMap == null) {
       // Try to obtain the map from the SupportMapFragment.
-      mMap = ((SupportMapFragment) mContext.getSupportFragmentManager ().findFragmentById (R.id.map))
+      mMap = ((SupportMapFragment) mContext.getSupportFragmentManager ().findFragmentById (R.id.driver_map))
           .getMap ();
       // Check if we were successful in obtaining the map.
       if (mMap != null) {
@@ -387,7 +390,7 @@ public class DriverMapFragment extends Fragment {
   }
 
   public void pollForMessages() {
-    Sync sync = new Sync(call,60*1000);
+    Sync sync = new Sync(call,1);
 
   }
 
@@ -405,7 +408,10 @@ public class DriverMapFragment extends Fragment {
     public void run() {
       //This is where my sync code will be, but for testing purposes I only have a Log statement
       //will run every 20 seconds
+      mMapText.setText ("Waiting for requests...");
       new PollTask().execute (mContext.getUserID ());
+      mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (
+          new LatLng (mContext.getLatitude (), mContext.getLongitude ()), 15));
       handler.postDelayed(call,20*1000);
     }
   };
