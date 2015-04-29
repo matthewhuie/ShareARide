@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+
 import java.net.MalformedURLException;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -55,6 +57,7 @@ import edu.cmu.andrew.sharearide.backend.shareARideApi.model.UserBeanCollection;
 import edu.cmu.andrew.utilities.DecodePoly;
 import edu.cmu.andrew.utilities.EndPointManager;
 import edu.cmu.andrew.utilities.GPSTracker;
+import edu.cmu.andrew.utilities.PricingAlgorithm;
 
 public class PassengerMapFragment extends Fragment {
 
@@ -69,8 +72,9 @@ public class PassengerMapFragment extends Fragment {
   private int numOfRiders;
     double estimatedDistance = 0.0;
     double estimatedDuration = 0.0;
+  double estimatedFare = 0.0;
   private List<LatLng> directions;
-
+  private TextView mMapText;
 
     @Override
   public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -78,8 +82,7 @@ public class PassengerMapFragment extends Fragment {
     mLayout = (RelativeLayout) inflater.inflate (R.layout.activity_passenger_map, container, false);
 
       directions = new ArrayList<> ();
-
-
+    mMapText = (TextView) mLayout.findViewById (R.id.pass_map_text);
       latitude = mContext.getLatitude ();
     longitude = mContext.getLongitude();
       setUpMapIfNeeded ();
@@ -335,6 +338,8 @@ public class PassengerMapFragment extends Fragment {
 
         estimatedDistance = Integer.valueOf (distance.get("value").toString())* mContext.MeterToMile;
         estimatedDuration = Integer.valueOf (duration.get("value").toString())/ mContext.SecToMin;
+        estimatedFare = PricingAlgorithm.calcMaximumPrice (estimatedDistance, estimatedDuration);
+        mMapText.setText ("Estimated Fare: $" + estimatedFare);
 
         double lat = 0;
         double lng = 0;

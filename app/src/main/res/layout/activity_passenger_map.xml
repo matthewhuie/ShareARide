@@ -9,4 +9,33 @@
         tools:context=".MapsActivity"
         android:name="com.google.android.gms.maps.SupportMapFragment">
     </fragment>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_margin="10dp"
+        android:background="@drawable/card_background"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/pass_map_text"
+            android:textSize="24sp"
+            android:layout_alignParentTop="true"
+            android:textColor="@color/material_grey_500">
+        </TextView>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/pass_map_secondary_text"
+            android:text="Map TextView"
+            android:textSize="24sp"
+            android:layout_alignParentBottom="true"
+            android:textColor="@color/material_grey_500">
+
+        </TextView>
+
+    </RelativeLayout>
 </RelativeLayout>
