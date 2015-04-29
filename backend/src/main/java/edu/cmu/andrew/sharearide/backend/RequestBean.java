@@ -11,11 +11,11 @@ public class RequestBean {
     private double dstLongitude;
     private double dstLatitude;
     private double fare;
-    private Timestamp latestTime;
+    private String latestTime;
     private float passRating;
     private float driverRating;
-    private Timestamp startTime;
-    private Timestamp endTime;
+    private String startTime;
+    private String endTime;
     private int isServed;
     private double distanceEstimated;
     private int numOfRiders;
@@ -50,7 +50,6 @@ public class RequestBean {
         this.srcLatitude = srcLatitude;
         this.dstLongitude = dstLongitude;
         this.dstLatitude = dstLatitude;
-        this.startTime = startTime;
         this.numOfRiders = riders;
         this.isServed = 0;
     }
@@ -128,11 +127,11 @@ public class RequestBean {
         this.fare = fare;
     }
 
-    public Timestamp getLatestTime() {
+    public String getLatestTime() {
         return latestTime;
     }
 
-    public void setLatestTime(Timestamp latestTime) {
+    public void setLatestTime(String latestTime) {
         this.latestTime = latestTime;
     }
 
@@ -152,19 +151,19 @@ public class RequestBean {
         this.driverRating = driverRating;
     }
 
-    public Timestamp getStartTime() {
+    public String getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(Timestamp startTime) {
+    public void setStartTime(String startTime) {
         this.startTime = startTime;
     }
 
-    public Timestamp getEndTime() {
+    public String getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(Timestamp endTime) {
+    public void setEndTime(String endTime) {
         this.endTime = endTime;
     }
 

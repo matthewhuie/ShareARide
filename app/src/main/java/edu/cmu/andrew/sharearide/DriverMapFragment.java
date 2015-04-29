@@ -295,7 +295,6 @@ public class DriverMapFragment extends Fragment {
       }
 
       trip.add (new TripSegment (trip.size (), data [0], minDestination, minDistance, minTime, requests));
-
       return minSteps;
     }
 

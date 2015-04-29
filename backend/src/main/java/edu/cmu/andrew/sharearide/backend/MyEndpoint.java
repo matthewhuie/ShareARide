@@ -298,12 +298,11 @@ public class MyEndpoint {
 
   @ApiMethod (name = "getRequest")
   public RequestBean getRequest (@Named ("request_id") int request_id) {
-    RequestBean request = new RequestBean ();
     List<RequestBean> requests = queryRequest ("request_id=" + request_id);
     if (requests != null && requests.size () > 0) {
-      request = requests.get (0);
+      return requests.get (0);
     }
-    return request;
+    return null;
   }
 
 
