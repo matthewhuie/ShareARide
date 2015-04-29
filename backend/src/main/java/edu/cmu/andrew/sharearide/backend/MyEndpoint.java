@@ -89,8 +89,7 @@ public class MyEndpoint {
 
   @ApiMethod (name = "pollMessage")
   public MessageBean pollMessage (@Named ("userID") int userID) {
-    MessageBean mb = getMessage (userID);
-    return mb;
+    return getMessage (userID);
   }
 
   /**
@@ -377,6 +376,7 @@ public class MyEndpoint {
         mb.setMessage (rs.getString (2));
         mb.setMessage_id (rs.getInt (3));
         mb.setIs_read (rs.getInt (4));
+        mb.setRequest_id (rs.getInt (5));
         al.add (mb);
       }
       disconnect (conn);
