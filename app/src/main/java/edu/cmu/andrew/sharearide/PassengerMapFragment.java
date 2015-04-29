@@ -146,7 +146,7 @@ public class PassengerMapFragment extends Fragment {
     }
   }
 
-  private void setUpDirection (List<LatLng> latlngRoute) {
+  private void setUpDirection () {
     Log.i ("add polyline", "method executed");
     if (mMap != null) {
       mMap.clear ();
@@ -229,7 +229,7 @@ public class PassengerMapFragment extends Fragment {
       //((TextView) mLayout.findViewById (R.id.my_location)).setText ("Lowest Price: " + estimates[0] + "\n" + "Time to Destination: " + estimates[1] + "\n" + "Time to Pickup: " + estimates[2]);
       //(mLayout.findViewById (R.id.requestMainLayout)).setVisibility (View.INVISIBLE);
       setUpDestination (dest_latitude, dest_longitude, pickUpLocation, destination);
-      setUpDirection (latlngRoute);
+      setUpDirection ();
     }
 
     private String[] calculatePriceAndTime (String originTxt, String destinationTxt) {
