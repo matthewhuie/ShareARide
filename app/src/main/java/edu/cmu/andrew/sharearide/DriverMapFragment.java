@@ -18,9 +18,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -166,7 +164,8 @@ public class DriverMapFragment extends Fragment {
         return null;
       }
     }.execute (mContext.getUserID ());
-    // *** calculate remaining fare
+
+    // PricingAlgorithm.calcFinalPrice HERE!!
 
     trip = null;
   }
