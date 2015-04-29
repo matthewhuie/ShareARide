@@ -13,12 +13,12 @@ public class PricingAlgorithm {
     static final float discountFeePerMile = 0.50f ;
     static final float discountFeePerMinute = 0.08f;
 
-    public double calcMaximumPrice (int distance, int time){
+    public static double calcMaximumPrice (int distance, int time){
         double price = (distance * costPerMileAlone) + (time * costPerMinuteAlone) + baseCharge + safetyFee;
         return price;
     }
 
-    public double calcTripSegmentPrice(TripSegment trip){
+    public static double calcTripSegmentPrice(TripSegment trip){
 
         double price = 0;
 
@@ -30,7 +30,7 @@ public class PricingAlgorithm {
         return price;
     }
 
-    public double calcFinalPrice(int estDistance, int estTime, int actDistance,int actTime){
+    public static double calcFinalPrice(int estDistance, int estTime, int actDistance,int actTime){
 
         double price = safetyFee + baseCharge - ((actDistance - estDistance) * discountFeePerMile) - ((actTime - estTime) * discountFeePerMinute);
         return price;

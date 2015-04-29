@@ -519,7 +519,7 @@ public class MyEndpoint {
           " VALUES (\"" + mb.getUser_name () + "\", \"" +
           mb.getMessage() + "\", " + mb.getMessage_id() + ", " + mb.isIs_read() + ", " + mb.getRequest_id () + ")" +
           "ON DUPLICATE KEY UPDATE user_name=VALUES(user_name), " +
-          "message=VALUES(message), message_id=VALUES(message_id), is_read=VALUES(is_read), Request_id=VALUES(Request_id");
+          "message=VALUES(message), message_id=VALUES(message_id), is_read=VALUES(is_read), Request_id=VALUES(Request_id)");
 
     } catch (Exception e) {
       StringWriter sw = new StringWriter ();
