@@ -18,7 +18,7 @@ public class PricingAlgorithm {
         return price;
     }
 
-    public static double calcTripSegmentPrice(TripSegment trip){
+    public static double calcTripSegmentPrice (TripSegment trip){
 
         double price = 0;
 
@@ -30,7 +30,7 @@ public class PricingAlgorithm {
         return price;
     }
 
-    public static double calcFinalPrice(int estDistance, int estTime, int actDistance,int actTime){
+    public static double calcFinalPrice (int estDistance, int estTime, int actDistance,int actTime){
 
         double price = safetyFee + baseCharge - ((actDistance - estDistance) * discountFeePerMile) - ((actTime - estTime) * discountFeePerMinute);
         return price;

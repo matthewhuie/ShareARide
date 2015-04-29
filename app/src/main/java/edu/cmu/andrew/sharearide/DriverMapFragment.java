@@ -150,6 +150,7 @@ public class DriverMapFragment extends Fragment {
 
   private void updateTripRiders (int numOfRiders) {
     new AsyncTask<Integer, Void, Void> (){
+
       @Override
       protected Void doInBackground(Integer... params) {
         TripBean trip = new TripBean ();
@@ -192,7 +193,28 @@ public class DriverMapFragment extends Fragment {
   }
 
   private void readMessage (MessageBean mb) {
-    mMapSecondaryText.setText (mb.getMessage ());
+    String message = mb.getMessage ();
+    int requestID = mb.getRequestId ();
+
+    if (message.equals ("New Request")) {
+      new AsyncTask<Integer, Void, RequestBean> (){
+        @Override
+        protected RequestBean doInBackground(Integer... params) {
+          try {
+            return EndPointManager.getEndpointInstance ().getRequest (params[0]).execute ();
+
+          } catch (IOException e) {
+            e.printStackTrace ();
+          }
+          return null;
+        }
+
+        @Override
+        protected void onPostExecute (RequestBean rb) {
+          startRequest (rb);
+        }
+      }.execute (requestID);
+    }
   }
 
   private void startRequest (RequestBean rb) {

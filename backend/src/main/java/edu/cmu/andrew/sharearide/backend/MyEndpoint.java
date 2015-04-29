@@ -77,7 +77,6 @@ public class MyEndpoint {
     return validDrivers;
   }
 
-
     @ApiMethod (name = "createMessage")
     public void createMessage (@Named ("driverName") int driverId,@Named("message") String message,@Named("requestId") int request_id) {
         MessageBean mb = new MessageBean();
