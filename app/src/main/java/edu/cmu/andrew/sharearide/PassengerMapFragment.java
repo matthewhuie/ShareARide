@@ -233,6 +233,7 @@ public class PassengerMapFragment extends Fragment {
       //(mLayout.findViewById (R.id.requestMainLayout)).setVisibility (View.INVISIBLE);
       setUpDestination (dest_latitude, dest_longitude, pickUpLocation, destination);
       setUpDirection ();
+      mMapText.setText ("Estimated Fare: $" + estimatedFare);
     }
 
     private String[] calculatePriceAndTime (String originTxt, String destinationTxt) {
@@ -339,7 +340,6 @@ public class PassengerMapFragment extends Fragment {
         estimatedDistance = Integer.valueOf (distance.get("value").toString())* mContext.MeterToMile;
         estimatedDuration = Integer.valueOf (duration.get("value").toString())/ mContext.SecToMin;
         estimatedFare = PricingAlgorithm.calcMaximumPrice (estimatedDistance, estimatedDuration);
-        mMapText.setText ("Estimated Fare: $" + estimatedFare);
 
         double lat = 0;
         double lng = 0;
