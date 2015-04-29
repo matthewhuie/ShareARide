@@ -29,7 +29,6 @@ public class LoginFragment extends Fragment {
   private String userType;
   private Button mButton;
   private String secret;
-  private ShareARideApi apiInstance = null;
   private String message = "";
 
   @Override

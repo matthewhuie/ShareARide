@@ -37,10 +37,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".DriverHome"
-            android:label="@string/title_activity_driver_home" >
-        </activity>
     </application>
 
 </manifest>
