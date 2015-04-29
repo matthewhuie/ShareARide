@@ -222,7 +222,7 @@ public class PassengerMapFragment extends Fragment {
       setUpDirection ();
 
       DecimalFormat df = new DecimalFormat ("'$'0.00");
-      mMapText.setText ("Estimated Fare: $" + df.format (estimatedFare));
+      mMapText.setText ("Estimated Fare: " + df.format (estimatedFare));
     }
 
     private String[] calculatePriceAndTime (String originTxt, String destinationTxt) {
