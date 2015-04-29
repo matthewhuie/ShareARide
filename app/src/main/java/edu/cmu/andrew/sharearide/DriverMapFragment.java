@@ -31,6 +31,7 @@ import edu.cmu.andrew.sharearide.backend.shareARideApi.model.RequestBean;
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.TripBean;
 import edu.cmu.andrew.utilities.DirectionsJSONParser;
 import edu.cmu.andrew.utilities.EndPointManager;
+import edu.cmu.andrew.utilities.PricingAlgorithm;
 import edu.cmu.andrew.utilities.TripSegment;
 
 public class DriverMapFragment extends Fragment {
@@ -213,6 +214,12 @@ public class DriverMapFragment extends Fragment {
 
       requests.addAll (previous.getRequests ());
       requests.add (new Integer (rb.getRequestId ()));
+
+      double pastFare = PricingAlgorithm.calcTripSegmentPrice (previous);
+      UpdateFareTask uft = new UpdateFareTask (pastFare);
+      for (int request : previous.getRequests ()) {
+        uft.execute (request);
+      }
     }
 
     for (TripSegment ts : trip) {
@@ -305,6 +312,26 @@ public class DriverMapFragment extends Fragment {
       }
     }
 
+  }
+
+  class UpdateFareTask extends AsyncTask <Integer, Void, Void> {
+
+    double fareToAdd;
+
+    public UpdateFareTask (double fareToAdd) {
+      this.fareToAdd = fareToAdd;
+    }
+
+    @Override
+    protected Void doInBackground (Integer... data) {
+      try {
+        EndPointManager.getEndpointInstance ().updateFare(data[0], fareToAdd).execute ();
+      } catch (IOException e) {
+        e.printStackTrace ();
+      }
+
+      return null;
+    }
   }
 
   /**

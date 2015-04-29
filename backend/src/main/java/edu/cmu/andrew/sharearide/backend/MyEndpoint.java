@@ -305,6 +305,16 @@ public class MyEndpoint {
     return null;
   }
 
+  @ApiMethod (name = "updateFare")
+  public RequestBean updateFare (@Named ("request_id") int requestID, @Named ("fareToAdd") double fareToAdd) {
+    RequestBean rb = getRequest (requestID);
+    if (rb != null) {
+      rb.setFare (rb.getFare () + fareToAdd);
+      updateRequest (rb);
+      return rb;
+    }
+    return null;
+  }
 
   private List<RequestBean> queryRequest (String where) {
     ArrayList<RequestBean> al = new ArrayList<> ();

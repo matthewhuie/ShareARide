@@ -18,7 +18,7 @@ public class PricingAlgorithm {
         return price;
     }
 
-    public static double calcTripSegmentPrice (TripSegment trip){
+    public static double calcTripSegmentPrice (TripSegment trip) {
 
         double price = 0;
 
