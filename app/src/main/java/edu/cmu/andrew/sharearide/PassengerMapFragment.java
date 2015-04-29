@@ -42,7 +42,7 @@ import edu.cmu.andrew.sharearide.backend.shareARideApi.model.MessageBean;
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.UserBean;
 
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.UserBeanCollection;
-import edu.cmu.andrew.utilities.MapHelper;
+import edu.cmu.andrew.utilities.DirectionsJSONParser;
 import edu.cmu.andrew.utilities.EndPointManager;
 import edu.cmu.andrew.utilities.PricingAlgorithm;
 
@@ -312,35 +312,14 @@ public class PassengerMapFragment extends Fragment {
       Log.i ("URL for Direction", url);
 
       try {
-
         String json = mContext.getRemoteJSON (url);
-        JSONObject routeObject = new JSONObject (json);
-        //System.out.println(priceObject.get("prices"));
-        JSONArray routes = routeObject.getJSONArray ("routes");
-        //Each element of the routes array contains a single result from the specified origin and destination.
-        JSONObject route = (JSONObject) routes.get (0);
-        JSONArray legs = route.getJSONArray ("legs");
-        //For routes that contain no waypoints, the route will consist of a single "leg
-        JSONObject leg = (JSONObject) legs.get (0);
-        JSONArray steps = leg.getJSONArray ("steps");
-        JSONObject distance = leg.getJSONObject ("distance");
-        JSONObject duration = leg.getJSONObject ("duration");
+        DirectionsJSONParser parser = new DirectionsJSONParser (json, null, null);
 
-        estimatedDistance = Integer.valueOf (distance.get("value").toString())* mContext.MeterToMile;
-        estimatedDuration = Integer.valueOf (duration.get("value").toString())/ mContext.SecToMin;
+        estimatedDistance = parser.getDistance () * mContext.MeterToMile;
+        estimatedDuration = parser.getDuration () / mContext.SecToMin;
         estimatedFare = PricingAlgorithm.calcMaximumPrice (estimatedDistance, estimatedDuration);
 
-        double lat = 0;
-        double lng = 0;
-
-        String polyline;
-
-        for (int i = 0; i < steps.length (); i++) {
-          JSONObject step = (JSONObject) steps.get (i);
-          polyline = ((JSONObject) step.get ("polyline")).get ("points").toString ();
-
-          directions.addAll (MapHelper.decodePolyline (polyline));
-        }
+        directions = parser.getPolyline ();
 
         //Log.i("price info: ", priceObject.get("estimate").toString());
 

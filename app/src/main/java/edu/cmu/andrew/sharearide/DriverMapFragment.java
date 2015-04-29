@@ -29,7 +29,7 @@ import java.util.List;
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.MessageBean;
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.RequestBean;
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.TripBean;
-import edu.cmu.andrew.utilities.MapHelper;
+import edu.cmu.andrew.utilities.DirectionsJSONParser;
 import edu.cmu.andrew.utilities.EndPointManager;
 import edu.cmu.andrew.utilities.TripSegment;
 
@@ -251,7 +251,7 @@ public class DriverMapFragment extends Fragment {
     }
   }
 
-  class NextRouteTask extends AsyncTask <LatLng, Void, JSONArray> {
+  class NextRouteTask extends AsyncTask <LatLng, Void, DirectionsJSONParser> {
 
     List<Integer> requests;
 
@@ -260,64 +260,49 @@ public class DriverMapFragment extends Fragment {
     }
 
     @Override
-    protected JSONArray doInBackground (LatLng... data) {
+    protected DirectionsJSONParser doInBackground (LatLng... data) {
       String key = "key=" + getString (R.string.google_maps_places_key);
       int minTimeDistance = Integer.MAX_VALUE;
-      int minDistance = 0;
-      int minTime = 0;
-      LatLng minDestination = null;
-      JSONArray minSteps = null;
-      String origin = "origin=" + data[0].latitude + "," + data[0].longitude + "&";
+      DirectionsJSONParser minParser = null;
+      String origin = "origin=" + data[0].longitude + "," + data[0].latitude + "&";
 
       for (int i = 1; i < data.length; i++) {
-        String destination = "destination=" + data[i].latitude + "," + data[i].longitude + "&";
+        String destination = "destination=" + data[i].longitude + "," + data[i].latitude + "&";
         String json = mContext.getRemoteJSON (mContext.DIRECTION_BASE_URL + origin + destination + key);
 
         try {
-          JSONObject routeObject = new JSONObject (json);
-          JSONObject route = (JSONObject) routeObject.getJSONArray ("routes").get (0);
-          JSONObject leg = (JSONObject) route.getJSONArray ("legs").get (0);
+          DirectionsJSONParser directions = new DirectionsJSONParser (json, data [0], data [i]);
 
-          int distance = Integer.parseInt (leg.getJSONObject ("distance").get ("value").toString ());
-          int duration = Integer.parseInt (leg.getJSONObject ("duration").get ("value").toString ());
-
+          int distance = directions.getDistance ();
+          int duration = directions.getDuration ();
           int timeDistance = distance * duration;
           if (timeDistance < minTimeDistance) {
             minTimeDistance = timeDistance;
-            minDistance = distance;
-            minTime = duration;
-            minDestination = data[i];
-            minSteps = leg.getJSONArray ("steps");
+            minParser = directions;
           }
         } catch (JSONException jsone) {
           Log.i ("Hit the JSON error: ", jsone.toString ());
         }
       }
 
-      trip.add (new TripSegment (trip.size (), data [0], minDestination, minDistance, minTime, requests));
-      return minSteps;
+      return minParser;
     }
 
     @Override
-    protected void onPostExecute (JSONArray steps) {
+    protected void onPostExecute (DirectionsJSONParser parser) {
       try {
-        String polyline;
+        List <LatLng> directions = parser.getPolyline ();
+        trip.add (new TripSegment (trip.size (), parser.getSource (), parser.getDestination (),
+            parser.getDistance (), parser.getDuration (), requests));
 
-        for (int i = 0; i < steps.length (); i++) {
-          JSONObject step = (JSONObject) steps.get (i);
-          polyline = ((JSONObject) step.get ("polyline")).get ("points").toString ();
-
-          directions.addAll (MapHelper.decodePolyline (polyline));
-        }
+        mMap.clear ();
+        mMap.addPolyline (new PolylineOptions ()
+            .addAll (directions)
+            .width (10)
+            .color (Color.rgb (1, 169, 212)));
       } catch (JSONException jsone) {
         Log.i ("Hit the JSON error: ", jsone.toString ());
       }
-
-      mMap.clear ();
-      mMap.addPolyline (new PolylineOptions ()
-          .addAll (directions)
-          .width (10)
-          .color (Color.rgb (1, 169, 212)));
     }
 
   }

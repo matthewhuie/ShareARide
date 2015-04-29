@@ -321,11 +321,12 @@ public class MyEndpoint {
         ub.setDstLongitude (rs.getDouble (5));
         ub.setDstLatitude (rs.getDouble (6));
         ub.setFare (rs.getDouble (7));
-        ub.setLatestTime (rs.getTimestamp (8));
+        // *****NEED TO FIX THIS
+        //ub.setLatestTime (rs.getString (8));
         ub.setPassRating (rs.getInt (9));
         ub.setDriverRating (rs.getInt (10));
-        ub.setStartTime (rs.getTimestamp (11));
-        ub.setEndTime (rs.getTimestamp (12));
+        //ub.setStartTime (rs.getString (11));
+        //ub.setEndTime (rs.getString (12));
         ub.setServed (rs.getInt (13));
         al.add (ub);
       }

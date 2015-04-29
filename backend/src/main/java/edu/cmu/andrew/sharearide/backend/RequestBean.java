@@ -1,6 +1,5 @@
 package edu.cmu.andrew.sharearide.backend;
 
-import java.sql.Timestamp;
 
 public class RequestBean {
 
