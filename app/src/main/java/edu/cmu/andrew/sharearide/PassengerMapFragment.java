@@ -313,7 +313,7 @@ public class PassengerMapFragment extends Fragment {
 
       try {
         String json = mContext.getRemoteJSON (url);
-        DirectionsJSONParser parser = new DirectionsJSONParser (json, null, null);
+        DirectionsJSONParser parser = new DirectionsJSONParser (json);
 
         estimatedDistance = parser.getDistance () * mContext.MeterToMile;
         estimatedDuration = parser.getDuration () / mContext.SecToMin;

@@ -20,7 +20,11 @@ public class DirectionsJSONParser {
   LatLng source;
   LatLng destination;
 
-  public DirectionsJSONParser (String json, LatLng source, LatLng destination) throws JSONException{
+  public DirectionsJSONParser (String json) throws JSONException {
+    this (json, null, null);
+  }
+
+  public DirectionsJSONParser (String json, LatLng source, LatLng destination) throws JSONException {
     this.json = json;
     this.source = source;
     this.destination = destination;
