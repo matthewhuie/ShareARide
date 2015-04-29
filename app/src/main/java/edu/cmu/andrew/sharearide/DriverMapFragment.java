@@ -1,7 +1,6 @@
 package edu.cmu.andrew.sharearide;
 
 import android.app.Fragment;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -16,42 +15,21 @@ import android.widget.TextView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import edu.cmu.andrew.sharearide.backend.shareARideApi.ShareARideApi;
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.MessageBean;
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.RequestBean;
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.TripBean;
-import edu.cmu.andrew.sharearide.backend.shareARideApi.model.UserBean;
-import edu.cmu.andrew.sharearide.backend.shareARideApi.model.UserBeanCollection;
-import edu.cmu.andrew.utilities.DecodePoly;
+import edu.cmu.andrew.utilities.MapHelper;
 import edu.cmu.andrew.utilities.EndPointManager;
 import edu.cmu.andrew.utilities.TripSegment;
 
@@ -330,7 +308,7 @@ public class DriverMapFragment extends Fragment {
           JSONObject step = (JSONObject) steps.get (i);
           polyline = ((JSONObject) step.get ("polyline")).get ("points").toString ();
 
-          directions.addAll (DecodePoly.run (polyline));
+          directions.addAll (MapHelper.decodePolyline (polyline));
         }
       } catch (JSONException jsone) {
         Log.i ("Hit the JSON error: ", jsone.toString ());
