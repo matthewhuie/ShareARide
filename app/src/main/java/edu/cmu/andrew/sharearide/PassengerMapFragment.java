@@ -52,6 +52,7 @@ import edu.cmu.andrew.sharearide.backend.shareARideApi.model.UserBean;
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.RequestBean;
 
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.UserBeanCollection;
+import edu.cmu.andrew.utilities.DecodePoly;
 import edu.cmu.andrew.utilities.EndPointManager;
 import edu.cmu.andrew.utilities.GPSTracker;
 
@@ -68,14 +69,18 @@ public class PassengerMapFragment extends Fragment {
   private int numOfRiders;
     double estimatedDistance = 0.0;
     double estimatedDuration = 0.0;
+  private List<LatLng> directions;
 
 
     @Override
   public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mContext = (SARActivity) super.getActivity ();
     mLayout = (RelativeLayout) inflater.inflate (R.layout.activity_passenger_map, container, false);
-    
-    latitude = mContext.getLatitude ();
+
+      directions = new ArrayList<> ();
+
+
+      latitude = mContext.getLatitude ();
     longitude = mContext.getLongitude();
       setUpMapIfNeeded ();
         selectDriver();
@@ -144,13 +149,11 @@ public class PassengerMapFragment extends Fragment {
   private void setUpDirection (List<LatLng> latlngRoute) {
     Log.i ("add polyline", "method executed");
     if (mMap != null) {
-      Log.i ("map not null", "method executed");
-      for (int i = 0; i < latlngRoute.size () - 1; i++) {
-        Polyline line = mMap.addPolyline (new PolylineOptions ()
-            .add (latlngRoute.get (i), latlngRoute.get (i + 1))
-            .width (10)
-            .color (Color.rgb (1, 169, 212)));
-      }
+      mMap.clear ();
+      mMap.addPolyline (new PolylineOptions ()
+          .addAll (directions)
+          .width (10)
+          .color (Color.rgb (1, 169, 212)));
     }
   }
 
@@ -315,9 +318,6 @@ public class PassengerMapFragment extends Fragment {
       String url = mContext.DIRECTION_BASE_URL + "origin=" + originTxt.replaceAll (" ", "+") + "&destination=" + destinationTxt.replaceAll (" ", "+") + "&key=" + getString (R.string.google_maps_places_key);
       Log.i ("URL for Direction", url);
 
-      LatLng origin = new LatLng (latitude, longitude);
-      latlngRoute.add (origin);
-
       try {
 
         String json = mContext.getRemoteJSON (url);
@@ -339,20 +339,14 @@ public class PassengerMapFragment extends Fragment {
         double lat = 0;
         double lng = 0;
 
-        for (int i = 0; i < steps.length (); i++) {
-          System.out.println (steps.get (i));
-          JSONObject step = (JSONObject) steps.get (i);
-          //System.out.println(priceForEachProduct.get("estimate"));
-          JSONObject start_location = (JSONObject) step.get ("start_location");
-          lat = Double.valueOf (start_location.get ("lat").toString ());
-          lng = Double.valueOf (start_location.get ("lng").toString ());
-          LatLng latlngPoint = new LatLng (lat, lng);
-          Log.i ("lat info for each step: ", start_location.get ("lat").toString ());
-          latlngRoute.add (latlngPoint);
-        }
+        String polyline;
 
-        LatLng dest = new LatLng (dest_latitude, dest_longitude);
-        latlngRoute.add (dest);
+        for (int i = 0; i < steps.length (); i++) {
+          JSONObject step = (JSONObject) steps.get (i);
+          polyline = ((JSONObject) step.get ("polyline")).get ("points").toString ();
+
+          directions.addAll (DecodePoly.run (polyline));
+        }
 
         //Log.i("price info: ", priceObject.get("estimate").toString());
 

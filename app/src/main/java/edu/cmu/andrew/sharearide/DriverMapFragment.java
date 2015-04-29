@@ -51,6 +51,7 @@ import edu.cmu.andrew.sharearide.backend.shareARideApi.model.RequestBean;
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.TripBean;
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.UserBean;
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.UserBeanCollection;
+import edu.cmu.andrew.utilities.DecodePoly;
 import edu.cmu.andrew.utilities.EndPointManager;
 import edu.cmu.andrew.utilities.TripSegment;
 
@@ -124,7 +125,7 @@ public class DriverMapFragment extends Fragment {
   private void setUpMap () {
     mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (
         new LatLng (mContext.getLatitude (), mContext.getLongitude ()), 15));
-    mMap.setMyLocationEnabled(true);
+    mMap.setMyLocationEnabled (true);
   }
 
   private void initTrip () {
@@ -308,7 +309,7 @@ public class DriverMapFragment extends Fragment {
           JSONObject step = (JSONObject) steps.get (i);
           polyline = ((JSONObject) step.get ("polyline")).get ("points").toString ();
 
-          directions.addAll (decodePoly (polyline));
+          directions.addAll (DecodePoly.run (polyline));
         }
       } catch (JSONException jsone) {
         Log.i ("Hit the JSON error: ", jsone.toString ());
@@ -321,38 +322,6 @@ public class DriverMapFragment extends Fragment {
           .color (Color.rgb (1, 169, 212)));
     }
 
-  }
-
-  private List<LatLng> decodePoly (String encoded) {
-    List<LatLng> poly = new ArrayList<LatLng> ();
-    int index = 0, len = encoded.length ();
-    int lat = 0, lng = 0;
-
-    while (index < len) {
-      int b, shift = 0, result = 0;
-      do {
-        b = encoded.charAt (index++) - 63;
-        result |= (b & 0x1f) << shift;
-        shift += 5;
-      } while (b >= 0x20);
-      int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-      lat += dlat;
-
-      shift = 0;
-      result = 0;
-      do {
-        b = encoded.charAt (index++) - 63;
-        result |= (b & 0x1f) << shift;
-        shift += 5;
-      } while (b >= 0x20);
-      int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-      lng += dlng;
-
-      LatLng ll = new LatLng((((double) lat / 1E5)),(((double) lng / 1E5)));
-      poly.add (ll);
-    }
-
-    return poly;
   }
 
   class AddTRTask extends AsyncTask<Integer, Void, Void> {
@@ -414,7 +383,7 @@ public class DriverMapFragment extends Fragment {
       new PollTask().execute (mContext.getUserID ());
       mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (
           new LatLng (mContext.getLatitude (), mContext.getLongitude ()), 15));
-      handler.postDelayed(call,20*1000);
+      handler.postDelayed (call, 20 * 1000);
     }
   };
 }
