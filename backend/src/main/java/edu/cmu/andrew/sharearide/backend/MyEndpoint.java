@@ -114,16 +114,16 @@ public class MyEndpoint {
     RequestBean rb = new RequestBean (getPassenger (passenger).getUserID (), srcLat, srcLong, destLat, destLong,riders);
       rb.setDistanceEstimated(estiDist);
       rb.setEstimatedTime(estiTime);
-    int result = updateRequest (rb);
+    int request_id = updateRequest (rb);
     MessageBean mb = new MessageBean ();
-      System.out.println(result + "----result");
-    if (result == 0)
+     // System.out.println(result + "----result");
+    if (request_id == -1)
       mb.setStatus (false);
     else {
       mb.setStatus (true);
       mb.setMessage ("New Request");
      // mb.setUser_name (passenger);
-      mb.setRequest_id(getPrimaryKey());
+      mb.setRequest_id(request_id);
      // updateMessage (mb);
     }
 
@@ -424,6 +424,13 @@ public class MyEndpoint {
           "dest_latitude=VALUES(dest_latitude), fare=VALUES(fare), latest_time=VALUES(latest_time), pass_rating=VALUES(pass_rating), " +
           "driver_rating=VALUES(driver_rating), start_time=VALUES(start_time), end_time=VALUES(end_time), is_served=VALUES(is_served), " +
           "estimated_distance=VALUES(estimated_distance), " + "num_riders=VALUES(num_riders)," + "estimated_time=VALUES(estimated_time)");
+
+        ResultSet rs = statement.getGeneratedKeys();
+        if(rs.next())
+        {
+            result = rs.getInt(1);
+       /*You can get more generated keys if they are generated in your code*/
+        }
     } catch (Exception e) {
       StringWriter sw = new StringWriter ();
       PrintWriter pw = new PrintWriter (sw);
