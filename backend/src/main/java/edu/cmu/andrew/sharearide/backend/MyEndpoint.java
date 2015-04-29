@@ -426,8 +426,11 @@ public class MyEndpoint {
           "estimated_distance=VALUES(estimated_distance), " + "num_riders=VALUES(num_riders)," + "estimated_time=VALUES(estimated_time)");
 
         ResultSet rs = statement.getGeneratedKeys();
+        log.severe (rs.toString() + " Result set toString");
         if(rs.next())
         {
+            log.severe (rs.getInt(1) + " inside for rs.get 1");
+            log.severe (rs.getInt(0) + " inside for rs.get 0");
             result = rs.getInt(1);
        /*You can get more generated keys if they are generated in your code*/
         }
