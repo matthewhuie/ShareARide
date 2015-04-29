@@ -173,17 +173,16 @@ public class MyEndpoint {
   }
 
   private MessageBean getMessage (int userID) {
-    MessageBean mb = new MessageBean ();
     List<MessageBean> al = new ArrayList<> ();
     al = queryMessage ("user_name=" + userID + " AND is_read=0");
 
     if (al.size () > 0) {
-      mb = al.get (0);
+      MessageBean mb = al.get (0);
+      mb.setIs_read (1);
+      updateMessage (mb);
+      return mb;
     }
-
-    mb.setIs_read (1);
-    updateMessage (mb);
-    return mb;
+    return null;
   }
 
   private UserBean getPassenger (String userId) {
@@ -238,6 +237,17 @@ public class MyEndpoint {
       return trips.get (0);
     }
     return null;
+  }
+
+  @ApiMethod (name = "taxiSearching")
+  public void taxiSearching (@Named ("request_id") int request_id,
+                             @Named ("minDriverID") int minDriverID,
+                             @Named ("numOfRiders") int numOfRiders) {
+    int tripId = getTrip (minDriverID).getTripId ();
+    updateTripRequest(tripId, request_id);
+    fulfillRequest(request_id);
+    //updateTrip(minDriverID, numOfRiders);
+    log.severe ("THIS IS TAXI SEARCHING!!!");
   }
 
   @ApiMethod (name = "endPreviousTrips")
@@ -426,7 +436,6 @@ public class MyEndpoint {
           Statement.RETURN_GENERATED_KEYS);
 
         ResultSet rs = statement.getGeneratedKeys();
-        log.severe (rs.toString() + " Result set toString");
         rs.next();
         result = rs.getInt(1);
     } catch (Exception e) {
@@ -515,10 +524,10 @@ public class MyEndpoint {
       Connection conn = connect ();
       Statement statement = conn.createStatement ();
       result = statement.executeUpdate ("INSERT INTO Message (user_name, message, message_id, is_read, Request_id)" +
-          " VALUES (\"" + mb.getUser_name () + "\", \"" +
-          mb.getMessage() + "\", " + mb.getMessage_id() + ", " + mb.isIs_read() + ", " + mb.getRequest_id () + ")" +
+          " VALUES (" + mb.getUser_name () + ", \"" + mb.getMessage() + "\", " + mb.getMessage_id() + ", " +
+          mb.isIs_read() + ", " + mb.getRequest_id () + ")" +
           "ON DUPLICATE KEY UPDATE user_name=VALUES(user_name), " +
-          "message=VALUES(message), message_id=VALUES(message_id), is_read=VALUES(is_read), Request_id=VALUES(Request_id)");
+          "message=VALUES(message), is_read=VALUES(is_read), Request_id=VALUES(Request_id)");
 
     } catch (Exception e) {
       StringWriter sw = new StringWriter ();

@@ -40,6 +40,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -233,7 +234,9 @@ public class PassengerMapFragment extends Fragment {
       //(mLayout.findViewById (R.id.requestMainLayout)).setVisibility (View.INVISIBLE);
       setUpDestination (dest_latitude, dest_longitude, pickUpLocation, destination);
       setUpDirection ();
-      mMapText.setText ("Estimated Fare: $" + estimatedFare);
+
+      DecimalFormat df = new DecimalFormat ("'$'0.00");
+      mMapText.setText ("Estimated Fare: $" + df.format (estimatedFare));
     }
 
     private String[] calculatePriceAndTime (String originTxt, String destinationTxt) {
@@ -401,11 +404,10 @@ public class PassengerMapFragment extends Fragment {
       UserBeanCollection taxis = queryTaxi (0);
       Log.i ("Taxi list: ", taxis.toString ());
 
-
             System.out.println("number of riders " + numOfRiders);
             taxiSearchingResult = taxiSearching(taxis, request_id, numOfRiders);
 
-            myApiService.createMessage(Integer.parseInt(taxiSearchingResult[3]),mb.getMessage(),mb.getRequestId()).execute();
+            myApiService.createMessage (Integer.parseInt (taxiSearchingResult[3]), mb.getMessage (), request_id).execute();
             System.out.println(taxiSearchingResult + " taxiSearchingResult");
         }
         catch (IOException ioe) {
@@ -520,18 +522,10 @@ public class PassengerMapFragment extends Fragment {
         }
       }
 
-      //get tripId related to a driver from trip table
-      TripBean trip = myApiService.getTrip(minDriverID).execute();
-      int tripId = trip.getTripId();
-      //get requestId related to a user
-      //RequestBean request = myApiService.getRequest(userName).execute();
-      //int requestId = request.getRequestId();
-      //insert a new row into trip table
-      myApiService.updateTripRequest(tripId, request_id);
-      //update the request in request table
-      myApiService.fulfillRequest(request_id);
-      //update the trip in trip table
-      myApiService.updateTrip(minDriverID, numOfRiders);
+      //Perform taxi searching duties on backend
+      myApiService.taxiSearching (request_id, minDriverID, numOfRiders).execute();
+
+      Log.i ("minDriverID", minDriverID + " " + numOfRiders);
 
       Log.i ("minDriver Location ", String.valueOf (minTaxiLatitude) + String.valueOf (minTaxiLongitude) + minDurTxt);
       return new String[] {String.valueOf (minTaxiLatitude), String.valueOf (minTaxiLongitude), minDurTxt,String.valueOf(minDriverID)};

@@ -246,7 +246,6 @@ public class DriverMapFragment extends Fragment {
     LatLng[] ll = new LatLng[paths.size ()];
     ll = paths.toArray (ll);
     new NextRouteTask (requests).execute (ll);
-    new AddTRTask ().execute (currentTrip, rb.getRequestId ());
   }
 
   private void finishRequest (RequestBean rb) {
@@ -344,19 +343,6 @@ public class DriverMapFragment extends Fragment {
           .color (Color.rgb (1, 169, 212)));
     }
 
-  }
-
-  class AddTRTask extends AsyncTask<Integer, Void, Void> {
-
-    @Override
-    protected Void doInBackground (Integer... data) {
-      try {
-        EndPointManager.getEndpointInstance ().updateTripRequest (data[0], data[1]).execute ();
-      } catch (IOException e) {
-        e.printStackTrace ();
-      }
-      return null;
-    }
   }
 
   /**
