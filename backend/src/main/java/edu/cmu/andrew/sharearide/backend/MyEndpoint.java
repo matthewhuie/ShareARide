@@ -423,17 +423,13 @@ public class MyEndpoint {
           "source_longitude=VALUES(source_longitude), source_latitude=VALUES(source_latitude), dest_longitude=VALUES(dest_longitude), " +
           "dest_latitude=VALUES(dest_latitude), fare=VALUES(fare), latest_time=VALUES(latest_time), pass_rating=VALUES(pass_rating), " +
           "driver_rating=VALUES(driver_rating), start_time=VALUES(start_time), end_time=VALUES(end_time), is_served=VALUES(is_served), " +
-          "estimated_distance=VALUES(estimated_distance), " + "num_riders=VALUES(num_riders)," + "estimated_time=VALUES(estimated_time)");
+          "estimated_distance=VALUES(estimated_distance), " + "num_riders=VALUES(num_riders)," + "estimated_time=VALUES(estimated_time)",
+          Statement.RETURN_GENERATED_KEYS);
 
         ResultSet rs = statement.getGeneratedKeys();
         log.severe (rs.toString() + " Result set toString");
-        if(rs.next())
-        {
-            log.severe (rs.getInt(1) + " inside for rs.get 1");
-            log.severe (rs.getInt(0) + " inside for rs.get 0");
-            result = rs.getInt(1);
-       /*You can get more generated keys if they are generated in your code*/
-        }
+        rs.next();
+        result = rs.getInt(1);
     } catch (Exception e) {
       StringWriter sw = new StringWriter ();
       PrintWriter pw = new PrintWriter (sw);
@@ -519,11 +515,11 @@ public class MyEndpoint {
     try {
       Connection conn = connect ();
       Statement statement = conn.createStatement ();
-      result = statement.executeUpdate ("INSERT INTO Message (user_name, message, message_id, is_read)" +
+      result = statement.executeUpdate ("INSERT INTO Message (user_name, message, message_id, is_read, Request_id)" +
           " VALUES (\"" + mb.getUser_name () + "\", \"" +
-          mb.getMessage() + "\", \"" + mb.getMessage_id() + "\", \"" + mb.isIs_read() + "\")" +
+          mb.getMessage() + "\", " + mb.getMessage_id() + ", " + mb.isIs_read() + ", " + mb.getRequest_id () + ")" +
           "ON DUPLICATE KEY UPDATE user_name=VALUES(user_name), " +
-          "message=VALUES(message), message_id=VALUES(message_id), is_read=VALUES(is_read)");
+          "message=VALUES(message), message_id=VALUES(message_id), is_read=VALUES(is_read), Request_id=VALUES(Request_id");
 
     } catch (Exception e) {
       StringWriter sw = new StringWriter ();
