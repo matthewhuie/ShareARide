@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">共乘</string>
+    <string name="app_name">偕行</string>
     <string name="title_activity_maps">地图</string>
     <string name="title_activity_driver_passenger">DriverPassenger</string>
     <string name="hello_world">Hello world!</string>
