@@ -30,6 +30,8 @@
     <string name="username_text">Username</string>
     <string name="password_text">Password</string>
     <string name="minutes">minutes</string>
+    <string name="driver_text_1">Your driver is </string>
+    <string name="driver_text_2"> away from you</string>
 
 
     <string name="title_activity_driver_home">DriverHome</string>
