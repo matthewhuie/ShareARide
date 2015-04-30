@@ -229,6 +229,7 @@ public class DriverMapFragment extends Fragment {
 
     updateTripRiders (rb.getNumOfRiders ());
     List<Integer> requests = new ArrayList<> ();
+    requests.add (new Integer (rb.getRequestId ()));
     if (trip.size () > 0) {
       TripSegment previous = trip.get (trip.size () - 1);
       paths.add (previous.getDestination ());
@@ -236,7 +237,6 @@ public class DriverMapFragment extends Fragment {
       previous.setCompleted (true);
 
       requests.addAll (previous.getRequests ());
-      requests.add (new Integer (rb.getRequestId ()));
 
       double pastFare = PricingAlgorithm.calcTripSegmentPrice (previous);
       UpdateFareTask uft = new UpdateFareTask (pastFare);
