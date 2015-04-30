@@ -238,7 +238,7 @@ public class PassengerMapFragment extends Fragment {
       Marker marker_destination = mMap.addMarker (new MarkerOptions ()
           .position (new LatLng (driver_latitude, driver_longitude))
           .icon (BitmapDescriptorFactory.defaultMarker (BitmapDescriptorFactory.HUE_GREEN))
-          .title (getString(R.string.driver_text_1) + minDurTxt + getString(R.string.driver_text_2)));
+          .title (getString(R.string.driver_text_1) + " "+minDurTxt + " "+ getString(R.string.driver_text_2)));
     }
   }
 
@@ -524,7 +524,7 @@ public class PassengerMapFragment extends Fragment {
 
                 }
 
-            int moodType = (((Spinner) mLayout.findViewById (R.id.moodText)).getSelectedItemPosition ());
+            int moodType = (((Spinner) mLayout.findViewById (R.id.moodInput)).getSelectedItemPosition ());
 
             String strMoodType = moodType == 0 ? "Save Money" : "Other";
 
