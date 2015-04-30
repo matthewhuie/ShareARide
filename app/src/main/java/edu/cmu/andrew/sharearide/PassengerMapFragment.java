@@ -520,7 +520,7 @@ public class PassengerMapFragment extends Fragment {
 
                     }
 
-                    int moodType = (((Spinner) mLayout.findViewById(R.id.moodInput)).getSelectedItemPosition());
+                    int moodType = mContext.moodType;
 
                     String strMoodType = moodType == 0 ? "Save Money" : "Other";
 

@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.SimpleAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.json.JSONObject;
@@ -57,6 +58,8 @@ public class PassengerInputFragment extends Fragment {
 
     mLocation = ((TextView) mLayout.findViewById (R.id.currentLocationText));
     mLocation.setText (mContext.getLocationName ());
+
+    mContext.moodType = (((Spinner) mLayout.findViewById(R.id.moodInput)).getSelectedItemPosition());
 
     buildAutoComplete ();
 
