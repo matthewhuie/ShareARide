@@ -362,7 +362,7 @@ public class PassengerMapFragment extends Fragment {
         userName = urls[1];
         try {
       myApiService = EndPointManager.getEndpointInstance ();
-      MessageBean mb = myApiService.createNewRequest (userName, latitude, longitude, dest_latitude, dest_longitude,numOfRiders,estimatedDistance,estimatedDuration).execute();
+      MessageBean mb = myApiService.createNewRequest (userName, latitude, longitude, dest_latitude, dest_longitude,numOfRiders,estimatedDistance,estimatedDuration,estimatedFare).execute();
       request_id = mb.getRequestId();
 
       //change the 0 to slider
