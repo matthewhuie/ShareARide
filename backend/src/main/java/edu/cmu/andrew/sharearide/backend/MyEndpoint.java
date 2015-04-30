@@ -378,11 +378,11 @@ public class MyEndpoint {
         ub.setStartTime (rs.getString (10));
         ub.setEndTime (rs.getString (11));
         ub.setServed (rs.getInt (12));
-          ub.setDistanceEstimated (rs.getDouble (13));
-          ub.setNumOfRiders (rs.getInt (14));
-          ub.setEstimatedTime (rs.getDouble (15));
-          ub.setActualDistance (rs.getDouble (16));
-          ub.setEstimatedFare (rs.getDouble (17));
+        ub.setDistanceEstimated (rs.getDouble (13));
+        ub.setNumOfRiders (rs.getInt (14));
+        ub.setEstimatedTime (rs.getDouble (15));
+        ub.setActualDistance (rs.getDouble (16));
+        ub.setEstimatedFare (rs.getDouble (17));
         ub.setActualDuration (rs.getDouble (18));
         al.add (ub);
       }
