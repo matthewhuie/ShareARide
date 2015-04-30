@@ -29,6 +29,7 @@
     <string name="ride_request_text">叫车</string>
     <string name="username_text">请输入您的用户名</string>
     <string name="password_text">请输入您的密码</string>
+    <string name="minutes">分钟</string>
 
     <string name="title_activity_driver_home">司机主页</string>
 
