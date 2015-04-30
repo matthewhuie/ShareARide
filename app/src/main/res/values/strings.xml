@@ -56,6 +56,8 @@
     <string name="endRide">endRide</string>
     <string name="travel_time">Travel Time: </string>
     <string name="actual_fare">Actual Fare: </string>
+    <string name="actual_distance">Actual Distance</string>
+    <string name="miles">miles</string>
 
 
 </resources>
