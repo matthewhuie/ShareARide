@@ -18,6 +18,7 @@
     <string name="request_message">等待叫车请求中...</string>
     <string name="wait_message">请稍后...</string>
     <string name="estimated_fare">预计车费：</string>
+    <string name="accumulated_fare">当前共计费用：</string>
     <string name="max_time">预计到达时间：</string>
     <string name="current_location">您目前的位置是</string>
     <string name="current_text">这儿！</string>
@@ -28,6 +29,7 @@
     <string name="ride_request_text">叫车</string>
     <string name="username_text">请输入您的用户名</string>
     <string name="password_text">请输入您的密码</string>
+    <string name="minutes">分钟</string>
 
     <string name="title_activity_driver_home">司机主页</string>
 
