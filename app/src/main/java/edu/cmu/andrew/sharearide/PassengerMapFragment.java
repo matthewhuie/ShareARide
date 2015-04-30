@@ -161,7 +161,7 @@ public class PassengerMapFragment extends Fragment {
       Marker marker_destination = mMap.addMarker (new MarkerOptions ()
           .position (new LatLng (driver_latitude, driver_longitude))
           .icon (BitmapDescriptorFactory.defaultMarker (BitmapDescriptorFactory.HUE_GREEN))
-          .title ("Your driver is " + minDurTxt + " away from you"));
+          .title (getString(R.string.driver_text_1) + minDurTxt + getString(R.string.driver_text_2)));
     }
   }
 

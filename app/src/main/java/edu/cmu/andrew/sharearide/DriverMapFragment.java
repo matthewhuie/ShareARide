@@ -314,6 +314,17 @@ public class DriverMapFragment extends Fragment {
       ll = paths.toArray (ll);
       new NextRouteTask (requests, rb).execute (ll);
     }
+
+    new AsyncTask<RequestBean, Void, Void> () {
+      @Override
+      protected Void doInBackground (RequestBean... data) {
+        try {
+          RequestBean rb = data[0];
+          EndPointManager.getEndpointInstance ().createMessage (rb.getPassUserId (), "End Request", rb.getRequestId ()).execute ();
+        } catch (IOException ioe) {}
+        return null;
+      }
+    }.execute(rb);
   }
 
   class ToRequestTask extends AsyncTask <LatLng, Void, DirectionsJSONParser> {
