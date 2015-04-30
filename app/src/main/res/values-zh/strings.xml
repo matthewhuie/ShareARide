@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Share-A-Ride</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_driver_passenger">DriverPassenger</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_driver_request">driver_request</string>
+    <string name="title_activity_pssnger_requested">PssngerRequested</string>
+    <string name="action_search">Search</string>
+    <string name="pick_time">Pick Time</string>
+    <string name="request">Request</string>
+    <string name="str_atv_places">Enter Destination Here</string>
+    <string name="login">Log in</string>
+    <string name="passenger">Passenger</string>
+    <string name="driver">Driver</string>
+
+    <string name="title_activity_driver_home">DriverHome</string>
+
+    <string-array name="user_type">
+        <item>I am a Passenger</item>
+        <item>I am a Driver</item>
+    </string-array>
+
+    <string-array name="mood">
+        <item>I would like to save money!</item>
+        <item>I am indifferent.</item>
+        <item>I am in a rush!</item>
+    </string-array>
+
+    <string name="title_activity_passenger">Passenger</string>
+
+    <string name="pickUp">pickupPassenger</string>
+    <string name="startRide">startRide</string>
+    <string name="endRide">endRide</string>
+
+
+</resources>
