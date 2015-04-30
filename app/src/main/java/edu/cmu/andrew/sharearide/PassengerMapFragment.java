@@ -155,9 +155,6 @@ public class PassengerMapFragment extends Fragment {
       Log.i ("map not null", "method executed");
       System.out.println ("In setUpDriverLocation" + driver_latitude + driver_longitude);
       mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (new LatLng (driver_latitude, driver_longitude), 13));
-      //Marker marker_origin = mMap.addMarker(new MarkerOptions()
-      //      .position(new LatLng(latitude, longitude))
-      //    .title("Your pickup location: " + pickUpLocation));
       Marker marker_destination = mMap.addMarker (new MarkerOptions ()
           .position (new LatLng (driver_latitude, driver_longitude))
           .icon (BitmapDescriptorFactory.defaultMarker (BitmapDescriptorFactory.HUE_GREEN))
@@ -404,10 +401,8 @@ public class PassengerMapFragment extends Fragment {
       String taxiPlaceTxt = "";
       int minDriverID = 0;
       int driverID = 0;
-      int minDuration = 1000;
+      int minDuration = 100000;
       int durationVal = 0;
-      String minDurTxt = "";
-      String durationTxt = "";
 
       if (taxis.getItems () != null) {
         for (UserBean taxi : taxis.getItems ()) {
@@ -449,7 +444,6 @@ public class PassengerMapFragment extends Fragment {
               JSONObject leg = (JSONObject) legs.get (0);
               JSONObject duration = (JSONObject) leg.get ("duration");
               durationVal = Integer.valueOf (duration.get ("value").toString ());
-              durationTxt = duration.get ("text").toString ();
 
             } catch (org.json.JSONException jsone) {
               Log.i ("Hit the JSON error: ", jsone.toString ());
@@ -458,7 +452,6 @@ public class PassengerMapFragment extends Fragment {
           }
           if (durationVal != 0 && durationVal < minDuration) {
             minDuration = durationVal;
-            minDurTxt = durationTxt;
             minTaxiLatitude = taxiLatitude;
             minTaxiLongitude = taxiLongitude;
             minDriverID = driverID;
@@ -469,7 +462,7 @@ public class PassengerMapFragment extends Fragment {
 
       //Perform taxi searching duties on backend
       myApiService.taxiSearching (request_id, minDriverID, numOfRiders).execute();
-      return new String[] {String.valueOf (minTaxiLatitude), String.valueOf (minTaxiLongitude), minDurTxt,String.valueOf(minDriverID)};
+      return new String[] {String.valueOf (minTaxiLatitude), String.valueOf (minTaxiLongitude), String.valueOf (durationVal/60),String.valueOf(minDriverID)};
 
 
     }

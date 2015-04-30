@@ -30,6 +30,8 @@
     <string name="username_text">请输入您的用户名</string>
     <string name="password_text">请输入您的密码</string>
     <string name="minutes">分钟</string>
+    <string name="driver_text_1">您的司机将在</string>
+    <string name="driver_text_2">分钟之内到达</string>
 
     <string name="title_activity_driver_home">司机主页</string>
 
