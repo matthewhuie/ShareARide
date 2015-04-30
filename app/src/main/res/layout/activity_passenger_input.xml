@@ -21,7 +21,7 @@
             android:layout_alignParentTop="true"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="64dp"
-            android:text="You are currently at"
+            android:text="@string/current_location"
             android:textColor="@android:color/white"
             android:textSize="28sp"/>
 
@@ -33,7 +33,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="80dp"
             android:layout_marginTop="16dp"
-            android:text="here!"
+            android:text="@string/current_text"
             android:textColor="@android:color/white"
             android:textSize="32sp"
             android:textStyle="bold"
@@ -51,7 +51,7 @@
                 android:id="@+id/whereToGoText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Where do you want to go?"
+                android:text="@string/destination_text"
                 android:textColor="@color/material_grey_500"
                 android:textSize="20sp"/>
 
@@ -76,7 +76,7 @@
                 android:id="@+id/ridersText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="How many people are with you?"
+                android:text="@string/riders_text"
                 android:textColor="@color/material_grey_500"
                 android:textSize="20sp"/>
 
@@ -92,7 +92,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/ridersInput"
-                android:text="Number of Riders"
+                android:text="@string/num_riders_text"
                 android:textColor="@color/material_grey_500"
                 android:textSize="20sp"/>
 
@@ -109,7 +109,7 @@
                 android:id="@+id/moodText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="What is your current mood?"
+                android:text="@string/mood_text"
                 android:textColor="@color/material_grey_500"
                 android:textSize="20sp"/>
 
@@ -131,7 +131,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/material_red_500"
-            android:text="Request a Ride"
+            android:text="@string/ride_request_text"
             android:theme="@style/Theme.SARTheme.Button"
             android:layout_gravity="center"
             android:layout_alignParentBottom="true"/>
