@@ -34,7 +34,7 @@
     <string name="driver_text_2"> min away from you</string>
     <string name="complete_task_text">Complete Task</string>
     <string name="task_completed_text">Task Completed!</string>
-
+    <string name="your_destination">Your destination:</string>
 
     <string name="title_activity_driver_home">DriverHome</string>
 
