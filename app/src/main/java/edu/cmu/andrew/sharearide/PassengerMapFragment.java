@@ -301,8 +301,7 @@ public class PassengerMapFragment extends Fragment {
         df1.setRoundingMode(RoundingMode.DOWN);
 
       mMapText.setText(getString(R.string.estimated_fare) + " " + df.format(estimatedFare)
-              + "\n" + getString(R.string.accumulated_fare) + " " + df.format(estimatedFare)
-              + "\n" + getString(R.string.max_time) + " " + df1.format(estimatedDuration) + " " + getString(R.string.minutes));
+                     + "\n" + getString(R.string.max_time) + " " + df1.format(estimatedDuration) + " " + getString(R.string.minutes));
     }
 
     private String[] calculatePriceAndTime (String originTxt, String destinationTxt) {
