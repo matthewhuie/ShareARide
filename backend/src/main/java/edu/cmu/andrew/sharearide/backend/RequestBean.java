@@ -10,7 +10,6 @@ public class RequestBean {
     private double dstLongitude;
     private double dstLatitude;
     private double fare;
-    private String latestTime;
     private float passRating;
     private float driverRating;
     private String startTime;
@@ -20,6 +19,16 @@ public class RequestBean {
     private int numOfRiders;
     private double estimatedTime;
     private double actualDistance;
+
+    public double getEstimatedFare() {
+        return estimatedFare;
+    }
+
+    public void setEstimatedFare(double estimatedFare) {
+        this.estimatedFare = estimatedFare;
+    }
+
+    private double estimatedFare;
 
     public RequestBean(){
 
@@ -124,14 +133,6 @@ public class RequestBean {
 
     public void setFare(double fare) {
         this.fare = fare;
-    }
-
-    public String getLatestTime() {
-        return latestTime;
-    }
-
-    public void setLatestTime(String latestTime) {
-        this.latestTime = latestTime;
     }
 
     public float getPassRating() {
