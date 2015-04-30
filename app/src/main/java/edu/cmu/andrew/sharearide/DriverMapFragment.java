@@ -310,7 +310,7 @@ public class DriverMapFragment extends Fragment {
     new UpdateFareTask (PricingAlgorithm.calcFinalPrice (
         rb.getDistanceEstimated (), rb.getEstimatedTime (),
         rb.getActualDistance () + previous.getDistance () * mContext.MeterToMile,
-        0 + previous.getDuration () / mContext.SecToMin)
+        rb.getActualDuration () + previous.getDuration () / mContext.SecToMin)
     ).execute (rb.getRequestId ());
 
     if (requests.size () == 0) {

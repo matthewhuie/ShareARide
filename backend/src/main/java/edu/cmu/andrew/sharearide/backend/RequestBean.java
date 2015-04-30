@@ -19,6 +19,7 @@ public class RequestBean {
     private int numOfRiders;
     private double estimatedTime;
     private double actualDistance;
+  private double actualDuration;
 
     public double getEstimatedFare() {
         return estimatedFare;
@@ -189,5 +190,13 @@ public class RequestBean {
 
   public void setActualDistance (double actualDistance) {
     this.actualDistance = actualDistance;
+  }
+
+  public double getActualDuration () {
+    return actualDuration;
+  }
+
+  public void setActualDuration (double actualDuration) {
+    this.actualDuration = actualDuration;
   }
 }

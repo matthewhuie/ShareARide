@@ -382,6 +382,7 @@ public class MyEndpoint {
           ub.setEstimatedTime (rs.getDouble (15));
           ub.setActualDistance (rs.getDouble (16));
           ub.setEstimatedFare (rs.getDouble (17));
+        ub.setActualDuration (rs.getDouble (18));
         al.add (ub);
       }
       disconnect (conn);
@@ -476,18 +477,19 @@ public class MyEndpoint {
       Statement statement = conn.createStatement ();
       result = statement.executeUpdate ("INSERT INTO Request (request_id, pass_user_id, source_longitude, source_latitude, " +
           "dest_longitude, dest_latitude, fare, pass_rating, driver_rating, start_time, end_time," +
-          "is_served, estimated_distance,num_riders,estimated_time,actual_distance,estimated_fare) " +
+          "is_served, estimated_distance,num_riders,estimated_time,actual_distance,estimated_fare,actual_duration) " +
           "VALUES (" + rb.getRequestId () + ", " + rb.getPassUserId () + ", " + rb.getSrcLongitude () +
           ", " + rb.getSrcLatitude () + ", " + rb.getDstLongitude () + ", " + rb.getDstLatitude () +
           ", " + rb.getFare () + "," + rb.getPassRating () + ", " +
           rb.getDriverRating () + ", " +calendar.getTimeInMillis()+"," + rb.getEndTime () + ", " +
-          rb.isServed () + ", " + rb.getDistanceEstimated () + ", " + rb.getNumOfRiders () + ", " + rb.getEstimatedTime() +"," + rb.getActualDistance()+"," + rb.getEstimatedFare() +") " +
+          rb.isServed () + ", " + rb.getDistanceEstimated () + ", " + rb.getNumOfRiders () + ", " + rb.getEstimatedTime() +
+          "," + rb.getActualDistance()+"," + rb.getEstimatedFare() +", " + rb.getActualDuration () + ") " +
           "ON DUPLICATE KEY UPDATE pass_user_id=VALUES(pass_user_id), " +
           "source_longitude=VALUES(source_longitude), source_latitude=VALUES(source_latitude), dest_longitude=VALUES(dest_longitude), " +
           "dest_latitude=VALUES(dest_latitude), fare=VALUES(fare),pass_rating=VALUES(pass_rating), " +
           "driver_rating=VALUES(driver_rating), start_time=VALUES(start_time), end_time=VALUES(end_time), is_served=VALUES(is_served), " +
           "estimated_distance=VALUES(estimated_distance), " + "num_riders=VALUES(num_riders)," + "estimated_time=VALUES(estimated_time),"
-              + "actual_distance=VALUES(actual_distance)," + "estimated_fare=VALUES(estimated_fare)",  Statement.RETURN_GENERATED_KEYS);
+              + "actual_distance=VALUES(actual_distance)," + "estimated_fare=VALUES(estimated_fare)," + "actual_duration=VALUES(actual_duration)",  Statement.RETURN_GENERATED_KEYS);
 
         ResultSet rs = statement.getGeneratedKeys();
         rs.next();
