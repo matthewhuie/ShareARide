@@ -315,6 +315,7 @@ public class DriverMapFragment extends Fragment {
       String key = "key=" + getString (R.string.google_maps_places_key);
       int minTimeDistance = Integer.MAX_VALUE;
       DirectionsJSONParser minParser = null;
+      String username = "";
       String origin = "origin=" + data[0].longitude + "," + data[0].latitude + "&";
 
       for (int i = 1; i < data.length; i++) {
@@ -331,13 +332,16 @@ public class DriverMapFragment extends Fragment {
             minTimeDistance = timeDistance;
             minParser = directions;
           }
+
+          username = (EndPointManager.getEndpointInstance ().getUserByID (userID).execute ()).getUserName ();
         } catch (JSONException jsone) {
           Log.i ("Hit the JSON error: ", jsone.toString ());
+        } catch (IOException ioe) {
+          Log.i ("Hit the IO error: ", ioe.toString ());
         }
       }
 
-      String username = (EndPointManager.getEndpointInstance ().getUserByID (userID).execute ()).getUserName ();
-      mMapText.setText ("Dropping off " + username);
+      updateMapText ("Dropping off " + username);
 
       return minParser;
     }
@@ -435,4 +439,8 @@ public class DriverMapFragment extends Fragment {
       handler.postDelayed (call, 20 * 1000);
     }
   };
+
+  private void updateMapText (String text) {
+    mMapText.setText (text);
+  }
 }
