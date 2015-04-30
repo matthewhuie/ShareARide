@@ -15,7 +15,10 @@ import android.widget.TextView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.json.JSONException;
@@ -105,8 +108,37 @@ public class DriverMapFragment extends Fragment {
     mMap.setMyLocationEnabled (true);
   }
 
+    private void setUpPassLocation (double pass_latitude, double pass_longitude) {
+        Log.i ("add marker", "method executed");
+        if (mMap != null) {
+            Log.i ("map not null", "method executed");
+            System.out.println ("In setUpPassLocation" + pass_latitude + pass_longitude);
+            mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (new LatLng (pass_latitude, pass_longitude), 13));
+            //Marker marker_origin = mMap.addMarker(new MarkerOptions()
+            //      .position(new LatLng(latitude, longitude))
+            //    .title("Your pickup location: " + pickUpLocation));
+            Marker marker_destination = mMap.addMarker (new MarkerOptions()
+                    .position (new LatLng (pass_latitude, pass_longitude))
+                    .icon (BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                    .title ("Pick up your passenger here!"));
+        }
+    }
+
+    private void setUpDestination (LatLng latlng) {
+        Log.i ("add marker", "method executed");
+        if (mMap != null) {
+            Log.i ("map not null", "method executed");
+            mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (latlng, 13));
+            Marker marker_destination = mMap.addMarker (new MarkerOptions ()
+                    .position (latlng)
+                    .title ("Current destination"));
+        }
+    }
+
+
   private void initTrip () {
     trip = new ArrayList<TripSegment> ();
+    mMapText.setText ("Waiting for requests...");
     new AsyncTask<Integer, Void, Void> (){
       @Override
       protected Void doInBackground(Integer... params) {
@@ -165,8 +197,6 @@ public class DriverMapFragment extends Fragment {
       }
     }.execute (mContext.getUserID ());
 
-    // PricingAlgorithm.calcFinalPrice HERE!!
-
     trip = null;
   }
 
@@ -189,7 +219,8 @@ public class DriverMapFragment extends Fragment {
 
         @Override
         protected void onPostExecute (RequestBean rb) {
-          startRequest (rb);
+          setUpPassLocation (rb.getSrcLatitude(), rb.getSrcLongitude());
+          startRequest(rb);
         }
       }.execute (requestID);
     }
@@ -240,8 +271,19 @@ public class DriverMapFragment extends Fragment {
     TripSegment previous = trip.get (trip.size () - 1);
     previous.setCompleted (true);
 
+    double pastFare = PricingAlgorithm.calcTripSegmentPrice (previous);
+    UpdateFareTask uft = new UpdateFareTask (pastFare);
+    for (int request : previous.getRequests ()) {
+      uft.execute (request);
+    }
+
     List<Integer> passengers = previous.getRequests ();
-    passengers.remove (new Integer (rb.getPassUserId ()));
+    passengers.remove (new Integer (rb.getRequestId ()));
+
+    new UpdateFareTask (PricingAlgorithm.calcFinalPrice (
+        rb.getDistanceEstimated (), rb.getEstimatedTime (), 0, 0)
+    ).execute (rb.getRequestId ());
+
     if (passengers.size () == 0) {
       endTrip ();
     } else {
@@ -306,6 +348,9 @@ public class DriverMapFragment extends Fragment {
             .addAll (directions)
             .width (10)
             .color (Color.rgb (1, 169, 212)));
+
+        setUpDestination(parser.getDestination ());
+
       } catch (JSONException jsone) {
         Log.i ("Hit the JSON error: ", jsone.toString ());
       }
@@ -375,7 +420,6 @@ public class DriverMapFragment extends Fragment {
     public void run() {
       //This is where my sync code will be, but for testing purposes I only have a Log statement
       //will run every 20 seconds
-      mMapText.setText ("Waiting for requests...");
       new PollTask().execute (mContext.getUserID ());
       mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (
           new LatLng (mContext.getLatitude (), mContext.getLongitude ()), 15));

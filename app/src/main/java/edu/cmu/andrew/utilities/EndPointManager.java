@@ -22,7 +22,7 @@ public class EndPointManager {
             Log.i("API Backend Connection: ", myApiService.toString());
 
         }
-
+        Log.i("myapi exist: ", myApiService.toString());
         return myApiService;
 
     }

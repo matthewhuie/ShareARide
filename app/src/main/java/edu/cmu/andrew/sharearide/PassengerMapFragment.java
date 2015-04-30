@@ -127,9 +127,6 @@ public class PassengerMapFragment extends Fragment {
       Log.i ("map not null", "method executed");
       System.out.println ("In setUpDestionation" + dest_latitude + dest_longitude);
       mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (new LatLng (dest_latitude, dest_longitude), 13));
-      //Marker marker_origin = mMap.addMarker(new MarkerOptions()
-      //      .position(new LatLng(latitude, longitude))
-      //    .title("Your pickup location: " + pickUpLocation));
       Marker marker_destination = mMap.addMarker (new MarkerOptions ()
           .position (new LatLng (dest_latitude, dest_longitude))
           .title ("Your destination: " + destination));
@@ -362,7 +359,8 @@ public class PassengerMapFragment extends Fragment {
         userName = urls[1];
         try {
       myApiService = EndPointManager.getEndpointInstance ();
-      MessageBean mb = myApiService.createNewRequest (userName, latitude, longitude, dest_latitude, dest_longitude,numOfRiders,estimatedDistance,estimatedDuration,estimatedFare).execute();
+            Log.i ("end point created: ", myApiService.toString());
+      MessageBean mb = myApiService.createNewRequest (userName, latitude, longitude, dest_latitude, dest_longitude,numOfRiders,estimatedDistance,estimatedDuration).execute();
       request_id = mb.getRequestId();
 
       //change the 0 to slider
