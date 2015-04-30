@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -42,6 +43,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import edu.cmu.andrew.sharearide.backend.shareARideApi.ShareARideApi;
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.MessageBean;
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.RequestBean;
+import edu.cmu.andrew.sharearide.backend.shareARideApi.model.TripBean;
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.UserBean;
 
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.UserBeanCollection;
@@ -480,60 +482,77 @@ public class PassengerMapFragment extends Fragment {
       int driverID = 0;
       int minDuration = 100000;
       int durationVal = 0;
+      int maxNumOfRider = 0;
 
       if (taxis.getItems () != null) {
         for (UserBean taxi : taxis.getItems ()) {
-          taxiLatitude = taxi.getLatitude ();
-          taxiLongitude = taxi.getLongitude ();
-          driverID = taxi.getUserID ();
+            taxiLatitude = taxi.getLatitude();
+            taxiLongitude = taxi.getLongitude();
+            driverID = taxi.getUserID();
 
-          LatLng currTaxi = new LatLng (taxiLatitude, taxiLongitude);
+                LatLng currTaxi = new LatLng(taxiLatitude, taxiLongitude);
 
-          String place_url = mContext.REV_GEOCODE_BASE_URL + taxiLatitude + "," + taxiLongitude + "&key=" + getString (R.string.google_maps_places_key);
-
-
-          try {
-
-            String json = mContext.getRemoteJSON (place_url);
-            JSONObject routeObject = new JSONObject (json);
-            JSONArray results = routeObject.getJSONArray ("results");
-            JSONObject result = (JSONObject) results.get (0);
-            taxiPlaceTxt = result.get ("formatted_address").toString ();
-
-
-          } catch (org.json.JSONException jsone) {
-            Log.i ("Hit the JSON error: ", jsone.toString ());
-          }
+                String place_url = mContext.REV_GEOCODE_BASE_URL + taxiLatitude + "," + taxiLongitude + "&key=" + getString(R.string.google_maps_places_key);
+                try {
+                    String json = mContext.getRemoteJSON(place_url);
+                    JSONObject routeObject = new JSONObject(json);
+                    JSONArray results = routeObject.getJSONArray("results");
+                    JSONObject result = (JSONObject) results.get(0);
+                    taxiPlaceTxt = result.get("formatted_address").toString();
+                } catch (org.json.JSONException jsone) {
+                    Log.i("Hit the JSON error: ", jsone.toString());
+                }
 
 
-          if (!taxiPlaceTxt.equals ("")) {
+                if (!taxiPlaceTxt.equals("")) {
 
-            String url = mContext.DIRECTION_BASE_URL + "origin=" + mContext.getLatitude() + "," + mContext.getLongitude() + "&destination=" + taxiLatitude + "," + taxiLongitude + "&key=" + getString (R.string.google_maps_places_key);
+                    String url = mContext.DIRECTION_BASE_URL + "origin=" + mContext.getLatitude() + "," + mContext.getLongitude() + "&destination=" + taxiLatitude + "," + taxiLongitude + "&key=" + getString(R.string.google_maps_places_key);
+                    try {
 
+                        String json = mContext.getRemoteJSON(url);
+                        JSONObject routeObject = new JSONObject(json);
+                        JSONArray routes = routeObject.getJSONArray("routes");
+                        JSONObject route = (JSONObject) routes.get(0);
+                        JSONArray legs = route.getJSONArray("legs");
+                        JSONObject leg = (JSONObject) legs.get(0);
+                        JSONObject duration = (JSONObject) leg.get("duration");
+                        durationVal = Integer.valueOf(duration.get("value").toString());
 
-            try {
+                    } catch (org.json.JSONException jsone) {
+                        Log.i("Hit the JSON error: ", jsone.toString());
+                    }
 
-              String json = mContext.getRemoteJSON (url);
-              JSONObject routeObject = new JSONObject (json);
-              JSONArray routes = routeObject.getJSONArray ("routes");
-              JSONObject route = (JSONObject) routes.get (0);
-              JSONArray legs = route.getJSONArray ("legs");
-              JSONObject leg = (JSONObject) legs.get (0);
-              JSONObject duration = (JSONObject) leg.get ("duration");
-              durationVal = Integer.valueOf (duration.get ("value").toString ());
+                }
 
-            } catch (org.json.JSONException jsone) {
-              Log.i ("Hit the JSON error: ", jsone.toString ());
+            int moodType = (((Spinner) mLayout.findViewById (R.id.moodText)).getSelectedItemPosition ());
+
+            String strMoodType = moodType == 0 ? "Save Money" : "Other";
+
+            if(strMoodType.equals("Save Money")) {
+
+                TripBean tb = EndPointManager.getEndpointInstance ().getTrip(driverID).execute ();
+                int currNumOfRider = tb.getNumOfRiders();
+
+                if (currNumOfRider > maxNumOfRider) {
+
+                    minDuration = durationVal;
+                    minTaxiLatitude = taxiLatitude;
+                    minTaxiLongitude = taxiLongitude;
+                    minDriverID = driverID;
+                }
             }
 
-          }
-          if (durationVal != 0 && durationVal < minDuration) {
-            minDuration = durationVal;
-            minTaxiLatitude = taxiLatitude;
-            minTaxiLongitude = taxiLongitude;
-            minDriverID = driverID;
-          }
 
+            else{
+
+              if (durationVal != 0 && durationVal < minDuration) {
+
+                  minDuration = durationVal;
+                  minTaxiLatitude = taxiLatitude;
+                  minTaxiLongitude = taxiLongitude;
+                  minDriverID = driverID;
+              }
+            }
         }
       }
 
