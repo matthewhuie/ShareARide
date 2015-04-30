@@ -231,7 +231,7 @@ public class PassengerMapFragment extends Fragment {
 //      mMapText.setText ("Estimated Fare: " + df.format (estimatedFare));
       mMapText.setText (getString(R.string.estimated_fare) +" " + df.format (estimatedFare)
               +"\n" +getString(R.string.accumulated_fare) +" "+ df.format (estimatedFare)
-              +"\n" +getString(R.string.max_time) +" "+ df1.format(estimatedDuration) + " minutes");
+              +"\n" +getString(R.string.max_time) +" "+ df1.format(estimatedDuration) + getString(R.string.minutes));
     //  mMapText. (getString(R.string.accumulated_fare)  + df.format (estimatedFare));
     }
 
