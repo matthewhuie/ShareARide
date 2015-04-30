@@ -412,8 +412,6 @@ public class DriverMapFragment extends Fragment {
           }
 
           username = (EndPointManager.getEndpointInstance ().getUserByID (userID).execute ()).getUserName ();
-          updateMapText ("Dropping off " + username);
-          updateButton (false, rb);
         } catch (JSONException jsone) {
           Log.i ("Hit the JSON error: ", jsone.toString ());
         } catch (IOException ioe) {
@@ -439,13 +437,8 @@ public class DriverMapFragment extends Fragment {
             .width (10)
             .color (Color.rgb (1, 169, 212)));
 
-        /**if (isPickUp) {
-          updateMapText ("Picking up " + username);
-          updateButton ("Picked up " + username, true, rb);
-        } else {
-          updateMapText ("Dropping off " + username);
-          updateButton ("Dropped off " + username, false, rb);
-        }*/
+        updateMapText ("Dropping off " + username);
+        updateButton (false, rb);
 
         setUpDestination(destination);
         setUpPassLocation(source);
