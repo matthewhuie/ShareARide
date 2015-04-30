@@ -91,7 +91,7 @@ public class PassengerMapFragment extends Fragment {
 
     private void pollForMessages() {
 
-        Sync sync = new Sync(call,2*1000);
+        Sync sync = new Sync(call,10*1000);
     }
 
 
@@ -144,19 +144,16 @@ public class PassengerMapFragment extends Fragment {
 
             StringBuilder sb = new StringBuilder();
 
-            if(rb.getEndTime()!=null && rb.getStartTime()!=null)
-                sb.append(getString(R.string.travel_time)).append(" ").append(df1.format
-                        ((Double.parseDouble(rb.getEndTime())-Double.parseDouble(rb.getStartTime()))/(1000*60)))
-                        .append(" ").append(getString(R.string.minutes)).append("\n");
-            else{
-                sb.append(getString(R.string.estimated_fare) + " " + df.format(estimatedFare)
-                        + "\n" + getString(R.string.accumulated_fare) + " " + df.format(estimatedFare)
-                        + "\n" + getString(R.string.max_time) + " " + df1.format(estimatedDuration) + " " + getString(R.string.minutes));
-            }
-            if(rb.getFare()!=0.0)
-                sb.append(getString(R.string.actual_fare)).append(" ").append(df.format(rb.getFare()));
+            mMapText.setText(getString(R.string.estimated_fare) + " " + df.format(estimatedFare)
+                    + "\n" + getString(R.string.accumulated_fare) + " " + df.format(estimatedFare)
+                    + "\n" + getString(R.string.max_time) + " " + df1.format(estimatedDuration) + " " + getString(R.string.minutes));
 
-                 mMapText.setText(sb.toString());
+
+              sb.append(getString(R.string.actual_fare)).append(" ").append(df.format(rb.getFare())).append("\n");
+              sb.append(getString(R.string.actual_distance)).append(" ").append(df.format(rb.getActualDistance())).append(" ").append(getString(R.string.miles));
+              sb.append(getString(R.string.travel_time)).append(rb.getActualDuration()).append("\n");
+
+                 mMapSecondaryText.setText(sb.toString());
 
         }
 
