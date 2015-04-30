@@ -26,12 +26,21 @@
             android:textColor="@color/material_grey_500">
         </TextView>
 
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_margin="10dp"
+        android:background="@drawable/card_background"
+        android:padding="16dp"
+        android:layout_alignParentBottom="true" >
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/pass_map_secondary_text"
             android:textSize="18sp"
-            android:layout_alignParentBottom="true"
             android:textColor="@color/material_grey_500">
         </TextView>
 
