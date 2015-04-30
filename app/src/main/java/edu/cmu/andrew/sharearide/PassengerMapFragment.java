@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,6 +41,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import edu.cmu.andrew.sharearide.backend.shareARideApi.ShareARideApi;
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.MessageBean;
+import edu.cmu.andrew.sharearide.backend.shareARideApi.model.RequestBean;
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.UserBean;
 
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.UserBeanCollection;
@@ -56,6 +58,8 @@ public class PassengerMapFragment extends Fragment {
   private double dest_latitude = 0;
   private double dest_longitude = 0;
   private RelativeLayout mLayout;
+    DecimalFormat df = new DecimalFormat ("'$'0.00");
+    DecimalFormat df1 = new DecimalFormat("#.##");
   private SARActivity mContext;
   private int numOfRiders;
     double estimatedDistance = 0.0;
@@ -66,6 +70,7 @@ public class PassengerMapFragment extends Fragment {
   private TextView mMapSecondaryText;
   private long startTime;
   private long endTime;
+    public final Handler handler = new Handler ();
 
     @Override
   public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -79,10 +84,72 @@ public class PassengerMapFragment extends Fragment {
     longitude = mContext.getLongitude();
       setUpMapIfNeeded ();
         selectDriver();
+        pollForMessages();
     return mLayout;
   }
 
-  @Override
+    private void pollForMessages() {
+
+        Sync sync = new Sync(call,2*1000);
+    }
+
+
+    final private Runnable call = new Runnable() {
+        public void run() {
+            //This is where my sync code will be, but for testing purposes I only have a Log statement
+            //will run every 2 seconds
+            new AsyncPoll().execute(mContext.getUserID());
+            handler.postDelayed(call,2*1000);
+        }
+    };
+
+    public class Sync {
+        Runnable task;
+
+        public Sync(Runnable task, long time) {
+            this.task = task;
+            handler.removeCallbacks(task);
+            handler.postDelayed(task, time);
+        }
+    }
+
+    private class AsyncPoll extends AsyncTask <Integer, Void, RequestBean> {
+
+
+        @Override
+        protected RequestBean doInBackground(Integer... params) {
+            MessageBean mb = new MessageBean ();
+            RequestBean rb = new RequestBean();
+            try {
+                mb = EndPointManager.getEndpointInstance ().pollMessage(params[0]).execute ();
+
+                if(mb.getMessage().equalsIgnoreCase("End Request")){
+                    //update end time
+                    myApiService.updateEndTime(mb.getRequestId()).execute();
+                    //get request row -
+                    rb =  myApiService.getRequest(mb.getRequestId()).execute();
+                }
+
+
+            } catch (IOException e) {
+                e.printStackTrace ();
+            }
+            return rb;
+        }
+
+        protected void onPostExecute (RequestBean rb) {
+            mMapText.setText (getString(R.string.travel_time) +" " + df1.format
+                    ((Double.parseDouble(rb.getEndTime())-Double.parseDouble(rb.getStartTime()))/(1000*60))
+                    + " "+getString(R.string.minutes)
+                    +"\n" + getString(R.string.actual_fare) +" "+ df.format (rb.getFare()));
+
+
+        }
+
+
+    }
+
+    @Override
   public void onResume () {
     super.onResume ();
     setUpMapIfNeeded ();
@@ -218,9 +285,9 @@ public class PassengerMapFragment extends Fragment {
       setUpDestination (dest_latitude, dest_longitude, destination);
 
 
-      DecimalFormat df = new DecimalFormat ("'$'0.00");
 
-        DecimalFormat df1 = new DecimalFormat("#.##");
+
+
         df1.setRoundingMode(RoundingMode.DOWN);
 
       mMapText.setText (getString(R.string.estimated_fare) +" " + df.format (estimatedFare)
