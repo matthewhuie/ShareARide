@@ -330,13 +330,16 @@ public class MyEndpoint {
         ub.setDstLongitude (rs.getDouble (5));
         ub.setDstLatitude (rs.getDouble (6));
         ub.setFare (rs.getDouble (7));
-        // *****NEED TO FIX THIS
-        //ub.setLatestTime (rs.getString (8));
-        ub.setPassRating (rs.getInt (9));
-        ub.setDriverRating (rs.getInt (10));
-        //ub.setStartTime (rs.getString (11));
-        //ub.setEndTime (rs.getString (12));
-        ub.setServed (rs.getInt (13));
+        ub.setPassRating (rs.getFloat (8));
+        ub.setDriverRating (rs.getFloat (9));
+        ub.setStartTime (rs.getString (10));
+        ub.setEndTime (rs.getString (11));
+        ub.setServed (rs.getInt (12));
+          ub.setDistanceEstimated (rs.getDouble (13));
+          ub.setNumOfRiders (rs.getInt (14));
+          ub.setEstimatedTime (rs.getDouble (15));
+          ub.setActualDistance (rs.getDouble (16));
+          ub.setEstimatedFare (rs.getDouble (17));
         al.add (ub);
       }
       disconnect (conn);
