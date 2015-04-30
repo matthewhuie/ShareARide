@@ -311,7 +311,7 @@ public class PassengerMapFragment extends Fragment {
 
 
     private void getDirection (String originTxt, String destinationTxt) {
-      String url = mContext.DIRECTION_BASE_URL + "origin=" + longitude + "," + latitude + "&destination=" + dest_longitude + "," + dest_latitude + "&key=" + getString (R.string.google_maps_places_key);
+      String url = mContext.DIRECTION_BASE_URL + "origin=" + mContext.getLatitude() + "," + mContext.getLongitude() + "&destination=" + destinationTxt.replaceAll (" ", "+") + "&key=" + getString (R.string.google_maps_places_key);
       Log.i ("URL for Direction", url);
 
       try {
