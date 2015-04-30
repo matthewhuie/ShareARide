@@ -111,7 +111,7 @@ public class DriverMapFragment extends Fragment {
     private void setUpPassLocation (double pass_latitude, double pass_longitude) {
         Log.i ("add marker", "method executed");
         if (mMap != null) {
-            Log.i ("map not null", "method executed");
+            Log.i ("map not null", "pass location set executed");
             System.out.println ("In setUpPassLocation" + pass_latitude + pass_longitude);
             mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (new LatLng (pass_latitude, pass_longitude), 13));
             //Marker marker_origin = mMap.addMarker(new MarkerOptions()
@@ -127,7 +127,7 @@ public class DriverMapFragment extends Fragment {
     private void setUpDestination (LatLng latlng) {
         Log.i ("add marker", "method executed");
         if (mMap != null) {
-            Log.i ("map not null", "method executed");
+            Log.i ("map not null", "destination set executed");
             mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (latlng, 13));
             Marker marker_destination = mMap.addMarker (new MarkerOptions ()
                     .position (latlng)
@@ -219,8 +219,8 @@ public class DriverMapFragment extends Fragment {
 
         @Override
         protected void onPostExecute (RequestBean rb) {
-          setUpPassLocation (rb.getSrcLatitude(), rb.getSrcLongitude());
           startRequest(rb);
+          setUpPassLocation (rb.getSrcLatitude(), rb.getSrcLongitude());
         }
       }.execute (requestID);
     }
@@ -340,6 +340,7 @@ public class DriverMapFragment extends Fragment {
     protected void onPostExecute (DirectionsJSONParser parser) {
       try {
         List <LatLng> directions = parser.getPolyline ();
+        LatLng destination = parser.getDestination ();
         trip.add (new TripSegment (trip.size (), parser.getSource (), parser.getDestination (),
             parser.getDistance (), parser.getDuration (), requests));
 
@@ -349,7 +350,8 @@ public class DriverMapFragment extends Fragment {
             .width (10)
             .color (Color.rgb (1, 169, 212)));
 
-        setUpDestination(parser.getDestination ());
+        setUpDestination(destination);
+
 
       } catch (JSONException jsone) {
         Log.i ("Hit the JSON error: ", jsone.toString ());
