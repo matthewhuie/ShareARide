@@ -339,8 +339,7 @@ public class DriverMapFragment extends Fragment {
         String destination = "destination=" + request[1].longitude + "," + request[1].latitude + "&";
         String key = "key=" + getString (R.string.google_maps_places_key);
         String json = mContext.getRemoteJSON (mContext.DIRECTION_BASE_URL + origin + destination + key);
-        System.out.println (mContext.DIRECTION_BASE_URL + origin + destination + key);
-        System.out.println (json);
+
         DirectionsJSONParser parser = new DirectionsJSONParser (json, request[0], request[1]);
 
         List <LatLng> directions = parser.getPolyline ();
@@ -516,6 +515,16 @@ public class DriverMapFragment extends Fragment {
       //This is where my sync code will be, but for testing purposes I only have a Log statement
       //will run every 20 seconds
       new PollTask().execute (mContext.getUserID ());
+      new AsyncTask<Integer, Void, Void> () {
+        @Override
+        protected Void doInBackground (Integer... data) {
+          try {
+            EndPointManager.getEndpointInstance ().updateLocation (data[0],
+                mContext.getLatitude (), mContext.getLongitude ()).execute ();
+          } catch (IOException ioe) {}
+          return null;
+        }
+      };
       mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (
           new LatLng (mContext.getLatitude (), mContext.getLongitude ()), 15));
       handler.postDelayed (call, 20 * 1000);
