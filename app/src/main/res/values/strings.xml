@@ -16,10 +16,17 @@
     <string name="passenger">Passenger</string>
     <string name="driver">Driver</string>
     <string name="request_message">Waiting for requests...</string>
-
-
     <string name="wait_message">Please wait...</string>
     <string name="estimated_fare">Estimated Fare: </string>
+    <string name="current_location">You are currently at</string>
+    <string name="current_text">here!</string>
+    <string name="destination_text">Where do you want to go?</string>
+    <string name="riders_text">How many people are with you?</string>
+    <string name="num_riders_text">Number of Riders</string>
+    <string name="mood_text">What is your current mood?</string>
+    <string name="ride_request_text">Request a Ride</string>
+    <string name="username_text">Username</string>
+    <string name="password_text">Password</string>
 
 
     <string name="title_activity_driver_home">DriverHome</string>
