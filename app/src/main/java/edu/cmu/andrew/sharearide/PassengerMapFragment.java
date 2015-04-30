@@ -457,7 +457,7 @@ public class PassengerMapFragment extends Fragment {
 
           if (!taxiPlaceTxt.equals ("")) {
 
-            String url = mContext.DIRECTION_BASE_URL + "origin=" + pickUpLocation.replaceAll (" ", "+") + "&destination=" + taxiPlaceTxt.replaceAll (" ", "+") + "&key=" + getString (R.string.google_maps_places_key);
+            String url = mContext.DIRECTION_BASE_URL + "origin=" + mContext.getLatitude() + "," + mContext.getLongitude() + "&destination=" + taxiLatitude + "," + taxiLongitude + "&key=" + getString (R.string.google_maps_places_key);
 
 
             try {
