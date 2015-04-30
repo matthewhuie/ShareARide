@@ -134,7 +134,7 @@ public class PassengerMapFragment extends Fragment {
       mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (new LatLng (dest_latitude, dest_longitude), 13));
       Marker marker_destination = mMap.addMarker (new MarkerOptions ()
           .position (new LatLng (dest_latitude, dest_longitude))
-          .title ("Your destination: " + destination));
+          .title (getString(R.string.your_destination) + destination));
     }
   }
 
