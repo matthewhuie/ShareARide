@@ -340,6 +340,7 @@ public class MyEndpoint {
     RequestBean rb = getRequest (requestID);
     if (rb != null) {
       rb.setActualDistance (rb.getActualDistance () + distanceToAdd);
+      rb.setActualDuration (rb.getActualDuration () + timeToAdd);
       updateRequest (rb);
       return rb;
     }
