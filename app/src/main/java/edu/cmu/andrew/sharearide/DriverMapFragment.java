@@ -115,9 +115,6 @@ public class DriverMapFragment extends Fragment {
             Log.i ("map not null", "pass location set executed");
             System.out.println ("In setUpPassLocation");
             mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (latlng, 13));
-            //Marker marker_origin = mMap.addMarker(new MarkerOptions()
-            //      .position(new LatLng(latitude, longitude))
-            //    .title("Your pickup location: " + pickUpLocation));
             Marker marker_destination = mMap.addMarker (new MarkerOptions()
                     .position (latlng)
                     .icon (BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
