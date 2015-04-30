@@ -220,13 +220,7 @@ public class DriverMapFragment extends Fragment {
 
         @Override
         protected void onPostExecute (RequestBean rb) {
-<<<<<<< Updated upstream
-          startRequest(rb);
-
-=======
           startRequest (rb);
-          setUpPassLocation (rb.getSrcLatitude (), rb.getSrcLongitude ());
->>>>>>> Stashed changes
         }
       }.execute (requestID);
     }
