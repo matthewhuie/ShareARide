@@ -339,7 +339,8 @@ public class DriverMapFragment extends Fragment {
         String destination = "destination=" + request[1].longitude + "," + request[1].latitude + "&";
         String key = "key=" + getString (R.string.google_maps_places_key);
         String json = mContext.getRemoteJSON (mContext.DIRECTION_BASE_URL + origin + destination + key);
-
+        System.out.println (mContext.DIRECTION_BASE_URL + origin + destination + key);
+        System.out.println (json);
         DirectionsJSONParser parser = new DirectionsJSONParser (json, request[0], request[1]);
 
         List <LatLng> directions = parser.getPolyline ();
