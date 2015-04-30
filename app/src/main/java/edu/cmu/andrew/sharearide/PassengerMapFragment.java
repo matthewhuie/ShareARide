@@ -62,6 +62,7 @@ public class PassengerMapFragment extends Fragment {
   double estimatedFare = 0.0;
   private List<LatLng> directions;
   private TextView mMapText;
+  private TextView mMapSecondaryText;
   private long startTime;
   private long endTime;
 
@@ -72,6 +73,7 @@ public class PassengerMapFragment extends Fragment {
 
       directions = new ArrayList<> ();
     mMapText = (TextView) mLayout.findViewById (R.id.pass_map_text);
+      mMapSecondaryText = (TextView) mLayout.findViewById (R.id.pass_map_secondary_text);
       latitude = mContext.getLatitude ();
     longitude = mContext.getLongitude();
       setUpMapIfNeeded ();
@@ -223,6 +225,7 @@ public class PassengerMapFragment extends Fragment {
       DecimalFormat df = new DecimalFormat ("'$'0.00");
 //      mMapText.setText ("Estimated Fare: " + df.format (estimatedFare));
       mMapText.setText (getString(R.string.estimated_fare)  + df.format (estimatedFare));
+      mMapText.setText (getString(R.string.accumulated_fare)  + df.format (estimatedFare));
     }
 
     private String[] calculatePriceAndTime (String originTxt, String destinationTxt) {

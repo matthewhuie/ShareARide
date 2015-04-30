@@ -13,7 +13,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="128dp"
         android:layout_margin="10dp"
         android:background="@drawable/card_background"
         android:padding="16dp">
@@ -24,18 +24,20 @@
             android:id="@+id/driver_map_text"
             android:textSize="24sp"
             android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
             android:textColor="@color/material_grey_500">
         </TextView>
 
-        <TextView
+        <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/driver_map_secondary_text"
-            android:textSize="24sp"
+            android:id="@+id/driver_map_button"
             android:layout_alignParentBottom="true"
-            android:textColor="@color/material_grey_500">
-
-        </TextView>
+            android:layout_centerHorizontal="true"
+            android:background="@color/material_grey_500"
+            android:theme="@style/Theme.SARTheme.Button"
+            android:visibility="invisible">
+        </Button>
 
     </RelativeLayout>
 

@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -41,7 +42,7 @@ public class DriverMapFragment extends Fragment {
   private RelativeLayout mLayout;
   private SARActivity mContext;
   private TextView mMapText;
-  private TextView mMapSecondaryText;
+  private Button mMapButton;
   private List<LatLng> directions;
   private List<TripSegment> trip;
   private int currentTrip;
@@ -53,7 +54,7 @@ public class DriverMapFragment extends Fragment {
     mContext = (SARActivity) super.getActivity ();
     mLayout = (RelativeLayout) inflater.inflate (R.layout.activity_driver_map, container, false);
     mMapText = (TextView) mLayout.findViewById (R.id.driver_map_text);
-    mMapSecondaryText = (TextView) mLayout.findViewById (R.id.driver_map_secondary_text);
+    mMapButton = (Button) mLayout.findViewById (R.id.driver_map_button);
 
     directions = new ArrayList<> ();
     currentTrip = -1;
@@ -134,7 +135,6 @@ public class DriverMapFragment extends Fragment {
                     .title ("Current destination"));
         }
     }
-
 
   private void initTrip () {
     trip = new ArrayList<TripSegment> ();
@@ -220,8 +220,13 @@ public class DriverMapFragment extends Fragment {
 
         @Override
         protected void onPostExecute (RequestBean rb) {
+<<<<<<< Updated upstream
           startRequest(rb);
 
+=======
+          startRequest (rb);
+          setUpPassLocation (rb.getSrcLatitude (), rb.getSrcLongitude ());
+>>>>>>> Stashed changes
         }
       }.execute (requestID);
     }
@@ -261,7 +266,7 @@ public class DriverMapFragment extends Fragment {
 
     LatLng[] ll = new LatLng[paths.size ()];
     ll = paths.toArray (ll);
-    new NextRouteTask (requests, rb.getPassUserId ()).execute (ll);
+    new NextRouteTask (requests, rb).execute (ll);
   }
 
   private void finishRequest (RequestBean rb) {
@@ -296,7 +301,7 @@ public class DriverMapFragment extends Fragment {
 
       LatLng[] ll = new LatLng[paths.size ()];
       ll = paths.toArray (ll);
-      new NextRouteTask (requests, rb.getPassUserId ()).execute (ll);
+      new NextRouteTask (requests, rb).execute (ll);
     }
   }
 
@@ -304,10 +309,15 @@ public class DriverMapFragment extends Fragment {
 
     List<Integer> requests;
     int userID;
+    boolean isPickUp;
+    String username;
+    RequestBean rb;
 
-    public NextRouteTask (List<Integer> requests, int userID) {
+    public NextRouteTask (List<Integer> requests, RequestBean rb) {
       this.requests = requests;
-      this.userID = userID;
+      this.userID = rb.getPassUserId ();
+      this.isPickUp = isPickUp;
+      this.rb = rb;
     }
 
     @Override
@@ -315,7 +325,6 @@ public class DriverMapFragment extends Fragment {
       String key = "key=" + getString (R.string.google_maps_places_key);
       int minTimeDistance = Integer.MAX_VALUE;
       DirectionsJSONParser minParser = null;
-      String username = "";
       String origin = "origin=" + data[0].longitude + "," + data[0].latitude + "&";
 
       for (int i = 1; i < data.length; i++) {
@@ -341,8 +350,6 @@ public class DriverMapFragment extends Fragment {
         }
       }
 
-      updateMapText ("Dropping off " + username);
-
       return minParser;
     }
 
@@ -360,6 +367,14 @@ public class DriverMapFragment extends Fragment {
             .addAll (directions)
             .width (10)
             .color (Color.rgb (1, 169, 212)));
+
+        if (isPickUp) {
+          updateMapText ("Picking up " + username);
+          updateButton ("Picked up " + username, true, rb);
+        } else {
+          updateMapText ("Dropping off " + username);
+          updateButton ("Dropped off " + username, false, rb);
+        }
 
         setUpDestination(destination);
         setUpPassLocation(source);
@@ -444,5 +459,25 @@ public class DriverMapFragment extends Fragment {
 
   private void updateMapText (String text) {
     mMapText.setText (text);
+  }
+
+  private void updateButton (String text, boolean isPickedUp, RequestBean rb) {
+    mMapButton.setVisibility (View.VISIBLE);
+    mMapButton.setText (text);
+    mMapButton.setOnClickListener (new ActionOnClick (isPickedUp));
+  }
+
+  class ActionOnClick implements View.OnClickListener {
+    boolean isPickedUp;
+    public ActionOnClick (boolean isPickedUp) {
+      this.isPickedUp = isPickedUp;
+    }
+    @Override
+    public void onClick (View v) {
+      if (isPickedUp) {
+      } else {
+
+      }
+    }
   }
 }
