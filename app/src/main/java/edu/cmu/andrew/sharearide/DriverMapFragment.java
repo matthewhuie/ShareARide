@@ -217,15 +217,15 @@ public class DriverMapFragment extends Fragment {
 
         @Override
         protected void onPostExecute (RequestBean rb) {
-          startRequest (rb);
+          toRequest (rb);
         }
       }.execute (requestID);
     }
   }
 
-  private void startRequest (RequestBean rb) {
-    LatLng rSrc = new LatLng (rb.getSrcLatitude (), rb.getSrcLongitude ());
-    LatLng rDst = new LatLng (rb.getDstLatitude (), rb.getDstLongitude ());
+  private void toRequest (RequestBean rb) {
+    LatLng rSrc = new LatLng (mContext.getLatitude (), mContext.getLongitude ());
+    LatLng rDst = new LatLng (rb.getSrcLatitude (), rb.getSrcLongitude ());
 
     List<LatLng> paths = new ArrayList<> ();
     paths.add (rSrc);
@@ -247,6 +247,31 @@ public class DriverMapFragment extends Fragment {
       for (int request : previous.getRequests ()) {
         uft.execute (request);
       }
+    }
+
+    LatLng[] ll = new LatLng[paths.size ()];
+    ll = paths.toArray (ll);
+
+    new ToRequestTask (requests, rb).execute(ll);
+  }
+
+  private void startRequest (RequestBean rb) {
+    LatLng rSrc = new LatLng (rb.getSrcLatitude (), rb.getSrcLongitude ());
+    LatLng rDst = new LatLng (rb.getDstLatitude (), rb.getDstLongitude ());
+
+    List<LatLng> paths = new ArrayList<> ();
+    paths.add (rSrc);
+    paths.add (rDst);
+    List<Integer> requests = new ArrayList<> (trip.get (trip.size () - 1).getRequests ());
+
+    TripSegment previous = trip.get (trip.size () - 1);
+    previous.setDestination (rSrc);
+    previous.setCompleted (true);
+
+    double pastFare = PricingAlgorithm.calcTripSegmentPrice (previous);
+    UpdateFareTask uft = new UpdateFareTask (pastFare);
+    for (int request : previous.getRequests ()) {
+      uft.execute (request);
     }
 
     for (TripSegment ts : trip) {
@@ -296,6 +321,52 @@ public class DriverMapFragment extends Fragment {
     }
   }
 
+  class ToRequestTask extends AsyncTask <LatLng, Void, Void> {
+
+    List<Integer> requests;
+    String username;
+    RequestBean rb;
+
+    public ToRequestTask (List<Integer> requests, RequestBean rb) {
+      this.requests = requests;
+      this.rb = rb;
+    }
+
+    @Override
+    protected Void doInBackground (LatLng... request) {
+      try {
+        String origin = "origin=" + request[0].longitude + "," + request[0].latitude + "&";
+        String destination = "destination=" + request[1].longitude + "," + request[1].latitude + "&";
+        String key = "key=" + getString (R.string.google_maps_places_key);
+        String json = mContext.getRemoteJSON (mContext.DIRECTION_BASE_URL + origin + destination + key);
+
+        DirectionsJSONParser parser = new DirectionsJSONParser (json, request[0], request[1]);
+
+        List <LatLng> directions = parser.getPolyline ();
+        LatLng dest = parser.getDestination ();
+        LatLng source = parser.getSource ();
+        trip.add (new TripSegment (trip.size (), source, dest,
+            parser.getDistance (), parser.getDuration (), requests));
+
+        mMap.clear ();
+        mMap.addPolyline (new PolylineOptions ()
+            .addAll (directions)
+            .width (10)
+            .color (Color.rgb (1, 169, 212)));
+
+        setUpDestination(dest);
+        setUpPassLocation(source);
+
+        username = (EndPointManager.getEndpointInstance ().getUserByID (rb.getPassUserId ()).execute ()).getUserName ();
+        updateMapText ("Picking up " + username);
+        updateButton (true, rb);
+      } catch (JSONException jsone) {}
+        catch (IOException ioe) {}
+
+      return null;
+    }
+  }
+
   class NextRouteTask extends AsyncTask <LatLng, Void, DirectionsJSONParser> {
 
     List<Integer> requests;
@@ -334,6 +405,8 @@ public class DriverMapFragment extends Fragment {
           }
 
           username = (EndPointManager.getEndpointInstance ().getUserByID (userID).execute ()).getUserName ();
+          updateMapText ("Dropping off " + username);
+          updateButton (false, rb);
         } catch (JSONException jsone) {
           Log.i ("Hit the JSON error: ", jsone.toString ());
         } catch (IOException ioe) {
@@ -448,27 +521,30 @@ public class DriverMapFragment extends Fragment {
     }
   };
 
-  /**private void updateMapText (String text) {
+  private void updateMapText (String text) {
     mMapText.setText (text);
   }
 
-  private void updateButton (String text, boolean isPickedUp, RequestBean rb) {
+  private void updateButton (boolean isPickedUp, RequestBean rb) {
     mMapButton.setVisibility (View.VISIBLE);
-    mMapButton.setText (text);
-    mMapButton.setOnClickListener (new ActionOnClick (isPickedUp));
+    mMapButton.setText ("Complete Task");
+    mMapButton.setOnClickListener (new ActionOnClick (isPickedUp, rb));
   }
 
   class ActionOnClick implements View.OnClickListener {
     boolean isPickedUp;
-    public ActionOnClick (boolean isPickedUp) {
+    RequestBean rb;
+    public ActionOnClick (boolean isPickedUp, RequestBean rb) {
       this.isPickedUp = isPickedUp;
+      this.rb = rb;
     }
     @Override
     public void onClick (View v) {
       if (isPickedUp) {
+        startRequest (rb);
       } else {
-
+        finishRequest (rb);
       }
     }
-  }*/
+  }
 }
