@@ -321,7 +321,7 @@ public class DriverMapFragment extends Fragment {
     }
   }
 
-  class ToRequestTask extends AsyncTask <LatLng, Void, Void> {
+  class ToRequestTask extends AsyncTask <LatLng, Void, DirectionsJSONParser> {
 
     List<Integer> requests;
     String username;
@@ -333,7 +333,7 @@ public class DriverMapFragment extends Fragment {
     }
 
     @Override
-    protected Void doInBackground (LatLng... request) {
+    protected DirectionsJSONParser doInBackground (LatLng... request) {
       try {
         String origin = "origin=" + request[0].latitude + "," + request[0].longitude + "&";
         String destination = "destination=" + request[1].latitude + "," + request[1].longitude + "&";
@@ -341,8 +341,19 @@ public class DriverMapFragment extends Fragment {
         String json = mContext.getRemoteJSON (mContext.DIRECTION_BASE_URL + origin + destination + key);
 
         DirectionsJSONParser parser = new DirectionsJSONParser (json, request[0], request[1]);
+        username = (EndPointManager.getEndpointInstance ().getUserByID (rb.getPassUserId ()).execute ()).getUserName ();
 
-        List <LatLng> directions = parser.getPolyline ();
+        return parser;
+      } catch(JSONException jsone){}
+      catch(IOException ioe){}
+
+      return null;
+    }
+
+      @Override
+      protected void onPostExecute (DirectionsJSONParser parser){
+        try {
+        List<LatLng> directions = parser.getPolyline ();
         LatLng dest = parser.getDestination ();
         LatLng source = parser.getSource ();
         trip.add (new TripSegment (trip.size (), source, dest,
@@ -354,16 +365,12 @@ public class DriverMapFragment extends Fragment {
             .width (10)
             .color (Color.rgb (1, 169, 212)));
 
-        setUpDestination(dest);
-        setUpPassLocation(source);
+        setUpDestination (dest);
+        setUpPassLocation (source);
 
-        username = (EndPointManager.getEndpointInstance ().getUserByID (rb.getPassUserId ()).execute ()).getUserName ();
         updateMapText ("Picking up " + username);
         updateButton (true, rb);
-      } catch (JSONException jsone) {}
-        catch (IOException ioe) {}
-
-      return null;
+      } catch(JSONException jsone){}
     }
   }
 
