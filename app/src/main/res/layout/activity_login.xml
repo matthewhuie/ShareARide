@@ -26,7 +26,7 @@
         android:layout_alignStart="@+id/button"
         android:layout_below="@+id/textView"
         android:layout_marginTop="32dp"
-        android:hint="Username"
+        android:hint="@string/username_text"
         android:textColor="@android:color/white"
         android:textColorHint="@android:color/white"/>
 
@@ -37,7 +37,7 @@
         android:layout_alignLeft="@+id/button"
         android:layout_below="@+id/username"
         android:ems="10"
-        android:hint="Password"
+        android:hint="@string/password_text"
         android:inputType="textPassword"
         android:textColor="@android:color/white"
         android:textColorHint="@android:color/white"/>

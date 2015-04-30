@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -41,7 +42,7 @@ public class DriverMapFragment extends Fragment {
   private RelativeLayout mLayout;
   private SARActivity mContext;
   private TextView mMapText;
-  private TextView mMapSecondaryText;
+  private Button mMapButton;
   private List<LatLng> directions;
   private List<TripSegment> trip;
   private int currentTrip;
@@ -53,7 +54,7 @@ public class DriverMapFragment extends Fragment {
     mContext = (SARActivity) super.getActivity ();
     mLayout = (RelativeLayout) inflater.inflate (R.layout.activity_driver_map, container, false);
     mMapText = (TextView) mLayout.findViewById (R.id.driver_map_text);
-    mMapSecondaryText = (TextView) mLayout.findViewById (R.id.driver_map_secondary_text);
+    mMapButton = (Button) mLayout.findViewById (R.id.driver_map_button);
 
     directions = new ArrayList<> ();
     currentTrip = -1;
@@ -108,17 +109,14 @@ public class DriverMapFragment extends Fragment {
     mMap.setMyLocationEnabled (true);
   }
 
-    private void setUpPassLocation (double pass_latitude, double pass_longitude) {
+    private void setUpPassLocation (LatLng latlng) {
         Log.i ("add marker", "method executed");
         if (mMap != null) {
-            Log.i ("map not null", "method executed");
-            System.out.println ("In setUpPassLocation" + pass_latitude + pass_longitude);
-            mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (new LatLng (pass_latitude, pass_longitude), 13));
-            //Marker marker_origin = mMap.addMarker(new MarkerOptions()
-            //      .position(new LatLng(latitude, longitude))
-            //    .title("Your pickup location: " + pickUpLocation));
+            Log.i ("map not null", "pass location set executed");
+            System.out.println ("In setUpPassLocation");
+            mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (latlng, 13));
             Marker marker_destination = mMap.addMarker (new MarkerOptions()
-                    .position (new LatLng (pass_latitude, pass_longitude))
+                    .position (latlng)
                     .icon (BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
                     .title ("Pick up your passenger here!"));
         }
@@ -127,7 +125,7 @@ public class DriverMapFragment extends Fragment {
     private void setUpDestination (LatLng latlng) {
         Log.i ("add marker", "method executed");
         if (mMap != null) {
-            Log.i ("map not null", "method executed");
+            Log.i ("map not null", "destination set executed");
             mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (latlng, 13));
             Marker marker_destination = mMap.addMarker (new MarkerOptions ()
                     .position (latlng)
@@ -135,10 +133,10 @@ public class DriverMapFragment extends Fragment {
         }
     }
 
-
   private void initTrip () {
     trip = new ArrayList<TripSegment> ();
-    mMapText.setText ("Waiting for requests...");
+//    mMapText.setText ("Waiting for requests...");
+    mMapText.setText (getString(R.string.request_message));
     new AsyncTask<Integer, Void, Void> (){
       @Override
       protected Void doInBackground(Integer... params) {
@@ -219,8 +217,7 @@ public class DriverMapFragment extends Fragment {
 
         @Override
         protected void onPostExecute (RequestBean rb) {
-          setUpPassLocation (rb.getSrcLatitude(), rb.getSrcLongitude());
-          startRequest(rb);
+          startRequest (rb);
         }
       }.execute (requestID);
     }
@@ -260,7 +257,7 @@ public class DriverMapFragment extends Fragment {
 
     LatLng[] ll = new LatLng[paths.size ()];
     ll = paths.toArray (ll);
-    new NextRouteTask (requests).execute (ll);
+    new NextRouteTask (requests, rb).execute (ll);
   }
 
   private void finishRequest (RequestBean rb) {
@@ -277,14 +274,14 @@ public class DriverMapFragment extends Fragment {
       uft.execute (request);
     }
 
-    List<Integer> passengers = previous.getRequests ();
-    passengers.remove (new Integer (rb.getRequestId ()));
+    List<Integer> requests = previous.getRequests ();
+    requests.remove (new Integer (rb.getRequestId ()));
 
     new UpdateFareTask (PricingAlgorithm.calcFinalPrice (
         rb.getDistanceEstimated (), rb.getEstimatedTime (), 0, 0)
     ).execute (rb.getRequestId ());
 
-    if (passengers.size () == 0) {
+    if (requests.size () == 0) {
       endTrip ();
     } else {
       for (TripSegment ts : trip) {
@@ -295,16 +292,23 @@ public class DriverMapFragment extends Fragment {
 
       LatLng[] ll = new LatLng[paths.size ()];
       ll = paths.toArray (ll);
-      new NextRouteTask (passengers).execute (ll);
+      new NextRouteTask (requests, rb).execute (ll);
     }
   }
 
   class NextRouteTask extends AsyncTask <LatLng, Void, DirectionsJSONParser> {
 
     List<Integer> requests;
+    int userID;
+    boolean isPickUp;
+    String username;
+    RequestBean rb;
 
-    public NextRouteTask (List<Integer> requests) {
+    public NextRouteTask (List<Integer> requests, RequestBean rb) {
       this.requests = requests;
+      this.userID = rb.getPassUserId ();
+      this.isPickUp = isPickUp;
+      this.rb = rb;
     }
 
     @Override
@@ -328,8 +332,12 @@ public class DriverMapFragment extends Fragment {
             minTimeDistance = timeDistance;
             minParser = directions;
           }
+
+          username = (EndPointManager.getEndpointInstance ().getUserByID (userID).execute ()).getUserName ();
         } catch (JSONException jsone) {
           Log.i ("Hit the JSON error: ", jsone.toString ());
+        } catch (IOException ioe) {
+          Log.i ("Hit the IO error: ", ioe.toString ());
         }
       }
 
@@ -340,6 +348,8 @@ public class DriverMapFragment extends Fragment {
     protected void onPostExecute (DirectionsJSONParser parser) {
       try {
         List <LatLng> directions = parser.getPolyline ();
+        LatLng destination = parser.getDestination ();
+        LatLng source = parser.getSource ();
         trip.add (new TripSegment (trip.size (), parser.getSource (), parser.getDestination (),
             parser.getDistance (), parser.getDuration (), requests));
 
@@ -349,7 +359,18 @@ public class DriverMapFragment extends Fragment {
             .width (10)
             .color (Color.rgb (1, 169, 212)));
 
-        setUpDestination(parser.getDestination ());
+        /**if (isPickUp) {
+          updateMapText ("Picking up " + username);
+          updateButton ("Picked up " + username, true, rb);
+        } else {
+          updateMapText ("Dropping off " + username);
+          updateButton ("Dropped off " + username, false, rb);
+        }*/
+
+        setUpDestination(destination);
+        setUpPassLocation(source);
+        Log.i ("Hit the JSON error: ", String.valueOf(destination.latitude)+String.valueOf(destination.longitude));
+
 
       } catch (JSONException jsone) {
         Log.i ("Hit the JSON error: ", jsone.toString ());
@@ -426,4 +447,28 @@ public class DriverMapFragment extends Fragment {
       handler.postDelayed (call, 20 * 1000);
     }
   };
+
+  /**private void updateMapText (String text) {
+    mMapText.setText (text);
+  }
+
+  private void updateButton (String text, boolean isPickedUp, RequestBean rb) {
+    mMapButton.setVisibility (View.VISIBLE);
+    mMapButton.setText (text);
+    mMapButton.setOnClickListener (new ActionOnClick (isPickedUp));
+  }
+
+  class ActionOnClick implements View.OnClickListener {
+    boolean isPickedUp;
+    public ActionOnClick (boolean isPickedUp) {
+      this.isPickedUp = isPickedUp;
+    }
+    @Override
+    public void onClick (View v) {
+      if (isPickedUp) {
+      } else {
+
+      }
+    }
+  }*/
 }

@@ -4,7 +4,6 @@
     <string name="app_name">Share-A-Ride</string>
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_driver_passenger">DriverPassenger</string>
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_driver_request">driver_request</string>
     <string name="title_activity_pssnger_requested">PssngerRequested</string>
@@ -16,6 +15,20 @@
     <string name="login">Log in</string>
     <string name="passenger">Passenger</string>
     <string name="driver">Driver</string>
+    <string name="request_message">Waiting for requests...</string>
+    <string name="wait_message">Please wait...</string>
+    <string name="estimated_fare">Maximum Fare: </string>
+    <string name="accumulated_fare">Accumulated Fare: </string>
+    <string name="current_location">You are currently at</string>
+    <string name="current_text">here!</string>
+    <string name="destination_text">Where do you want to go?</string>
+    <string name="riders_text">How many people are with you?</string>
+    <string name="num_riders_text">Number of Riders</string>
+    <string name="mood_text">What is your current mood?</string>
+    <string name="ride_request_text">Request a Ride</string>
+    <string name="username_text">Username</string>
+    <string name="password_text">Password</string>
+
 
     <string name="title_activity_driver_home">DriverHome</string>
 

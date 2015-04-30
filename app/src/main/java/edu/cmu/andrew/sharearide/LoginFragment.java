@@ -26,7 +26,7 @@ public class LoginFragment extends Fragment {
 
   private SARActivity mContext;
   private RelativeLayout mLayout;
-  private String userType;
+  private int userType;
   private Button mButton;
   private String secret;
   private String message = "";
@@ -42,12 +42,14 @@ public class LoginFragment extends Fragment {
       public void onClick (View v) {
         mContext.setUsername (((EditText) mLayout.findViewById (R.id.username)).getText ().toString ());
         secret = computeMD5 (((EditText) mLayout.findViewById (R.id.password)).getText ().toString ());
-        userType = (((Spinner) mLayout.findViewById (R.id.userType)).getSelectedItem ().toString ()).split (" ") [3];
+        userType = (((Spinner) mLayout.findViewById (R.id.userType)).getSelectedItemPosition ());
+
+        String strUserType = userType == 0 ? "Passenger" : "Driver";
 
         disableButton ();
         new LoginTask ().execute (mContext.getUsername (), secret,
             String.valueOf (mContext.getLatitude ()),
-            String.valueOf (mContext.getLongitude ()), userType);
+            String.valueOf (mContext.getLongitude ()), strUserType);
       }
     });
 
@@ -57,13 +59,14 @@ public class LoginFragment extends Fragment {
   }
 
   private void disableButton () {
-    mButton.setText ("Please wait...");
+    mButton.setText (R.string.wait_message);
     mButton.setBackgroundColor (getResources ().getColor (R.color.material_red_900));
     mButton.setClickable (false);
   }
 
   private void resetButton () {
-    mButton.setText ("Log in");
+//    mButton.setText ("Log in");
+    mButton.setText (R.string.login);
     mButton.setBackgroundColor (getResources ().getColor (R.color.material_red_700));
     mButton.setClickable (true);
   }
@@ -104,7 +107,7 @@ public class LoginFragment extends Fragment {
     protected void onPostExecute (UserBean result) {
       if (result != null) {
         message = "Authentication successful!";
-        if (userType.equals ("Passenger")) {
+        if (userType == 0) {
           mContext.initPassenger ();
         } else {
           mContext.initDriver ();

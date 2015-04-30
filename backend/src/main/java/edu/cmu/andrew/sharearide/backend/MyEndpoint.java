@@ -140,10 +140,19 @@ public class MyEndpoint {
   }
 
 
-  @ApiMethod (name = "getUser")
-  public UserBean getUserDetails (@Named ("userName") String userName) {
-    UserBean ub = getUser (userName);
-    return ub;
+  //@ApiMethod (name = "getUser")
+  //public UserBean getUserDetails (@Named ("userName") String userName) {
+  //  UserBean ub = getUser (userName);
+  //  return ub;
+  //}
+
+  @ApiMethod (name = "getUserByID")
+  public UserBean getUserByID (@Named ("userID") int userID) {
+    List<UserBean> users = queryUser ("user_id=" + userID);
+    if (users != null && users.size () > 0) {
+      return users.get (0);
+    }
+    return null;
   }
 
   @ApiMethod (name = "userLogin")
