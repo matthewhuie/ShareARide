@@ -113,7 +113,7 @@ public class MyEndpoint {
       rb.setEstimatedFare(estiFare);
     int request_id = updateRequest (rb);
     MessageBean mb = new MessageBean ();
-     // System.out.println(result + "----result");
+      System.out.println(request_id + "----result");
     if (request_id == -1)
       mb.setStatus (false);
     else {
