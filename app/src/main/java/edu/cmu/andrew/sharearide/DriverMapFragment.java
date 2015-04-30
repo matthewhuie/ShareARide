@@ -558,6 +558,7 @@ public class DriverMapFragment extends Fragment {
     }
     @Override
     public void onClick (View v) {
+      disableButton ();
       if (isPickedUp) {
         startRequest (rb);
       } else {
