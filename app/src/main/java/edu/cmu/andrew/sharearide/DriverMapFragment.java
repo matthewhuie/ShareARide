@@ -240,7 +240,8 @@ public class DriverMapFragment extends Fragment {
 
       double pastFare = PricingAlgorithm.calcTripSegmentPrice (previous);
       UpdateFareTask uft = new UpdateFareTask (pastFare);
-      UpdateDistanceTimeTask udtt = new UpdateDistanceTimeTask (previous.getDistance (), previous.getDuration ());
+      UpdateDistanceTimeTask udtt = new UpdateDistanceTimeTask (previous.getDistance () * mContext.MeterToMile,
+          previous.getDuration () / mContext.SecToMin);
       for (int request : previous.getRequests ()) {
         uft.execute (request);
         udtt.execute (request);
@@ -268,7 +269,8 @@ public class DriverMapFragment extends Fragment {
 
     double pastFare = PricingAlgorithm.calcTripSegmentPrice (previous);
     UpdateFareTask uft = new UpdateFareTask (pastFare);
-    UpdateDistanceTimeTask udtt = new UpdateDistanceTimeTask (previous.getDistance (), previous.getDuration ());
+    UpdateDistanceTimeTask udtt = new UpdateDistanceTimeTask (previous.getDistance () * mContext.MeterToMile,
+        previous.getDuration () / mContext.SecToMin);
     for (int request : previous.getRequests ()) {
       uft.execute (request);
       udtt.execute (request);
@@ -295,7 +297,8 @@ public class DriverMapFragment extends Fragment {
 
     double pastFare = PricingAlgorithm.calcTripSegmentPrice (previous);
     UpdateFareTask uft = new UpdateFareTask (pastFare);
-    UpdateDistanceTimeTask udtt = new UpdateDistanceTimeTask (previous.getDistance (), previous.getDuration ());
+    UpdateDistanceTimeTask udtt = new UpdateDistanceTimeTask (previous.getDistance () * mContext.MeterToMile,
+        previous.getDuration () / mContext.SecToMin);
     for (int request : previous.getRequests ()) {
       uft.execute (request);
       udtt.execute (request);
@@ -306,8 +309,8 @@ public class DriverMapFragment extends Fragment {
 
     new UpdateFareTask (PricingAlgorithm.calcFinalPrice (
         rb.getDistanceEstimated (), rb.getEstimatedTime (),
-        rb.getActualDistance () + previous.getDistance (),
-        0 + previous.getDuration ())
+        rb.getActualDistance () + previous.getDistance () * mContext.MeterToMile,
+        0 + previous.getDuration () / mContext.SecToMin)
     ).execute (rb.getRequestId ());
 
     if (requests.size () == 0) {
@@ -418,7 +421,7 @@ public class DriverMapFragment extends Fragment {
         try {
           DirectionsJSONParser directions = new DirectionsJSONParser (json, data [0], data [i]);
 
-          double distance = directions.getDistance () * mContext.MeterToMile;;
+          double distance = directions.getDistance () * mContext.MeterToMile;
           double duration = directions.getDuration () / mContext.SecToMin;
           double timeDistance = distance * duration;
           if (timeDistance < minTimeDistance) {
