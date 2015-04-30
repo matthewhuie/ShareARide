@@ -261,7 +261,7 @@ public class DriverMapFragment extends Fragment {
 
     LatLng[] ll = new LatLng[paths.size ()];
     ll = paths.toArray (ll);
-    new NextRouteTask (requests).execute (ll);
+    new NextRouteTask (requests, rb.getPassUserId ()).execute (ll);
   }
 
   private void finishRequest (RequestBean rb) {
@@ -278,14 +278,14 @@ public class DriverMapFragment extends Fragment {
       uft.execute (request);
     }
 
-    List<Integer> passengers = previous.getRequests ();
-    passengers.remove (new Integer (rb.getRequestId ()));
+    List<Integer> requests = previous.getRequests ();
+    requests.remove (new Integer (rb.getRequestId ()));
 
     new UpdateFareTask (PricingAlgorithm.calcFinalPrice (
         rb.getDistanceEstimated (), rb.getEstimatedTime (), 0, 0)
     ).execute (rb.getRequestId ());
 
-    if (passengers.size () == 0) {
+    if (requests.size () == 0) {
       endTrip ();
     } else {
       for (TripSegment ts : trip) {
@@ -296,16 +296,18 @@ public class DriverMapFragment extends Fragment {
 
       LatLng[] ll = new LatLng[paths.size ()];
       ll = paths.toArray (ll);
-      new NextRouteTask (passengers).execute (ll);
+      new NextRouteTask (requests, rb.getPassUserId ()).execute (ll);
     }
   }
 
   class NextRouteTask extends AsyncTask <LatLng, Void, DirectionsJSONParser> {
 
     List<Integer> requests;
+    int userID;
 
-    public NextRouteTask (List<Integer> requests) {
+    public NextRouteTask (List<Integer> requests, int userID) {
       this.requests = requests;
+      this.userID = userID;
     }
 
     @Override
@@ -313,6 +315,7 @@ public class DriverMapFragment extends Fragment {
       String key = "key=" + getString (R.string.google_maps_places_key);
       int minTimeDistance = Integer.MAX_VALUE;
       DirectionsJSONParser minParser = null;
+      String username = "";
       String origin = "origin=" + data[0].longitude + "," + data[0].latitude + "&";
 
       for (int i = 1; i < data.length; i++) {
@@ -329,10 +332,16 @@ public class DriverMapFragment extends Fragment {
             minTimeDistance = timeDistance;
             minParser = directions;
           }
+
+          username = (EndPointManager.getEndpointInstance ().getUserByID (userID).execute ()).getUserName ();
         } catch (JSONException jsone) {
           Log.i ("Hit the JSON error: ", jsone.toString ());
+        } catch (IOException ioe) {
+          Log.i ("Hit the IO error: ", ioe.toString ());
         }
       }
+
+      updateMapText ("Dropping off " + username);
 
       return minParser;
     }
@@ -430,4 +439,8 @@ public class DriverMapFragment extends Fragment {
       handler.postDelayed (call, 20 * 1000);
     }
   };
+
+  private void updateMapText (String text) {
+    mMapText.setText (text);
+  }
 }
