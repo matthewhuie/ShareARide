@@ -34,6 +34,7 @@
     <string name="driver_text_2">分钟之内到达</string>
     <string name="complete_task_text">该路段结束</string>
     <string name="task_completed_text">确认成功！</string>
+    <string name="your_destination">您的目的地是：</string>
 
     <string name="title_activity_driver_home">司机主页</string>
 

@@ -333,19 +333,6 @@ public class MyEndpoint {
     return null;
   }
 
-  @ApiMethod (name = "updateDistanceTime")
-  public RequestBean updateDistanceTime (@Named ("request_id") int requestID,
-                                         @Named ("distanceToAdd") double distanceToAdd,
-                                         @Named ("timeToAdd") double timeToAdd) {
-    RequestBean rb = getRequest (requestID);
-    if (rb != null) {
-      rb.setActualDistance (rb.getActualDistance () + distanceToAdd);
-      updateRequest (rb);
-      return rb;
-    }
-    return null;
-  }
-
   private List<RequestBean> queryRequest (String where) {
     ArrayList<RequestBean> al = new ArrayList<> ();
     try {
