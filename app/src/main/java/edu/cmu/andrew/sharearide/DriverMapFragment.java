@@ -108,10 +108,7 @@ public class DriverMapFragment extends Fragment {
   }
 
     private void setUpPassLocation (LatLng latlng) {
-        Log.i ("add marker", "method executed");
         if (mMap != null) {
-            Log.i ("map not null", "pass location set executed");
-            System.out.println ("In setUpPassLocation");
             mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (latlng, 13));
             Marker marker_destination = mMap.addMarker (new MarkerOptions()
                     .position (latlng)
@@ -121,9 +118,7 @@ public class DriverMapFragment extends Fragment {
     }
 
     private void setUpDestination (LatLng latlng) {
-        Log.i ("add marker", "method executed");
         if (mMap != null) {
-            Log.i ("map not null", "destination set executed");
             mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (latlng, 13));
             Marker marker_destination = mMap.addMarker (new MarkerOptions ()
                     .position (latlng)
