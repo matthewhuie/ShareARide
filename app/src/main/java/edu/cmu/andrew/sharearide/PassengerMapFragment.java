@@ -150,7 +150,7 @@ public class PassengerMapFragment extends Fragment {
 
 
               sb.append(getString(R.string.actual_fare)).append(" ").append(df.format(rb.getFare())).append("\n");
-              sb.append(getString(R.string.actual_distance)).append(" ").append(df.format(rb.getActualDistance())).append(" ").append(getString(R.string.miles));
+              sb.append(getString(R.string.actual_distance)).append(" ").append(df.format(rb.getActualDistance())).append(" ").append(getString(R.string.miles)).append("\n");
               sb.append(getString(R.string.travel_time)).append(rb.getActualDuration()).append("\n");
 
                  mMapSecondaryText.setText(sb.toString());
