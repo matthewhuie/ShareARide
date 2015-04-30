@@ -333,7 +333,19 @@ public class MyEndpoint {
     return null;
   }
 
-  private List<RequestBean> queryRequest (String where) {
+    @ApiMethod (name = "updateEndTime")
+    public RequestBean updateEndTime (@Named ("request_id") int requestID) {
+        RequestBean rb = getRequest (requestID);
+        if (rb != null) {
+            rb.setEndTime(""+calendar.getTimeInMillis());
+            updateRequest (rb);
+            return rb;
+        }
+        return null;
+    }
+
+
+    private List<RequestBean> queryRequest (String where) {
     ArrayList<RequestBean> al = new ArrayList<> ();
     try {
       Connection conn = connect ();
