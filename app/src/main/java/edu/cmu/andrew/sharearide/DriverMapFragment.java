@@ -545,13 +545,15 @@ public class DriverMapFragment extends Fragment {
     mMapButton.setClickable (true);
     mMapButton.setBackgroundColor (getResources ().getColor (R.color.material_red_500));
     mMapButton.setVisibility (View.VISIBLE);
-    mMapButton.setText ("Complete Task");
+//    mMapButton.setText ("Complete Task");
+    mMapButton.setText (getString(R.string.complete_task_text));
     mMapButton.setOnClickListener (new ActionOnClick (isPickedUp, rb));
   }
 
   private void disableButton () {
     mMapButton.setClickable (false);
-    mMapButton.setText ("Task Completed!");
+//    mMapButton.setText ("Task Completed!");
+    mMapButton.setText (getString(R.string.task_completed_text));
     mMapButton.setBackgroundColor (getResources ().getColor (R.color.material_red_900));
   }
 
