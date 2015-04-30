@@ -139,7 +139,7 @@ public class DriverMapFragment extends Fragment {
   private void initTrip () {
     trip = new ArrayList<TripSegment> ();
 //    mMapText.setText ("Waiting for requests...");
-    mMapText.setText (R.string.request_message);
+    mMapText.setText (getString(R.string.request_message));
     new AsyncTask<Integer, Void, Void> (){
       @Override
       protected Void doInBackground(Integer... params) {
