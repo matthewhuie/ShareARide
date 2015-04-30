@@ -239,8 +239,10 @@ public class DriverMapFragment extends Fragment {
 
       double pastFare = PricingAlgorithm.calcTripSegmentPrice (previous);
       UpdateFareTask uft = new UpdateFareTask (pastFare);
+      UpdateDistanceTimeTask udtt = new UpdateDistanceTimeTask (previous.getDistance (), previous.getDuration ());
       for (int request : previous.getRequests ()) {
         uft.execute (request);
+        udtt.execute (request);
       }
     }
 
@@ -265,8 +267,10 @@ public class DriverMapFragment extends Fragment {
 
     double pastFare = PricingAlgorithm.calcTripSegmentPrice (previous);
     UpdateFareTask uft = new UpdateFareTask (pastFare);
+    UpdateDistanceTimeTask udtt = new UpdateDistanceTimeTask (previous.getDistance (), previous.getDuration ());
     for (int request : previous.getRequests ()) {
       uft.execute (request);
+      udtt.execute (request);
     }
 
     for (TripSegment ts : trip) {
@@ -290,15 +294,19 @@ public class DriverMapFragment extends Fragment {
 
     double pastFare = PricingAlgorithm.calcTripSegmentPrice (previous);
     UpdateFareTask uft = new UpdateFareTask (pastFare);
+    UpdateDistanceTimeTask udtt = new UpdateDistanceTimeTask (previous.getDistance (), previous.getDuration ());
     for (int request : previous.getRequests ()) {
       uft.execute (request);
+      udtt.execute (request);
     }
 
     List<Integer> requests = previous.getRequests ();
     requests.remove (new Integer (rb.getRequestId ()));
 
     new UpdateFareTask (PricingAlgorithm.calcFinalPrice (
-        rb.getDistanceEstimated (), rb.getEstimatedTime (), 0, 0)
+        rb.getDistanceEstimated (), rb.getEstimatedTime (),
+        rb.getActualDistance () + previous.getDistance (),
+        0 + previous.getDuration ())
     ).execute (rb.getRequestId ());
 
     if (requests.size () == 0) {
@@ -398,7 +406,7 @@ public class DriverMapFragment extends Fragment {
     @Override
     protected DirectionsJSONParser doInBackground (LatLng... data) {
       String key = "key=" + getString (R.string.google_maps_places_key);
-      int minTimeDistance = Integer.MAX_VALUE;
+      double minTimeDistance = Double.MAX_VALUE;
       DirectionsJSONParser minParser = null;
       String origin = "origin=" + data[0].latitude + "," + data[0].longitude + "&";
 
@@ -409,9 +417,9 @@ public class DriverMapFragment extends Fragment {
         try {
           DirectionsJSONParser directions = new DirectionsJSONParser (json, data [0], data [i]);
 
-          int distance = directions.getDistance ();
-          int duration = directions.getDuration ();
-          int timeDistance = distance * duration;
+          double distance = directions.getDistance () * mContext.MeterToMile;;
+          double duration = directions.getDuration () / mContext.SecToMin;
+          double timeDistance = distance * duration;
           if (timeDistance < minTimeDistance) {
             minTimeDistance = timeDistance;
             minParser = directions;
@@ -470,6 +478,28 @@ public class DriverMapFragment extends Fragment {
     protected Void doInBackground (Integer... data) {
       try {
         EndPointManager.getEndpointInstance ().updateFare(data[0], fareToAdd).execute ();
+      } catch (IOException e) {
+        e.printStackTrace ();
+      }
+
+      return null;
+    }
+  }
+
+  class UpdateDistanceTimeTask extends AsyncTask <Integer, Void, Void> {
+
+    double distanceToAdd;
+    double timeToAdd;
+
+    public UpdateDistanceTimeTask (double distanceToAdd, double timeToAdd) {
+      this.distanceToAdd = distanceToAdd;
+      this.timeToAdd = timeToAdd;
+    }
+
+    @Override
+    protected Void doInBackground (Integer... data) {
+      try {
+        EndPointManager.getEndpointInstance ().updateDistanceTime (data[0], distanceToAdd, timeToAdd).execute ();
       } catch (IOException e) {
         e.printStackTrace ();
       }
