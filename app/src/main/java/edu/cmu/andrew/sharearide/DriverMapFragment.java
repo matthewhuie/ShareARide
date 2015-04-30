@@ -56,8 +56,6 @@ public class DriverMapFragment extends Fragment {
     mMapText = (TextView) mLayout.findViewById (R.id.driver_map_text);
     mMapButton = (Button) mLayout.findViewById (R.id.driver_map_button);
 
-    directions = new ArrayList<> ();
-    currentTrip = -1;
     setUpMapIfNeeded ();
     initTrip ();
     return mLayout;
@@ -110,10 +108,7 @@ public class DriverMapFragment extends Fragment {
   }
 
     private void setUpPassLocation (LatLng latlng) {
-        Log.i ("add marker", "method executed");
         if (mMap != null) {
-            Log.i ("map not null", "pass location set executed");
-            System.out.println ("In setUpPassLocation");
             mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (latlng, 13));
             Marker marker_destination = mMap.addMarker (new MarkerOptions()
                     .position (latlng)
@@ -123,9 +118,7 @@ public class DriverMapFragment extends Fragment {
     }
 
     private void setUpDestination (LatLng latlng) {
-        Log.i ("add marker", "method executed");
         if (mMap != null) {
-            Log.i ("map not null", "destination set executed");
             mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (latlng, 13));
             Marker marker_destination = mMap.addMarker (new MarkerOptions ()
                     .position (latlng)
@@ -135,7 +128,9 @@ public class DriverMapFragment extends Fragment {
 
   private void initTrip () {
     trip = new ArrayList<TripSegment> ();
-//    mMapText.setText ("Waiting for requests...");
+    directions = new ArrayList<> ();
+    currentTrip = -1;
+    mMapButton.setVisibility (View.INVISIBLE);
     mMapText.setText (getString(R.string.request_message));
     new AsyncTask<Integer, Void, Void> (){
       @Override
@@ -195,7 +190,7 @@ public class DriverMapFragment extends Fragment {
       }
     }.execute (mContext.getUserID ());
 
-    trip = null;
+    initTrip ();
   }
 
   private void readMessage (MessageBean mb) {
@@ -319,6 +314,17 @@ public class DriverMapFragment extends Fragment {
       ll = paths.toArray (ll);
       new NextRouteTask (requests, rb).execute (ll);
     }
+
+    new AsyncTask<RequestBean, Void, Void> () {
+      @Override
+      protected Void doInBackground (RequestBean... data) {
+        try {
+          RequestBean rb = data[0];
+          EndPointManager.getEndpointInstance ().createMessage (rb.getPassUserId (), "End Request", rb.getRequestId ()).execute ();
+        } catch (IOException ioe) {}
+        return null;
+      }
+    }.execute(rb);
   }
 
   class ToRequestTask extends AsyncTask <LatLng, Void, DirectionsJSONParser> {
@@ -539,13 +545,15 @@ public class DriverMapFragment extends Fragment {
     mMapButton.setClickable (true);
     mMapButton.setBackgroundColor (getResources ().getColor (R.color.material_red_500));
     mMapButton.setVisibility (View.VISIBLE);
-    mMapButton.setText ("Complete Task");
+//    mMapButton.setText ("Complete Task");
+    mMapButton.setText (getString(R.string.complete_task_text));
     mMapButton.setOnClickListener (new ActionOnClick (isPickedUp, rb));
   }
 
   private void disableButton () {
     mMapButton.setClickable (false);
-    mMapButton.setText ("Task Completed!");
+//    mMapButton.setText ("Task Completed!");
+    mMapButton.setText (getString(R.string.task_completed_text));
     mMapButton.setBackgroundColor (getResources ().getColor (R.color.material_red_900));
   }
 
@@ -558,6 +566,7 @@ public class DriverMapFragment extends Fragment {
     }
     @Override
     public void onClick (View v) {
+      disableButton ();
       if (isPickedUp) {
         startRequest (rb);
       } else {

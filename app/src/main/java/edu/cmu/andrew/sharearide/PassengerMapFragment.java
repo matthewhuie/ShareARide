@@ -126,7 +126,7 @@ public class PassengerMapFragment extends Fragment {
     mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (new LatLng (latitude, longitude), 13));
   }
 
-  private void setUpDestination (double dest_latitude, double dest_longitude, String pickUpLocation, String destination) {
+  private void setUpDestination (double dest_latitude, double dest_longitude, String destination) {
     Log.i ("add marker", "method executed");
     if (mMap != null) {
       Log.i ("map not null", "method executed");
@@ -155,13 +155,10 @@ public class PassengerMapFragment extends Fragment {
       Log.i ("map not null", "method executed");
       System.out.println ("In setUpDriverLocation" + driver_latitude + driver_longitude);
       mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (new LatLng (driver_latitude, driver_longitude), 13));
-      //Marker marker_origin = mMap.addMarker(new MarkerOptions()
-      //      .position(new LatLng(latitude, longitude))
-      //    .title("Your pickup location: " + pickUpLocation));
       Marker marker_destination = mMap.addMarker (new MarkerOptions ()
           .position (new LatLng (driver_latitude, driver_longitude))
           .icon (BitmapDescriptorFactory.defaultMarker (BitmapDescriptorFactory.HUE_GREEN))
-          .title ("Your driver is " + minDurTxt + " away from you"));
+          .title (getString(R.string.driver_text_1) + minDurTxt + getString(R.string.driver_text_2)));
     }
   }
 
@@ -217,22 +214,18 @@ public class PassengerMapFragment extends Fragment {
 
     @Override
     protected void onPostExecute (String[] estimates) {
-      //ip.placeReady(place);
-      //((TextView) mLayout.findViewById (R.id.my_location)).setText ("Lowest Price: " + estimates[0] + "\n" + "Time to Destination: " + estimates[1] + "\n" + "Time to Pickup: " + estimates[2]);
-      //(mLayout.findViewById (R.id.requestMainLayout)).setVisibility (View.INVISIBLE);
-      setUpDestination (dest_latitude, dest_longitude, pickUpLocation, destination);
       setUpDirection ();
+      setUpDestination (dest_latitude, dest_longitude, destination);
+
 
       DecimalFormat df = new DecimalFormat ("'$'0.00");
 
         DecimalFormat df1 = new DecimalFormat("#.##");
         df1.setRoundingMode(RoundingMode.DOWN);
 
-//      mMapText.setText ("Estimated Fare: " + df.format (estimatedFare));
       mMapText.setText (getString(R.string.estimated_fare) +" " + df.format (estimatedFare)
               +"\n" +getString(R.string.accumulated_fare) +" "+ df.format (estimatedFare)
               +"\n" +getString(R.string.max_time) +" "+ df1.format(estimatedDuration) + " "+getString(R.string.minutes));
-    //  mMapText. (getString(R.string.accumulated_fare)  + df.format (estimatedFare));
     }
 
     private String[] calculatePriceAndTime (String originTxt, String destinationTxt) {
@@ -241,30 +234,23 @@ public class PassengerMapFragment extends Fragment {
 
 
       if (destinationTxt != null) {
-
-        //First get the destination coordinates and display on Google Map
         getLocation (destinationTxt);
-        getDirection (originTxt, destinationTxt);
-        Log.d ("coordinates", dest_latitude + " " + dest_longitude);
-        //Then calculate price for the whole journey and the time for the uber driver to pick up the passenger
-        String url = mContext.UBER_PRICE_BASE_URL + "start_latitude=" + latitude + "&start_longitude=" + longitude + "&end_latitude=" + dest_latitude + "&end_longitude=" + dest_longitude + "&server_token=" + getString (R.string.uber_api_key);
-        Log.i ("URL for Uber API", url);
-        //String url = "https://api.uber.com/v1/estimates/price?start_latitude=37.625732&start_longitude=-122.377807&end_latitude=37.785114&end_longitude=-122.406677&server_token=" + getString(R.string.uber_api_key);
+        getDirection (destinationTxt);
+        String origin = "origin=" + "start_latitude=" + latitude + "&start_longitude=" + longitude + "&";
+        String destination = "end_latitude=" + dest_latitude + "&end_longitude=" + dest_longitude + "&";
+        String url = mContext.UBER_PRICE_BASE_URL + origin + destination + "&server_token=" + getString (R.string.uber_api_key);
 
         try {
 
           String json = mContext.getRemoteJSON (url);
           JSONObject priceObject = new JSONObject (json);
-          //System.out.println(priceObject.get("prices"));
           JSONArray allPrice = priceObject.getJSONArray ("prices");
 
           String[] estimateForProduct = new String[6];
-          //Double[] lowEstimateForProduct = new Double[6];
           double lowestEstimateForProduct = 1000.0;
           int lowestPriceIndex = 0;
 
           for (int i = 0; i < allPrice.length (); i++) {
-            //System.out.println(allPrice.get(i));
             JSONObject priceForEachProduct = (JSONObject) allPrice.get (i);
             System.out.println (priceForEachProduct.get ("estimate"));
             estimateForProduct[i] = priceForEachProduct.get ("estimate").toString ();
@@ -278,7 +264,6 @@ public class PassengerMapFragment extends Fragment {
           String durationMin = String.valueOf (lowestPriceDuration / 60);
           String durationSec = String.valueOf (lowestPriceDuration % 60);
 
-          //Log.i("price info: ", priceObject.get("estimate").toString());
           estimates[0] = '$' + String.valueOf (lowestEstimateForProduct);
           estimates[1] = durationMin + " minutes " + durationSec + " seconds";
           estimates[2] = durationMin + " minutes " + durationSec + " seconds";
@@ -297,11 +282,8 @@ public class PassengerMapFragment extends Fragment {
     private void getLocation (String destinationTxt) {
 
       String url = mContext.GEOCODE_BASE_URL + destinationTxt.replaceAll (" ", "+") + "&key=" + getString (R.string.google_maps_places_key);
-      //String url = "https://maps.googleapis.com/maps/api/geocode/xml?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key="+ R.string.google_maps_key;
       Document doc = getRemoteXML (url);
-
       doc.getDocumentElement ().normalize ();
-
       NodeList nl = doc.getElementsByTagName ("result");
 
       if (nl.getLength () != 0) {
@@ -312,14 +294,11 @@ public class PassengerMapFragment extends Fragment {
 
       }
 
-      System.out.println ("************" + dest_latitude + dest_longitude);
-
     }
 
 
-    private void getDirection (String originTxt, String destinationTxt) {
+    private void getDirection (String destinationTxt) {
       String url = mContext.DIRECTION_BASE_URL + "origin=" + mContext.getLatitude() + "," + mContext.getLongitude() + "&destination=" + destinationTxt.replaceAll (" ", "+") + "&key=" + getString (R.string.google_maps_places_key);
-      Log.i ("URL for Direction", url);
 
       try {
         String json = mContext.getRemoteJSON (url);
@@ -331,7 +310,6 @@ public class PassengerMapFragment extends Fragment {
 
         directions = parser.getPolyline ();
 
-        //Log.i("price info: ", priceObject.get("estimate").toString());
 
       } catch (org.json.JSONException jsone) {
         Log.i ("Hit the JSON error: ", jsone.toString ());
@@ -423,38 +401,27 @@ public class PassengerMapFragment extends Fragment {
       String taxiPlaceTxt = "";
       int minDriverID = 0;
       int driverID = 0;
-      int minDuration = 1000;
+      int minDuration = 100000;
       int durationVal = 0;
-      String minDurTxt = "";
-      String durationTxt = "";
 
       if (taxis.getItems () != null) {
         for (UserBean taxi : taxis.getItems ()) {
-
           taxiLatitude = taxi.getLatitude ();
-
           taxiLongitude = taxi.getLongitude ();
-
-          Log.i ("latlng: ", String.valueOf (taxiLatitude));
-          Log.i ("latlng: ", String.valueOf (taxiLongitude));
           driverID = taxi.getUserID ();
 
           LatLng currTaxi = new LatLng (taxiLatitude, taxiLongitude);
 
           String place_url = mContext.REV_GEOCODE_BASE_URL + taxiLatitude + "," + taxiLongitude + "&key=" + getString (R.string.google_maps_places_key);
 
-          Log.i ("url: ", place_url.toString ());
 
           try {
 
             String json = mContext.getRemoteJSON (place_url);
             JSONObject routeObject = new JSONObject (json);
-            //System.out.println(priceObject.get("prices"));
             JSONArray results = routeObject.getJSONArray ("results");
-            //Each element of the routes array contains a single result from the specified origin and destination.
             JSONObject result = (JSONObject) results.get (0);
             taxiPlaceTxt = result.get ("formatted_address").toString ();
-            Log.i ("taxiPlaceTxt ", taxiPlaceTxt);
 
 
           } catch (org.json.JSONException jsone) {
@@ -471,16 +438,12 @@ public class PassengerMapFragment extends Fragment {
 
               String json = mContext.getRemoteJSON (url);
               JSONObject routeObject = new JSONObject (json);
-              //System.out.println(priceObject.get("prices"));
               JSONArray routes = routeObject.getJSONArray ("routes");
-              //Each element of the routes array contains a single result from the specified origin and destination.
               JSONObject route = (JSONObject) routes.get (0);
               JSONArray legs = route.getJSONArray ("legs");
-              //For routes that contain no waypoints, the route will consist of a single "leg
               JSONObject leg = (JSONObject) legs.get (0);
               JSONObject duration = (JSONObject) leg.get ("duration");
               durationVal = Integer.valueOf (duration.get ("value").toString ());
-              durationTxt = duration.get ("text").toString ();
 
             } catch (org.json.JSONException jsone) {
               Log.i ("Hit the JSON error: ", jsone.toString ());
@@ -489,7 +452,6 @@ public class PassengerMapFragment extends Fragment {
           }
           if (durationVal != 0 && durationVal < minDuration) {
             minDuration = durationVal;
-            minDurTxt = durationTxt;
             minTaxiLatitude = taxiLatitude;
             minTaxiLongitude = taxiLongitude;
             minDriverID = driverID;
@@ -500,11 +462,7 @@ public class PassengerMapFragment extends Fragment {
 
       //Perform taxi searching duties on backend
       myApiService.taxiSearching (request_id, minDriverID, numOfRiders).execute();
-
-      Log.i ("minDriverID", minDriverID + " " + numOfRiders);
-
-      Log.i ("minDriver Location ", String.valueOf (minTaxiLatitude) + String.valueOf (minTaxiLongitude) + minDurTxt);
-      return new String[] {String.valueOf (minTaxiLatitude), String.valueOf (minTaxiLongitude), minDurTxt,String.valueOf(minDriverID)};
+      return new String[] {String.valueOf (minTaxiLatitude), String.valueOf (minTaxiLongitude), String.valueOf (durationVal/60),String.valueOf(minDriverID)};
 
 
     }
