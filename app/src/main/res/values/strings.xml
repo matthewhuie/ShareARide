@@ -19,6 +19,7 @@
     <string name="wait_message">Please wait...</string>
     <string name="estimated_fare">Maximum Fare: </string>
     <string name="accumulated_fare">Accumulated Fare: </string>
+    <string name="max_time">Estimated Time: </string>
     <string name="current_location">You are currently at</string>
     <string name="current_text">here!</string>
     <string name="destination_text">Where do you want to go?</string>
