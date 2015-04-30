@@ -126,7 +126,7 @@ public class PassengerMapFragment extends Fragment {
     mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (new LatLng (latitude, longitude), 13));
   }
 
-  private void setUpDestination (double dest_latitude, double dest_longitude, String pickUpLocation, String destination) {
+  private void setUpDestination (double dest_latitude, double dest_longitude, String destination) {
     Log.i ("add marker", "method executed");
     if (mMap != null) {
       Log.i ("map not null", "method executed");
@@ -220,8 +220,9 @@ public class PassengerMapFragment extends Fragment {
       //ip.placeReady(place);
       //((TextView) mLayout.findViewById (R.id.my_location)).setText ("Lowest Price: " + estimates[0] + "\n" + "Time to Destination: " + estimates[1] + "\n" + "Time to Pickup: " + estimates[2]);
       //(mLayout.findViewById (R.id.requestMainLayout)).setVisibility (View.INVISIBLE);
-      setUpDestination (dest_latitude, dest_longitude, pickUpLocation, destination);
       setUpDirection ();
+      setUpDestination (dest_latitude, dest_longitude, destination);
+
 
       DecimalFormat df = new DecimalFormat ("'$'0.00");
 

@@ -56,8 +56,6 @@ public class DriverMapFragment extends Fragment {
     mMapText = (TextView) mLayout.findViewById (R.id.driver_map_text);
     mMapButton = (Button) mLayout.findViewById (R.id.driver_map_button);
 
-    directions = new ArrayList<> ();
-    currentTrip = -1;
     setUpMapIfNeeded ();
     initTrip ();
     return mLayout;
@@ -135,7 +133,9 @@ public class DriverMapFragment extends Fragment {
 
   private void initTrip () {
     trip = new ArrayList<TripSegment> ();
-//    mMapText.setText ("Waiting for requests...");
+    directions = new ArrayList<> ();
+    currentTrip = -1;
+    mMapButton.setVisibility (View.INVISIBLE);
     mMapText.setText (getString(R.string.request_message));
     new AsyncTask<Integer, Void, Void> (){
       @Override
@@ -195,7 +195,7 @@ public class DriverMapFragment extends Fragment {
       }
     }.execute (mContext.getUserID ());
 
-    trip = null;
+    initTrip ();
   }
 
   private void readMessage (MessageBean mb) {
@@ -558,6 +558,7 @@ public class DriverMapFragment extends Fragment {
     }
     @Override
     public void onClick (View v) {
+      disableButton ();
       if (isPickedUp) {
         startRequest (rb);
       } else {
