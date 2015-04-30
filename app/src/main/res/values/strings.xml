@@ -16,6 +16,8 @@
     <string name="passenger">Passenger</string>
     <string name="driver">Driver</string>
     <string name="request_message">Waiting for requests...</string>
+
+
     <string name="wait_message">Please wait...</string>
     <string name="estimated_fare">Estimated Fare: </string>
 
