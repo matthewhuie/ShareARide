@@ -351,6 +351,7 @@ public class DriverMapFragment extends Fragment {
             .color (Color.rgb (1, 169, 212)));
 
         setUpDestination(destination);
+        Log.i ("Hit the JSON error: ", String.valueOf(destination.latitude)+String.valueOf(destination.longitude));
 
 
       } catch (JSONException jsone) {
