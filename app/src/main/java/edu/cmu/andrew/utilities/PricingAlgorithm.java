@@ -21,8 +21,8 @@ public class PricingAlgorithm {
     public static double calcTripSegmentPrice (TripSegment trip) {
 
         double price = 0;
-      double distance = trip.getDistance () * 0.000621371;
-      double time = trip.getDuration () / 60;
+      double distance = trip.getDistance ();
+      double time = trip.getDuration ();
 
         if (trip.getRequests().size() == 1)
             price = (distance * costPerMileAlone) + (time * costPerMinuteAlone);

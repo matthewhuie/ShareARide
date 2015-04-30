@@ -240,13 +240,14 @@ public class DriverMapFragment extends Fragment {
 
       double pastFare = PricingAlgorithm.calcTripSegmentPrice (previous);
       UpdateFareTask uft = new UpdateFareTask (pastFare);
-      UpdateDistanceTimeTask udtt = new UpdateDistanceTimeTask (previous.getDistance () * mContext.MeterToMile,
-          previous.getDuration () / mContext.SecToMin);
+      UpdateDistanceTimeTask udtt = new UpdateDistanceTimeTask (previous.getDistance (),
+          previous.getDuration ());
       for (int request : previous.getRequests ()) {
         uft.execute (request);
         udtt.execute (request);
       }
     }
+    Log.i ("requests in to", rb.getRequestId() + ", " + requests.toString ());
 
     LatLng[] ll = new LatLng[paths.size ()];
     ll = paths.toArray (ll);
@@ -269,12 +270,13 @@ public class DriverMapFragment extends Fragment {
 
     double pastFare = PricingAlgorithm.calcTripSegmentPrice (previous);
     UpdateFareTask uft = new UpdateFareTask (pastFare);
-    UpdateDistanceTimeTask udtt = new UpdateDistanceTimeTask (previous.getDistance () * mContext.MeterToMile,
-        previous.getDuration () / mContext.SecToMin);
+    UpdateDistanceTimeTask udtt = new UpdateDistanceTimeTask (previous.getDistance (),
+        previous.getDuration ());
     for (int request : previous.getRequests ()) {
       uft.execute (request);
       udtt.execute (request);
     }
+    Log.i ("requests in start", rb.getRequestId() + ", " + requests.toString ());
 
     for (TripSegment ts : trip) {
       if (! ts.isCompleted ()) {
@@ -297,8 +299,8 @@ public class DriverMapFragment extends Fragment {
 
     double pastFare = PricingAlgorithm.calcTripSegmentPrice (previous);
     UpdateFareTask uft = new UpdateFareTask (pastFare);
-    UpdateDistanceTimeTask udtt = new UpdateDistanceTimeTask (previous.getDistance () * mContext.MeterToMile,
-        previous.getDuration () / mContext.SecToMin);
+    UpdateDistanceTimeTask udtt = new UpdateDistanceTimeTask (previous.getDistance (),
+        previous.getDuration ());
     for (int request : previous.getRequests ()) {
       uft.execute (request);
       udtt.execute (request);
@@ -309,11 +311,11 @@ public class DriverMapFragment extends Fragment {
 
     new UpdateFareTask (PricingAlgorithm.calcFinalPrice (
         rb.getDistanceEstimated (), rb.getEstimatedTime (),
-        rb.getActualDistance () + previous.getDistance () * mContext.MeterToMile,
-        rb.getActualDuration () + previous.getDuration () / mContext.SecToMin)
+        rb.getActualDistance () + previous.getDistance (),
+        rb.getActualDuration () + previous.getDuration ())
     ).execute (rb.getRequestId ());
 
-    Log.i ("requests", requests.toString ());
+    Log.i ("requests in finish", rb.getRequestId() + ", " + requests.toString ());
     if (requests.size () == 0) {
       endTrip ();
     } else {
@@ -376,7 +378,7 @@ public class DriverMapFragment extends Fragment {
         LatLng dest = parser.getDestination ();
         LatLng source = parser.getSource ();
         trip.add (new TripSegment (trip.size (), source, dest,
-            parser.getDistance (), parser.getDuration (), requests));
+            parser.getDistance () * mContext.MeterToMile, parser.getDuration () / mContext.SecToMin, requests));
 
         mMap.clear ();
         mMap.addPolyline (new PolylineOptions ()
@@ -422,8 +424,8 @@ public class DriverMapFragment extends Fragment {
         try {
           DirectionsJSONParser directions = new DirectionsJSONParser (json, data [0], data [i]);
 
-          double distance = directions.getDistance () * mContext.MeterToMile;
-          double duration = directions.getDuration () / mContext.SecToMin;
+          double distance = directions.getDistance ();
+          double duration = directions.getDuration ();
           double timeDistance = distance * duration;
           if (timeDistance < minTimeDistance) {
             minTimeDistance = timeDistance;
@@ -448,7 +450,7 @@ public class DriverMapFragment extends Fragment {
         LatLng destination = parser.getDestination ();
         LatLng source = parser.getSource ();
         trip.add (new TripSegment (trip.size (), parser.getSource (), parser.getDestination (),
-            parser.getDistance (), parser.getDuration (), requests));
+            parser.getDistance () * mContext.MeterToMile, parser.getDuration () / mContext.SecToMin, requests));
 
         mMap.clear ();
         mMap.addPolyline (new PolylineOptions ()
