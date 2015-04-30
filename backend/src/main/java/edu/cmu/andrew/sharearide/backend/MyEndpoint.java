@@ -50,6 +50,15 @@ public class MyEndpoint {
     }
   }
 
+  @ApiMethod (name = "updateLocation")
+  public UserBean updateLocation (@Named ("userID") int userID, @Named ("latitude") double latitude, @Named ("longitude") double longitude) {
+    UserBean ub = queryUser ("user_id=" + userID).get(0);
+    ub.setLatitude (latitude);
+    ub.setLongitude (longitude);
+    updateUser (ub);
+    return ub;
+  }
+
   //change!!!
   @ApiMethod (name = "getAvailableDrivers")
   public List<UserBean> getAvailableDrivers (@Named ("numOfRiders") int numOfRiders) {
