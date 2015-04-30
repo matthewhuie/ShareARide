@@ -107,6 +107,7 @@ public class DriverMapFragment extends Fragment {
 
   private void initTrip () {
     trip = new ArrayList<TripSegment> ();
+    mMapText.setText ("Waiting for requests...");
     new AsyncTask<Integer, Void, Void> (){
       @Override
       protected Void doInBackground(Integer... params) {
@@ -164,8 +165,6 @@ public class DriverMapFragment extends Fragment {
         return null;
       }
     }.execute (mContext.getUserID ());
-
-    // PricingAlgorithm.calcFinalPrice HERE!!
 
     trip = null;
   }
@@ -240,8 +239,19 @@ public class DriverMapFragment extends Fragment {
     TripSegment previous = trip.get (trip.size () - 1);
     previous.setCompleted (true);
 
+    double pastFare = PricingAlgorithm.calcTripSegmentPrice (previous);
+    UpdateFareTask uft = new UpdateFareTask (pastFare);
+    for (int request : previous.getRequests ()) {
+      uft.execute (request);
+    }
+
     List<Integer> passengers = previous.getRequests ();
-    passengers.remove (new Integer (rb.getPassUserId ()));
+    passengers.remove (new Integer (rb.getRequestId ()));
+
+    new UpdateFareTask (PricingAlgorithm.calcFinalPrice (
+        rb.getDistanceEstimated (), rb.getEstimatedTime (), 0, 0)
+    ).execute (rb.getRequestId ());
+
     if (passengers.size () == 0) {
       endTrip ();
     } else {
@@ -375,7 +385,6 @@ public class DriverMapFragment extends Fragment {
     public void run() {
       //This is where my sync code will be, but for testing purposes I only have a Log statement
       //will run every 20 seconds
-      mMapText.setText ("Waiting for requests...");
       new PollTask().execute (mContext.getUserID ());
       mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (
           new LatLng (mContext.getLatitude (), mContext.getLongitude ()), 15));
