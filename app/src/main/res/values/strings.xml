@@ -32,6 +32,8 @@
     <string name="minutes">minutes</string>
     <string name="driver_text_1">Your driver is </string>
     <string name="driver_text_2"> away from you</string>
+    <string name="complete_task_text">Complete Task</string>
+    <string name="task_completed_text">Task Completed!</string>
 
 
     <string name="title_activity_driver_home">DriverHome</string>
