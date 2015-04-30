@@ -123,11 +123,13 @@ public class PassengerMapFragment extends Fragment {
             try {
                 mb = EndPointManager.getEndpointInstance ().pollMessage(params[0]).execute ();
 
-                if(mb.getMessage().equalsIgnoreCase("End Request")){
+                if(mb!=null && mb.getMessage().equalsIgnoreCase("End Request")){
                     //update end time
                     myApiService.updateEndTime(mb.getRequestId()).execute();
                     //get request row -
                     rb =  myApiService.getRequest(mb.getRequestId()).execute();
+                }else{
+                   rb = myApiService.getRequest(mb.getRequestId()).execute();
                 }
 
 
@@ -138,11 +140,17 @@ public class PassengerMapFragment extends Fragment {
         }
 
         protected void onPostExecute (RequestBean rb) {
-            mMapText.setText (getString(R.string.travel_time) +" " + df1.format
-                    ((Double.parseDouble(rb.getEndTime())-Double.parseDouble(rb.getStartTime()))/(1000*60))
-                    + " "+getString(R.string.minutes)
-                    +"\n" + getString(R.string.actual_fare) +" "+ df.format (rb.getFare()));
 
+            StringBuilder sb = new StringBuilder();
+
+            if(rb.getEndTime()!=null && rb.getStartTime()!=null)
+                sb.append(getString(R.string.travel_time)).append(" ").append(df1.format
+                        ((Double.parseDouble(rb.getEndTime())-Double.parseDouble(rb.getStartTime()))/(1000*60)))
+                        .append(" ").append(getString(R.string.minutes)).append("\n");
+            if(rb.getFare()!=0.0)
+                sb.append(getString(R.string.actual_fare)).append(" ").append(df.format(rb.getFare()));
+
+                 mMapText.setText(sb.toString());
 
         }
 
@@ -290,9 +298,9 @@ public class PassengerMapFragment extends Fragment {
 
         df1.setRoundingMode(RoundingMode.DOWN);
 
-      mMapText.setText (getString(R.string.estimated_fare) +" " + df.format (estimatedFare)
-              +"\n" +getString(R.string.accumulated_fare) +" "+ df.format (estimatedFare)
-              +"\n" +getString(R.string.max_time) +" "+ df1.format(estimatedDuration) + " "+getString(R.string.minutes));
+      mMapText.setText(getString(R.string.estimated_fare) + " " + df.format(estimatedFare)
+              + "\n" + getString(R.string.accumulated_fare) + " " + df.format(estimatedFare)
+              + "\n" + getString(R.string.max_time) + " " + df1.format(estimatedDuration) + " " + getString(R.string.minutes));
     }
 
     private String[] calculatePriceAndTime (String originTxt, String destinationTxt) {
@@ -302,7 +310,7 @@ public class PassengerMapFragment extends Fragment {
 
       if (destinationTxt != null) {
         getLocation (destinationTxt);
-        getDirection (destinationTxt);
+        getDirection(destinationTxt);
         String origin = "origin=" + "start_latitude=" + latitude + "&start_longitude=" + longitude + "&";
         String destination = "end_latitude=" + dest_latitude + "&end_longitude=" + dest_longitude + "&";
         String url = mContext.UBER_PRICE_BASE_URL + origin + destination + "&server_token=" + getString (R.string.uber_api_key);
