@@ -132,6 +132,7 @@ public class DriverMapFragment extends Fragment {
     currentTrip = -1;
     mMapButton.setVisibility (View.INVISIBLE);
     mMapText.setText (getString(R.string.request_message));
+    mMap.clear();
     new AsyncTask<Integer, Void, Void> (){
       @Override
       protected Void doInBackground(Integer... params) {
