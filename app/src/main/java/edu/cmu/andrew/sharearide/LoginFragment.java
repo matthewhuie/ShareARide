@@ -57,13 +57,15 @@ public class LoginFragment extends Fragment {
   }
 
   private void disableButton () {
-    mButton.setText ("Please wait...");
+//    mButton.setText ("Please wait...");
+    mButton.setText (R.string.wait_message);
     mButton.setBackgroundColor (getResources ().getColor (R.color.material_red_900));
     mButton.setClickable (false);
   }
 
   private void resetButton () {
-    mButton.setText ("Log in");
+//    mButton.setText ("Log in");
+    mButton.setText (R.string.login);
     mButton.setBackgroundColor (getResources ().getColor (R.color.material_red_700));
     mButton.setClickable (true);
   }
