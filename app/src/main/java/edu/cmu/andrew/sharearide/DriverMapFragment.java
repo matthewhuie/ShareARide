@@ -362,13 +362,13 @@ public class DriverMapFragment extends Fragment {
             .width (10)
             .color (Color.rgb (1, 169, 212)));
 
-        if (isPickUp) {
+        /**if (isPickUp) {
           updateMapText ("Picking up " + username);
           updateButton ("Picked up " + username, true, rb);
         } else {
           updateMapText ("Dropping off " + username);
           updateButton ("Dropped off " + username, false, rb);
-        }
+        }*/
 
         setUpDestination(destination);
         setUpPassLocation(source);
@@ -451,7 +451,7 @@ public class DriverMapFragment extends Fragment {
     }
   };
 
-  private void updateMapText (String text) {
+  /**private void updateMapText (String text) {
     mMapText.setText (text);
   }
 
@@ -473,5 +473,5 @@ public class DriverMapFragment extends Fragment {
 
       }
     }
-  }
+  }*/
 }
