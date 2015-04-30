@@ -12,12 +12,12 @@ public class TripSegment {
   private int segmentID;
   private LatLng source;
   private LatLng destination;
-  private int distance;
-  private int duration;
+  private double distance;
+  private double duration;
   private List<Integer> requests;
   private boolean isCompleted;
 
-  public TripSegment (int segmentID, LatLng source, LatLng destination, int distance, int duration, List<Integer> requests) {
+  public TripSegment (int segmentID, LatLng source, LatLng destination, double distance, double duration, List<Integer> requests) {
     this.segmentID = segmentID;
     this.source = source;
     this.destination = destination;
@@ -51,19 +51,19 @@ public class TripSegment {
     this.destination = destination;
   }
 
-  public int getDistance () {
+  public double getDistance () {
     return distance;
   }
 
-  public void setDistance (int distance) {
+  public void setDistance (double distance) {
     this.distance = distance;
   }
 
-  public int getDuration () {
+  public double getDuration () {
     return duration;
   }
 
-  public void setDuration (int duration) {
+  public void setDuration (double duration) {
     this.duration = duration;
   }
 
