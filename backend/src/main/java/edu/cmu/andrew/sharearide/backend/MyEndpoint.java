@@ -433,7 +433,7 @@ public class MyEndpoint {
       Connection conn = connect ();
       Statement statement = conn.createStatement ();
       result = statement.executeUpdate ("INSERT INTO Request (request_id, pass_user_id, source_longitude, source_latitude, " +
-          "dest_longitude, dest_latitude, fare, latest_time, pass_rating, driver_rating, start_time, end_time," +
+          "dest_longitude, dest_latitude, fare, pass_rating, driver_rating, start_time, end_time," +
           "is_served, estimated_distance,num_riders,estimated_time,actual_distance,estimated_fare) " +
           "VALUES (" + rb.getRequestId () + ", " + rb.getPassUserId () + ", " + rb.getSrcLongitude () +
           ", " + rb.getSrcLatitude () + ", " + rb.getDstLongitude () + ", " + rb.getDstLatitude () +

@@ -62,6 +62,8 @@ public class PassengerMapFragment extends Fragment {
   double estimatedFare = 0.0;
   private List<LatLng> directions;
   private TextView mMapText;
+  private long startTime;
+  private long endTime;
 
     @Override
   public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
