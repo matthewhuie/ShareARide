@@ -38,7 +38,7 @@
     <string-array name="mood">
         <item>我想省钱！</item>
         <item>我无所谓。</item>
-        <item>我正赶时间！</item>
+        <item>我赶时间！</item>
     </string-array>
 
     <string name="title_activity_passenger">乘客主页</string>
