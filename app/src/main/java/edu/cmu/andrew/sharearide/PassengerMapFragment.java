@@ -150,7 +150,8 @@ public class PassengerMapFragment extends Fragment {
 
               sb.append(getString(R.string.actual_fare)).append(" ").append(df.format(rb.getFare())).append("\n");
               sb.append(getString(R.string.actual_distance)).append(" ").append(df1.format(rb.getActualDistance())).append(" ").append(getString(R.string.miles)).append("\n");
-              sb.append(getString(R.string.travel_time)).append(df1.format(rb.getActualDuration())).append("\n").append(" ").append(getString(R.string.minutes));
+              sb.append(getString(R.string.travel_time)).append(df1.format(rb.getActualDuration())).append(" ").append(getString(R.string.minutes));
+
 
                  mMapSecondaryText.setText(sb.toString());
 
@@ -301,8 +302,7 @@ public class PassengerMapFragment extends Fragment {
         df1.setRoundingMode(RoundingMode.DOWN);
 
       mMapText.setText(getString(R.string.estimated_fare) + " " + df.format(estimatedFare)
-              + "\n" + getString(R.string.accumulated_fare) + " " + df.format(estimatedFare)
-              + "\n" + getString(R.string.max_time) + " " + df1.format(estimatedDuration) + " " + getString(R.string.minutes));
+                     + "\n" + getString(R.string.max_time) + " " + df1.format(estimatedDuration) + " " + getString(R.string.minutes));
     }
 
     private String[] calculatePriceAndTime (String originTxt, String destinationTxt) {
