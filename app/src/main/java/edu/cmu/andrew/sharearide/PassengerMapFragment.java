@@ -30,6 +30,7 @@ import org.xml.sax.InputSource;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -223,9 +224,15 @@ public class PassengerMapFragment extends Fragment {
       setUpDirection ();
 
       DecimalFormat df = new DecimalFormat ("'$'0.00");
+
+        DecimalFormat df1 = new DecimalFormat("#.##");
+        df1.setRoundingMode(RoundingMode.DOWN);
+
 //      mMapText.setText ("Estimated Fare: " + df.format (estimatedFare));
-      mMapText.setText (getString(R.string.estimated_fare)  + df.format (estimatedFare));
-      mMapText.setText (getString(R.string.accumulated_fare)  + df.format (estimatedFare));
+      mMapText.setText (getString(R.string.estimated_fare) +" " + df.format (estimatedFare)
+              +"\n" +getString(R.string.accumulated_fare) +" "+ df.format (estimatedFare)
+              +"\n" +getString(R.string.max_time) +" "+ df1.format(estimatedDuration) + " minutes");
+    //  mMapText. (getString(R.string.accumulated_fare)  + df.format (estimatedFare));
     }
 
     private String[] calculatePriceAndTime (String originTxt, String destinationTxt) {
