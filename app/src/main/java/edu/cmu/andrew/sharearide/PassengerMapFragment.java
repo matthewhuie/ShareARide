@@ -99,7 +99,7 @@ public class PassengerMapFragment extends Fragment {
             //This is where my sync code will be, but for testing purposes I only have a Log statement
             //will run every 2 seconds
             new AsyncPoll().execute(mContext.getUserID());
-            handler.postDelayed(call,2*1000);
+            handler.postDelayed(call,10*1000);
         }
     };
 
