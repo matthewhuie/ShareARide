@@ -313,6 +313,7 @@ public class DriverMapFragment extends Fragment {
         rb.getActualDuration () + previous.getDuration () / mContext.SecToMin)
     ).execute (rb.getRequestId ());
 
+    Log.i ("requests", requests.toString ());
     if (requests.size () == 0) {
       endTrip ();
     } else {
