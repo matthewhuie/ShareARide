@@ -335,8 +335,8 @@ public class DriverMapFragment extends Fragment {
     @Override
     protected Void doInBackground (LatLng... request) {
       try {
-        String origin = "origin=" + request[0].longitude + "," + request[0].latitude + "&";
-        String destination = "destination=" + request[1].longitude + "," + request[1].latitude + "&";
+        String origin = "origin=" + request[0].latitude + "," + request[0].longitude + "&";
+        String destination = "destination=" + request[1].latitude + "," + request[1].longitude + "&";
         String key = "key=" + getString (R.string.google_maps_places_key);
         String json = mContext.getRemoteJSON (mContext.DIRECTION_BASE_URL + origin + destination + key);
 
@@ -387,10 +387,10 @@ public class DriverMapFragment extends Fragment {
       String key = "key=" + getString (R.string.google_maps_places_key);
       int minTimeDistance = Integer.MAX_VALUE;
       DirectionsJSONParser minParser = null;
-      String origin = "origin=" + data[0].longitude + "," + data[0].latitude + "&";
+      String origin = "origin=" + data[0].latitude + "," + data[0].longitude + "&";
 
       for (int i = 1; i < data.length; i++) {
-        String destination = "destination=" + data[i].longitude + "," + data[i].latitude + "&";
+        String destination = "destination=" + data[i].latitude + "," + data[i].longitude + "&";
         String json = mContext.getRemoteJSON (mContext.DIRECTION_BASE_URL + origin + destination + key);
 
         try {
