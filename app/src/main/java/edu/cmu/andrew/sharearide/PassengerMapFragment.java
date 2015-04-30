@@ -55,6 +55,7 @@ public class PassengerMapFragment extends Fragment {
   private static ShareARideApi myApiService = null;
   private double latitude;
   private double longitude;
+    int request_id = 0;
   private double dest_latitude = 0;
   private double dest_longitude = 0;
   private RelativeLayout mLayout;
@@ -129,7 +130,7 @@ public class PassengerMapFragment extends Fragment {
                     //get request row -
                     rb =  myApiService.getRequest(mb.getRequestId()).execute();
                 }else{
-                   rb = myApiService.getRequest(mb.getRequestId()).execute();
+                   rb = myApiService.getRequest(request_id).execute();
                 }
 
 
@@ -420,7 +421,7 @@ public class PassengerMapFragment extends Fragment {
     @Override
     protected String[] doInBackground (String... urls) {
       String[] taxiSearchingResult = new String[4];
-      int request_id = 0;
+
         pickUpLocation = urls[0];
         userName = urls[1];
         try {
