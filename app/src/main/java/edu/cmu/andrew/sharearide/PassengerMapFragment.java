@@ -147,6 +147,7 @@ public class PassengerMapFragment extends Fragment {
             StringBuilder sb = new StringBuilder();
 
             mMapText.setText(getString(R.string.estimated_fare) + " " + df.format(estimatedFare)
+                    + "\n" + getString(R.string.estimated_distance) + " " + df1.format(estimatedDistance) + " " + getString(R.string.miles)
                     + "\n" + getString(R.string.max_time) + " " + df1.format(estimatedDuration) + " " + getString(R.string.minutes));
 
 
@@ -301,6 +302,7 @@ public class PassengerMapFragment extends Fragment {
             df1.setRoundingMode(RoundingMode.DOWN);
 
             mMapText.setText(getString(R.string.estimated_fare) + " " + df.format(estimatedFare)
+                    + "\n" + getString(R.string.estimated_distance) + " " + df1.format(estimatedDistance) + " " + getString(R.string.miles)
                     + "\n" + getString(R.string.max_time) + " " + df1.format(estimatedDuration) + " " + getString(R.string.minutes));
         }
 
