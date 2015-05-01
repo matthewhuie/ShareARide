@@ -55,7 +55,7 @@
     <string name="startRide">起步</string>
     <string name="endRide">终止</string>
     <string name="travel_time">本次车程用时：</string>
-    <string name="actual_fare">本次车程话费：</string>
+    <string name="actual_fare">本次车程花费：</string>
     <string name="actual_distance">本次实际车程：</string>
     <string name="miles"> 英里</string>
 

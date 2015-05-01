@@ -262,8 +262,6 @@ public class MyEndpoint {
     int tripId = getTrip (minDriverID).getTripId ();
     updateTripRequest(tripId, request_id);
     fulfillRequest(request_id);
-    //updateTrip(minDriverID, numOfRiders);
-    log.severe ("THIS IS TAXI SEARCHING!!!");
   }
 
   @ApiMethod (name = "endPreviousTrips")
