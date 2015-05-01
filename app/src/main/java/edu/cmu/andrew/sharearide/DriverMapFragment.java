@@ -239,12 +239,10 @@ public class DriverMapFragment extends Fragment {
       requests.addAll (previous.getRequests ());
 
       double pastFare = PricingAlgorithm.calcTripSegmentPrice (previous);
-      UpdateFareTask uft = new UpdateFareTask (pastFare);
-      UpdateDistanceTimeTask udtt = new UpdateDistanceTimeTask (previous.getDistance (),
-          previous.getDuration ());
       for (int request : previous.getRequests ()) {
-        uft.execute (request);
-        udtt.execute (request);
+        new UpdateFareTask (pastFare).execute (request);
+        new UpdateDistanceTimeTask (previous.getDistance (),
+            previous.getDuration ()).execute (request);
       }
     }
     Log.i ("requests in to", rb.getRequestId() + ", " + requests.toString ());
@@ -269,12 +267,10 @@ public class DriverMapFragment extends Fragment {
     previous.setCompleted (true);
 
     double pastFare = PricingAlgorithm.calcTripSegmentPrice (previous);
-    UpdateFareTask uft = new UpdateFareTask (pastFare);
-    UpdateDistanceTimeTask udtt = new UpdateDistanceTimeTask (previous.getDistance (),
-        previous.getDuration ());
     for (int request : previous.getRequests ()) {
-      uft.execute (request);
-      udtt.execute (request);
+      new UpdateFareTask (pastFare).execute (request);
+      new UpdateDistanceTimeTask (previous.getDistance (),
+          previous.getDuration ()).execute (request);
     }
     Log.i ("requests in start", rb.getRequestId() + ", " + requests.toString ());
 
@@ -298,12 +294,10 @@ public class DriverMapFragment extends Fragment {
     previous.setCompleted (true);
 
     double pastFare = PricingAlgorithm.calcTripSegmentPrice (previous);
-    UpdateFareTask uft = new UpdateFareTask (pastFare);
-    UpdateDistanceTimeTask udtt = new UpdateDistanceTimeTask (previous.getDistance (),
-        previous.getDuration ());
     for (int request : previous.getRequests ()) {
-      uft.execute (request);
-      udtt.execute (request);
+      new UpdateFareTask (pastFare).execute (request);
+      new UpdateDistanceTimeTask (previous.getDistance (),
+          previous.getDuration ()).execute (request);
     }
 
     List<Integer> requests = previous.getRequests ();
