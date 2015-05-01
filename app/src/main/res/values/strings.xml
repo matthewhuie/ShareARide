@@ -58,6 +58,7 @@
     <string name="actual_fare">Actual Fare: </string>
     <string name="actual_distance">Actual Distance</string>
     <string name="miles">miles</string>
+    <string name="estimated_distance">Estimated Distance</string>
 
 
 </resources>
