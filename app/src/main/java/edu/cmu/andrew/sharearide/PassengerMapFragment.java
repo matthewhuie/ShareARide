@@ -522,11 +522,11 @@ public class PassengerMapFragment extends Fragment {
 
                     int moodType = mContext.moodType;
 
-                    String strMoodType = moodType == 0 ? "Save Money" : "Other";
+                    String strMoodType = moodType == 0 ? "Save Money" : "Others";
 
-                    if (strMoodType.equals("Save Money")) {
+                    if (strMoodType.equals("Others")) {
 
-                        TripBean tb = EndPointManager.getEndpointInstance().getTrip(driverID).execute();
+                        TripBean tb = myApiService.getTrip(driverID).execute();
                         int currNumOfRider = tb.getNumOfRiders();
 
                         if (currNumOfRider > maxNumOfRider) {
