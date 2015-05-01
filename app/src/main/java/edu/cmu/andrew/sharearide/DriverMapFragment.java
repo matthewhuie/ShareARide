@@ -241,12 +241,12 @@ public class DriverMapFragment extends Fragment {
 
       requests.addAll (previous.getRequests ());
 
-      double pastFare = PricingAlgorithm.calcTripSegmentPrice (previous);
+      /**double pastFare = PricingAlgorithm.calcTripSegmentPrice (previous);
       for (int request : previous.getRequests ()) {
         new UpdateFareTask (pastFare).execute (request);
         new UpdateDistanceTimeTask (previous.getDistance (),
             previous.getDuration ()).execute (request);
-      }
+      }*/
     }
     Log.i ("requests in to", rb.getRequestId() + ", " + requests.toString ());
 
@@ -311,6 +311,11 @@ public class DriverMapFragment extends Fragment {
 
     List<Integer> requests = previous.getRequests ();
     requests.remove (new Integer (rb.getRequestId ()));
+
+    System.out.println (rb.getRequestId ());
+    System.out.println (rb.getDistanceEstimated () + " - " + rb.getEstimatedTime ());
+    System.out.println (rb.getActualDistance () + " - " + previous.getDistance ());
+    System.out.println (rb.getActualDuration () + " - " + previous.getDuration ());
 
     new UpdateFareTask (PricingAlgorithm.calcFinalPrice (
         rb.getDistanceEstimated (), rb.getEstimatedTime (),
@@ -426,6 +431,7 @@ public class DriverMapFragment extends Fragment {
         String json = mContext.getRemoteJSON (mContext.DIRECTION_BASE_URL + origin + destination + key);
 
         try {
+          rb = EndPointManager.getEndpointInstance ().getRequest (rb.getRequestId ()).execute();
           DirectionsJSONParser directions = new DirectionsJSONParser (json, data [0], data [i]);
 
           double distance = directions.getDistance ();
@@ -586,14 +592,12 @@ public class DriverMapFragment extends Fragment {
     mMapButton.setClickable (true);
     mMapButton.setBackgroundColor (getResources ().getColor (R.color.material_red_500));
     mMapButton.setVisibility (View.VISIBLE);
-//    mMapButton.setText ("Complete Task");
     mMapButton.setText (getString(R.string.complete_task_text));
     mMapButton.setOnClickListener (new ActionOnClick (isPickedUp, rb));
   }
 
   private void disableButton () {
     mMapButton.setClickable (false);
-//    mMapButton.setText ("Task Completed!");
     mMapButton.setText (getString(R.string.task_completed_text));
     mMapButton.setBackgroundColor (getResources ().getColor (R.color.material_red_900));
   }
