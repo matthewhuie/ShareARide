@@ -26,6 +26,7 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import edu.cmu.andrew.sharearide.backend.shareARideApi.model.MessageBean;
@@ -47,6 +48,7 @@ public class DriverMapFragment extends Fragment {
   private List<TripSegment> trip;
   private int currentTrip;
   public final Handler handler = new Handler ();
+  private HashMap<Integer, LatLng> destinations;
 
 
   @Override
@@ -129,9 +131,10 @@ public class DriverMapFragment extends Fragment {
   private void initTrip () {
     trip = new ArrayList<TripSegment> ();
     directions = new ArrayList<> ();
+    destinations = new HashMap<> ();
     currentTrip = -1;
     mMapButton.setVisibility (View.INVISIBLE);
-    mMapText.setText (getString(R.string.request_message));
+    mMapText.setText (getString (R.string.request_message));
     mMap.clear();
     new AsyncTask<Integer, Void, Void> (){
       @Override
@@ -223,6 +226,8 @@ public class DriverMapFragment extends Fragment {
     LatLng rSrc = new LatLng (mContext.getLatitude (), mContext.getLongitude ());
     LatLng rDst = new LatLng (rb.getSrcLatitude (), rb.getSrcLongitude ());
 
+    destinations.put (rb.getRequestId (), rDst);
+
     List<LatLng> paths = new ArrayList<> ();
     paths.add (rSrc);
     paths.add (rDst);
@@ -259,7 +264,7 @@ public class DriverMapFragment extends Fragment {
 
     List<LatLng> paths = new ArrayList<> ();
     paths.add (rSrc);
-    paths.add (rDst);
+    //paths.add (rDst);
     List<Integer> requests = new ArrayList<> (trip.get (trip.size () - 1).getRequests ());
 
     TripSegment previous = trip.get (trip.size () - 1);
@@ -274,11 +279,13 @@ public class DriverMapFragment extends Fragment {
     }
     Log.i ("requests in start", rb.getRequestId() + ", " + requests.toString ());
 
-    for (TripSegment ts : trip) {
+    /**for (TripSegment ts : trip) {
       if (! ts.isCompleted ()) {
         paths.add (ts.getDestination ());
       }
-    }
+    }*/
+
+    paths.addAll (destinations.values ());
 
     LatLng[] ll = new LatLng[paths.size ()];
     ll = paths.toArray (ll);
@@ -287,6 +294,8 @@ public class DriverMapFragment extends Fragment {
 
   private void finishRequest (RequestBean rb) {
     LatLng rDst = new LatLng (rb.getDstLatitude (), rb.getDstLongitude ());
+
+    destinations.remove (rb.getRequestId ());
 
     List<LatLng> paths = new ArrayList<> ();
     paths.add (rDst);
@@ -309,15 +318,16 @@ public class DriverMapFragment extends Fragment {
         rb.getActualDuration () + previous.getDuration ())
     ).execute (rb.getRequestId ());
 
-    Log.i ("requests in finish", rb.getRequestId() + ", " + requests.toString ());
     if (requests.size () == 0) {
       endTrip ();
     } else {
-      for (TripSegment ts : trip) {
+      /**for (TripSegment ts : trip) {
         if (! ts.isCompleted ()) {
           paths.add (ts.getDestination ());
         }
-      }
+      }*/
+      paths.addAll (destinations.values ());
+      System.out.println (paths);
 
       LatLng[] ll = new LatLng[paths.size ()];
       ll = paths.toArray (ll);
@@ -400,7 +410,6 @@ public class DriverMapFragment extends Fragment {
     public NextRouteTask (List<Integer> requests, RequestBean rb) {
       this.requests = requests;
       this.userID = rb.getPassUserId ();
-      this.isPickUp = isPickUp;
       this.rb = rb;
     }
 
