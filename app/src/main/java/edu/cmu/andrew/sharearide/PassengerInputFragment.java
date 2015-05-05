@@ -100,8 +100,7 @@ public class PassengerInputFragment extends Fragment {
       @Override
       public void onClick (View v) {
 
-        // *** NEED TO VERIFY INPUT FIELD HERE
-        mContext.setDestination (atvPlaces.getText ().toString ());
+         mContext.setDestination (atvPlaces.getText ().toString ());
           mContext.setNumOfRiders(mRiders.getProgress() + 1);
             mContext.nextFragment ();
       }
