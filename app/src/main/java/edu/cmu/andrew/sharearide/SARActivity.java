@@ -26,33 +26,56 @@ import edu.cmu.andrew.utilities.GPSTracker;
  */
 public class SARActivity extends FragmentActivity {
 
-  /** The base URL of all the APIs used */
+  /**
+   * The base URL of all the APIs used
+   */
   public final String GEOCODE_BASE_URL = "https://maps.googleapis.com/maps/api/geocode/xml?address=";
   public final String REV_GEOCODE_BASE_URL = "https://maps.googleapis.com/maps/api/geocode/json?latlng=";
   public final String UBER_PRICE_BASE_URL = "https://api.uber.com/v1/estimates/price?";
   public final String DIRECTION_BASE_URL = "https://maps.googleapis.com/maps/api/directions/json?";
   public final String GOOGLE_AUTOCOMPLETE_URL = "https://maps.googleapis.com/maps/api/place/autocomplete/";
 
-  /** The conversion units used against Google Directions API */
+  /**
+   * The conversion units used against Google Directions API
+   */
   public final double MeterToMile = 0.000621371;
   public final double SecToMin = 60;
 
-  /** The number of riders and mood type of the request */
+  /**
+   * The number of riders and mood type of the request
+   */
   public int numOfRiders;
   public int moodType = 0;
 
-  /** The list of fragments and position of fragments within this instance */
+  /**
+   * The list of fragments and position of fragments within this instance
+   */
   private List<Fragment> fragments;
   private int position;
 
-  /** The GPSTracker object for this user */
+  /**
+   * The GPSTracker object for this user
+   */
   private GPSTracker mGPS;
+
+  /**
+   * This user's destination
+   */
   private String destination;
+
+  /**
+   * This user's username
+   */
   private String username;
+
+  /**
+   * This user's user ID
+   */
   private int userID;
 
   /**
    * This Activity's onCreate method
+   *
    * @param savedInstanceState the saved instance state
    */
   @Override
@@ -69,6 +92,7 @@ public class SARActivity extends FragmentActivity {
 
   /**
    * Sets the current fragment to the fragment in the specified position
+   *
    * @param position the fragment to switch to
    */
   private void setFragment (int position) {
@@ -105,7 +129,8 @@ public class SARActivity extends FragmentActivity {
 
   /**
    * Geocodes a given latitude and longitude to a location name
-   * @param latitude a given latitude
+   *
+   * @param latitude  a given latitude
    * @param longitude a given longitude
    * @return the string notation of the location
    */
@@ -139,6 +164,7 @@ public class SARActivity extends FragmentActivity {
 
   /**
    * Gets the latitude of this user
+   *
    * @return the latitude of this user
    */
   public double getLatitude () {
@@ -147,6 +173,7 @@ public class SARActivity extends FragmentActivity {
 
   /**
    * Gets the longitude of this user
+   *
    * @return the longitude of this user
    */
   public double getLongitude () {
@@ -155,6 +182,7 @@ public class SARActivity extends FragmentActivity {
 
   /**
    * Gets the location name of this user
+   *
    * @return the location name of this user
    */
   public String getLocationName () {
@@ -163,6 +191,7 @@ public class SARActivity extends FragmentActivity {
 
   /**
    * Gets the destination of this user
+   *
    * @return the destination of this user
    */
   public String getDestination () {
@@ -171,6 +200,7 @@ public class SARActivity extends FragmentActivity {
 
   /**
    * Sets the destination of this user
+   *
    * @param destination the destination of this user
    */
   public void setDestination (String destination) {
@@ -179,6 +209,7 @@ public class SARActivity extends FragmentActivity {
 
   /**
    * Gets the number of riders of this user
+   *
    * @return the number of riders of this user
    */
   public int getNumOfRiders () {
@@ -187,6 +218,7 @@ public class SARActivity extends FragmentActivity {
 
   /**
    * Sets the number of riders of this user
+   *
    * @param numOfRiders the number of riders of this user
    */
   public void setNumOfRiders (int numOfRiders) {
@@ -195,6 +227,7 @@ public class SARActivity extends FragmentActivity {
 
   /**
    * Gets the username of this user
+   *
    * @return the username of this user
    */
   public String getUsername () {
@@ -203,6 +236,7 @@ public class SARActivity extends FragmentActivity {
 
   /**
    * Sets the username of this user
+   *
    * @param username the username of this user
    */
   public void setUsername (String username) {
@@ -211,6 +245,7 @@ public class SARActivity extends FragmentActivity {
 
   /**
    * Gets the user ID of this user
+   *
    * @return the user ID of this user
    */
   public int getUserID () {
@@ -219,6 +254,7 @@ public class SARActivity extends FragmentActivity {
 
   /**
    * Sets the user ID of this user
+   *
    * @param userID
    */
   public void setUserID (int userID) {
@@ -239,6 +275,7 @@ public class SARActivity extends FragmentActivity {
 
   /**
    * Gets the remote JSON object
+   *
    * @param url the remote URL
    * @return the remote JSON object as a String
    */
