@@ -37,20 +37,71 @@ import edu.cmu.andrew.utilities.EndPointManager;
 import edu.cmu.andrew.utilities.PricingAlgorithm;
 import edu.cmu.andrew.utilities.TripSegment;
 
+/**
+ * DriverMapFragment is the main fragment for a driver of the platform.
+ * It displays the map for navigation and appropriate text for input requests.
+ */
 public class DriverMapFragment extends Fragment {
 
-  private GoogleMap mMap; // Might be null if Google Play services APK is not available.
+  /**
+   * The Google Map object
+   */
+  private GoogleMap mMap;
+
+  /**
+   * This fragment's layout
+   */
   private RelativeLayout mLayout;
+
+  /**
+   * Ths main activity
+   */
   private SARActivity mContext;
+
+  /**
+   * The main TextView of this fragment
+   */
   private TextView mMapText;
+
+  /**
+   * The main submit button of this fragment
+   */
   private Button mMapButton;
+
+  /**
+   * The directions from source to destination
+   */
   private List<LatLng> directions;
+
+  /**
+   * The list of TripSegments within this trip
+   */
   private List<TripSegment> trip;
+
+  /**
+   * The current TripSegment ID
+   */
   private int currentTrip;
+
+  /**
+   * The handle for polling operations
+   */
   public final Handler handler = new Handler ();
+
+  /**
+   * A list of probably destinations for the routing algorithm
+   */
   private HashMap<RequestBean, LatLng> destinations;
 
 
+  /**
+   * This fragment's onCreateView method
+   *
+   * @param inflater           the LayoutInflater
+   * @param container          the ViewGroup
+   * @param savedInstanceState the Bundle
+   * @return the created view
+   */
   @Override
   public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mContext = (SARActivity) super.getActivity ();
@@ -58,11 +109,18 @@ public class DriverMapFragment extends Fragment {
     mMapText = (TextView) mLayout.findViewById (R.id.driver_map_text);
     mMapButton = (Button) mLayout.findViewById (R.id.driver_map_button);
 
+    /** Initiates the map */
     setUpMapIfNeeded ();
+
+    /** Initiates the trip */
     initTrip ();
+
     return mLayout;
   }
 
+  /**
+   * The fragment's onResume method
+   */
   @Override
   public void onResume () {
     super.onResume ();
@@ -109,38 +167,54 @@ public class DriverMapFragment extends Fragment {
     mMap.setMyLocationEnabled (true);
   }
 
-    private void setUpPassLocation (LatLng latlng) {
-        if (mMap != null) {
-            mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (latlng, 13));
-            Marker marker_destination = mMap.addMarker (new MarkerOptions()
-                    .position (latlng)
-                    .icon (BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-                    .title ("Pick up your passenger here!"));
-        }
+  /**
+   * Places a marker where the passenger is
+   *
+   * @param latlng the passenger's location
+   */
+  private void setUpPassLocation (LatLng latlng) {
+    if (mMap != null) {
+      mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (latlng, 13));
+      Marker marker_destination = mMap.addMarker (new MarkerOptions ()
+          .position (latlng)
+          .icon (BitmapDescriptorFactory.defaultMarker (BitmapDescriptorFactory.HUE_BLUE))
+          .title ("Pick up your passenger here!"));
     }
+  }
 
-    private void setUpDestination (LatLng latlng) {
-        if (mMap != null) {
-            mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (latlng, 13));
-            Marker marker_destination = mMap.addMarker (new MarkerOptions ()
-                    .position (latlng)
-                    .title ("Current destination"));
-        }
+  /**
+   * Places a marker where the current destination is
+   *
+   * @param latlng the current destination location
+   */
+  private void setUpDestination (LatLng latlng) {
+    if (mMap != null) {
+      mMap.moveCamera (CameraUpdateFactory.newLatLngZoom (latlng, 13));
+      Marker marker_destination = mMap.addMarker (new MarkerOptions ()
+          .position (latlng)
+          .title ("Current destination"));
     }
+  }
 
+  /**
+   * Initiates the trip for this driver
+   */
   private void initTrip () {
+    /** Resets all parameters needed for a trip */
     trip = new ArrayList<TripSegment> ();
     directions = new ArrayList<> ();
     destinations = new HashMap<> ();
     currentTrip = -1;
     mMapButton.setVisibility (View.INVISIBLE);
     mMapText.setText (getString (R.string.request_message));
-    mMap.clear();
-    new AsyncTask<Integer, Void, Void> (){
+    mMap.clear ();
+
+    /** Ends all previous trips to ensure a clean trip */
+    new AsyncTask<Integer, Void, Void> () {
       @Override
-      protected Void doInBackground(Integer... params) {
+      protected Void doInBackground (Integer... params) {
         try {
-          EndPointManager.getEndpointInstance ().endPreviousTrips(params[0]).execute ();
+          EndPointManager.getEndpointInstance ().endPreviousTrips (params[0]).execute ();
         } catch (IOException e) {
           e.printStackTrace ();
         }
@@ -154,18 +228,26 @@ public class DriverMapFragment extends Fragment {
     }.execute (mContext.getUserID ());
   }
 
+  /**
+   * Updates the number of riders within this trip
+   *
+   * @param numOfRiders the number of riders within this trip
+   */
   private void updateTripRiders (int numOfRiders) {
-    new AsyncTask<Integer, Void, Void> (){
+    new AsyncTask<Integer, Void, Void> () {
 
       @Override
-      protected Void doInBackground(Integer... params) {
+      protected Void doInBackground (Integer... params) {
         TripBean trip = new TripBean ();
         try {
-          trip = EndPointManager.getEndpointInstance ().updateTrip(params[0], params[1]).execute ();
+
+          /** Updates the trip with the specified number of riders */
+          trip = EndPointManager.getEndpointInstance ().updateTrip (params[0], params[1]).execute ();
         } catch (IOException e) {
           e.printStackTrace ();
         }
 
+        /** Sets the current trip ID */
         currentTrip = trip.getTripId ();
 
         return null;
@@ -173,17 +255,22 @@ public class DriverMapFragment extends Fragment {
 
       @Override
       protected void onPostExecute (Void v) {
+
+        /** Once the trip is initiated, poll for possible requests */
         pollForMessages ();
       }
     }.execute (mContext.getUserID (), numOfRiders);
   }
 
+  /**
+   * Ends the current trip and resets this driver for a new trip
+   */
   private void endTrip () {
-    new AsyncTask<Integer, Void, Void> (){
+    new AsyncTask<Integer, Void, Void> () {
       @Override
-      protected Void doInBackground(Integer... params) {
+      protected Void doInBackground (Integer... params) {
         try {
-          EndPointManager.getEndpointInstance ().endTrip(params[0]).execute ();
+          EndPointManager.getEndpointInstance ().endTrip (params[0]).execute ();
         } catch (IOException e) {
           e.printStackTrace ();
         }
@@ -197,14 +284,22 @@ public class DriverMapFragment extends Fragment {
     initTrip ();
   }
 
+  /**
+   * Reads an incoming message for a passenger request
+   *
+   * @param mb the incoming message
+   */
   private void readMessage (MessageBean mb) {
     String message = mb.getMessage ();
     int requestID = mb.getRequestId ();
 
+    /** Respond accordingly if it is a new request */
     if (message.equals ("New Request")) {
-      new AsyncTask<Integer, Void, RequestBean> (){
+
+      /** Retrieves the RequestBean for the incoming request */
+      new AsyncTask<Integer, Void, RequestBean> () {
         @Override
-        protected RequestBean doInBackground(Integer... params) {
+        protected RequestBean doInBackground (Integer... params) {
           try {
             return EndPointManager.getEndpointInstance ().getRequest (params[0]).execute ();
 
@@ -216,55 +311,73 @@ public class DriverMapFragment extends Fragment {
 
         @Override
         protected void onPostExecute (RequestBean rb) {
+
+          /** Initiates routing algorithm to the requests's destination */
           toRequest (rb);
         }
       }.execute (requestID);
     }
   }
 
+  /**
+   * Performs the routing algorithm from the current location to the new request's source
+   *
+   * @param rb the new request's RequestBean
+   */
   private void toRequest (RequestBean rb) {
+    /** Sets the source to driver's current location and destination to the request's source */
     LatLng rSrc = new LatLng (mContext.getLatitude (), mContext.getLongitude ());
     LatLng rDst = new LatLng (rb.getSrcLatitude (), rb.getSrcLongitude ());
 
+    /** Adds the above source and destination to the list of possible paths */
     List<LatLng> paths = new ArrayList<> ();
     paths.add (rSrc);
     paths.add (rDst);
 
     updateTripRiders (rb.getNumOfRiders ());
+
+    /** Updates the list of requests within the new TripSegment */
     List<Integer> requests = new ArrayList<> ();
     requests.add (new Integer (rb.getRequestId ()));
+
+    /** If there is a previous TripSegment, end it and start a new one */
     if (trip.size () > 0) {
       TripSegment previous = trip.get (trip.size () - 1);
       paths.add (previous.getDestination ());
       previous.setDestination (rSrc);
       previous.setCompleted (true);
 
+      /** Grabs the previous list of requests from the previous TripSegment */
       requests.addAll (previous.getRequests ());
 
-      /**double pastFare = PricingAlgorithm.calcTripSegmentPrice (previous);
-      for (int request : previous.getRequests ()) {
-        new UpdateFareTask (pastFare).execute (request);
-        new UpdateDistanceTimeTask (previous.getDistance (),
-            previous.getDuration ()).execute (request);
-      }*/
     }
-    Log.i ("requests in to", rb.getRequestId() + ", " + requests.toString ());
 
+    /** Converts the list of possible paths to an array */
     LatLng[] ll = new LatLng[paths.size ()];
     ll = paths.toArray (ll);
 
-    new ToRequestTask (requests, rb).execute(ll);
+    /** Starts routing algorithm for here to source of request */
+    new ToRequestTask (requests, rb).execute (ll);
   }
 
+  /**
+   * Performs the routing algorithm from the source to the best destination
+   *
+   * @param rb the new request's RequestBean
+   */
   private void startRequest (RequestBean rb) {
+    /** Sets the source to request's source and destination to the request's destination */
     LatLng rSrc = new LatLng (rb.getSrcLatitude (), rb.getSrcLongitude ());
     LatLng rDst = new LatLng (rb.getDstLatitude (), rb.getDstLongitude ());
 
+    /** Places this destination in the list of destinations */
     destinations.put (rb, rDst);
 
+    /** Adds the above source and destination to the list of possible paths */
     List<LatLng> paths = new ArrayList<> ();
     paths.add (rSrc);
-    //paths.add (rDst);
+
+    /** Gets the previous list of requests */
     List<Integer> requests = new ArrayList<> (trip.get (trip.size () - 1).getRequests ());
 
     TripSegment previous = trip.get (trip.size () - 1);
@@ -277,18 +390,14 @@ public class DriverMapFragment extends Fragment {
       new UpdateDistanceTimeTask (previous.getDistance (),
           previous.getDuration ()).execute (request);
     }
-    Log.i ("requests in start", rb.getRequestId() + ", " + requests.toString ());
-
-    /**for (TripSegment ts : trip) {
-      if (! ts.isCompleted ()) {
-        paths.add (ts.getDestination ());
-      }
-    }*/
 
     paths.addAll (destinations.values ());
 
+    /** Converts the list of possible paths to an array */
     LatLng[] ll = new LatLng[paths.size ()];
     ll = paths.toArray (ll);
+
+    /** Starts routing algorithm for source to best destination */
     new NextRouteTask (requests, rb).execute (ll);
   }
 
@@ -297,8 +406,10 @@ public class DriverMapFragment extends Fragment {
 
     destinations.remove (rb);
 
+    /** Adds the above source and destination to the list of possible paths */
     List<LatLng> paths = new ArrayList<> ();
     paths.add (rDst);
+
     TripSegment previous = trip.get (trip.size () - 1);
     previous.setCompleted (true);
 
@@ -312,11 +423,6 @@ public class DriverMapFragment extends Fragment {
     List<Integer> requests = previous.getRequests ();
     requests.remove (new Integer (rb.getRequestId ()));
 
-    System.out.println (rb.getRequestId ());
-    System.out.println (rb.getDistanceEstimated () + " - " + rb.getEstimatedTime ());
-    System.out.println (rb.getActualDistance () + " - " + previous.getDistance ());
-    System.out.println (rb.getActualDuration () + " - " + previous.getDuration ());
-
     new UpdateFareTask (PricingAlgorithm.calcFinalPrice (
         rb.getDistanceEstimated (), rb.getEstimatedTime (),
         rb.getActualDistance () + previous.getDistance (),
@@ -327,17 +433,20 @@ public class DriverMapFragment extends Fragment {
       endTrip ();
     } else {
       /**for (TripSegment ts : trip) {
-        if (! ts.isCompleted ()) {
-          paths.add (ts.getDestination ());
-        }
-      }*/
+       if (! ts.isCompleted ()) {
+       paths.add (ts.getDestination ());
+       }
+       }*/
       paths.addAll (destinations.values ());
       System.out.println (destinations);
       System.out.println (paths);
 
+      /** Converts the list of possible paths to an array */
       LatLng[] ll = new LatLng[paths.size ()];
       ll = paths.toArray (ll);
-      new NextRouteTask (requests, (RequestBean) destinations.keySet ().iterator().next()).execute (ll);
+
+      /** Starts routing algorithm for destination to next best destination */
+      new NextRouteTask (requests, (RequestBean) destinations.keySet ().iterator ().next ()).execute (ll);
     }
 
     new AsyncTask<RequestBean, Void, Void> () {
@@ -346,13 +455,14 @@ public class DriverMapFragment extends Fragment {
         try {
           RequestBean rb = data[0];
           EndPointManager.getEndpointInstance ().createMessage (rb.getPassUserId (), "End Request", rb.getRequestId ()).execute ();
-        } catch (IOException ioe) {}
+        } catch (IOException ioe) {
+        }
         return null;
       }
-    }.execute(rb);
+    }.execute (rb);
   }
 
-  class ToRequestTask extends AsyncTask <LatLng, Void, DirectionsJSONParser> {
+  class ToRequestTask extends AsyncTask<LatLng, Void, DirectionsJSONParser> {
 
     List<Integer> requests;
     String username;
@@ -375,15 +485,16 @@ public class DriverMapFragment extends Fragment {
         username = (EndPointManager.getEndpointInstance ().getUserByID (rb.getPassUserId ()).execute ()).getUserName ();
 
         return parser;
-      } catch(JSONException jsone){}
-      catch(IOException ioe){}
+      } catch (JSONException jsone) {
+      } catch (IOException ioe) {
+      }
 
       return null;
     }
 
-      @Override
-      protected void onPostExecute (DirectionsJSONParser parser){
-        try {
+    @Override
+    protected void onPostExecute (DirectionsJSONParser parser) {
+      try {
         List<LatLng> directions = parser.getPolyline ();
         LatLng dest = parser.getDestination ();
         LatLng source = parser.getSource ();
@@ -401,11 +512,12 @@ public class DriverMapFragment extends Fragment {
 
         updateMapText ("Picking up " + username);
         updateButton (true, rb);
-      } catch(JSONException jsone){}
+      } catch (JSONException jsone) {
+      }
     }
   }
 
-  class NextRouteTask extends AsyncTask <LatLng, Void, DirectionsJSONParser> {
+  class NextRouteTask extends AsyncTask<LatLng, Void, DirectionsJSONParser> {
 
     List<Integer> requests;
     int userID;
@@ -431,8 +543,8 @@ public class DriverMapFragment extends Fragment {
         String json = mContext.getRemoteJSON (mContext.DIRECTION_BASE_URL + origin + destination + key);
 
         try {
-          rb = EndPointManager.getEndpointInstance ().getRequest (rb.getRequestId ()).execute();
-          DirectionsJSONParser directions = new DirectionsJSONParser (json, data [0], data [i]);
+          rb = EndPointManager.getEndpointInstance ().getRequest (rb.getRequestId ()).execute ();
+          DirectionsJSONParser directions = new DirectionsJSONParser (json, data[0], data[i]);
 
           double distance = directions.getDistance ();
           double duration = directions.getDuration ();
@@ -456,7 +568,7 @@ public class DriverMapFragment extends Fragment {
     @Override
     protected void onPostExecute (DirectionsJSONParser parser) {
       try {
-        List <LatLng> directions = parser.getPolyline ();
+        List<LatLng> directions = parser.getPolyline ();
         LatLng destination = parser.getDestination ();
         LatLng source = parser.getSource ();
         trip.add (new TripSegment (trip.size (), parser.getSource (), parser.getDestination (),
@@ -471,9 +583,9 @@ public class DriverMapFragment extends Fragment {
         updateMapText ("Dropping off " + username);
         updateButton (false, rb);
 
-        setUpDestination(destination);
-        setUpPassLocation(source);
-        Log.i ("Hit the JSON error: ", String.valueOf(destination.latitude)+String.valueOf(destination.longitude));
+        setUpDestination (destination);
+        setUpPassLocation (source);
+        Log.i ("Hit the JSON error: ", String.valueOf (destination.latitude) + String.valueOf (destination.longitude));
 
 
       } catch (JSONException jsone) {
@@ -483,7 +595,7 @@ public class DriverMapFragment extends Fragment {
 
   }
 
-  class UpdateFareTask extends AsyncTask <Integer, Void, Void> {
+  class UpdateFareTask extends AsyncTask<Integer, Void, Void> {
 
     double fareToAdd;
 
@@ -494,7 +606,7 @@ public class DriverMapFragment extends Fragment {
     @Override
     protected Void doInBackground (Integer... data) {
       try {
-        EndPointManager.getEndpointInstance ().updateFare(data[0], fareToAdd).execute ();
+        EndPointManager.getEndpointInstance ().updateFare (data[0], fareToAdd).execute ();
       } catch (IOException e) {
         e.printStackTrace ();
       }
@@ -503,7 +615,7 @@ public class DriverMapFragment extends Fragment {
     }
   }
 
-  class UpdateDistanceTimeTask extends AsyncTask <Integer, Void, Void> {
+  class UpdateDistanceTimeTask extends AsyncTask<Integer, Void, Void> {
 
     double distanceToAdd;
     double timeToAdd;
@@ -534,7 +646,7 @@ public class DriverMapFragment extends Fragment {
     protected MessageBean doInBackground (Integer... data) {
       MessageBean mb = new MessageBean ();
       try {
-        mb = EndPointManager.getEndpointInstance ().pollMessage(data[0]).execute ();
+        mb = EndPointManager.getEndpointInstance ().pollMessage (data[0]).execute ();
       } catch (IOException e) {
         e.printStackTrace ();
       }
@@ -548,33 +660,34 @@ public class DriverMapFragment extends Fragment {
 
   }
 
-  public void pollForMessages() {
-    Sync sync = new Sync(call,1);
+  public void pollForMessages () {
+    Sync sync = new Sync (call, 1);
 
   }
 
   public class Sync {
     Runnable task;
 
-    public Sync(Runnable task, long time) {
+    public Sync (Runnable task, long time) {
       this.task = task;
-      handler.removeCallbacks(task);
-      handler.postDelayed(task, time);
+      handler.removeCallbacks (task);
+      handler.postDelayed (task, time);
     }
   }
 
-  final private Runnable call = new Runnable() {
-    public void run() {
+  final private Runnable call = new Runnable () {
+    public void run () {
       //This is where my sync code will be, but for testing purposes I only have a Log statement
       //will run every 20 seconds
-      new PollTask().execute (mContext.getUserID ());
+      new PollTask ().execute (mContext.getUserID ());
       new AsyncTask<Integer, Void, Void> () {
         @Override
         protected Void doInBackground (Integer... data) {
           try {
             EndPointManager.getEndpointInstance ().updateLocation (data[0],
                 mContext.getLatitude (), mContext.getLongitude ()).execute ();
-          } catch (IOException ioe) {}
+          } catch (IOException ioe) {
+          }
           return null;
         }
       };
@@ -592,23 +705,25 @@ public class DriverMapFragment extends Fragment {
     mMapButton.setClickable (true);
     mMapButton.setBackgroundColor (getResources ().getColor (R.color.material_red_500));
     mMapButton.setVisibility (View.VISIBLE);
-    mMapButton.setText (getString(R.string.complete_task_text));
+    mMapButton.setText (getString (R.string.complete_task_text));
     mMapButton.setOnClickListener (new ActionOnClick (isPickedUp, rb));
   }
 
   private void disableButton () {
     mMapButton.setClickable (false);
-    mMapButton.setText (getString(R.string.task_completed_text));
+    mMapButton.setText (getString (R.string.task_completed_text));
     mMapButton.setBackgroundColor (getResources ().getColor (R.color.material_red_900));
   }
 
   class ActionOnClick implements View.OnClickListener {
     boolean isPickedUp;
     RequestBean rb;
+
     public ActionOnClick (boolean isPickedUp, RequestBean rb) {
       this.isPickedUp = isPickedUp;
       this.rb = rb;
     }
+
     @Override
     public void onClick (View v) {
       disableButton ();
