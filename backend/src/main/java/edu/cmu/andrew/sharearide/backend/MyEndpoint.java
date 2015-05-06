@@ -27,7 +27,7 @@ import javax.inject.Named;
     packagePath = ""))
 public class MyEndpoint {
 
-  // https://apis-explorer.appspot.com/apis-explorer/?base=https://vivid-art-90101.appspot.com/_ah/api#p/shareARideApi/v1/
+
 
   private static final Logger log = Logger.getLogger (MyEndpoint.class.getName ());
   private static final Calendar calendar = Calendar.getInstance ();
@@ -59,7 +59,12 @@ public class MyEndpoint {
     return ub;
   }
 
-  //change!!!
+    /**
+     * Get drivers who have the capacity for the current request API method
+     *
+     * @param numOfRiders number of riders in the current request
+     * @return drivers met the requirement
+     */
   @ApiMethod (name = "getAvailableDrivers")
   public List<UserBean> getAvailableDrivers (@Named ("numOfRiders") int numOfRiders) {
     int maxInCurr = 4 - numOfRiders;
@@ -136,6 +141,12 @@ public class MyEndpoint {
     return mb;
   }
 
+    /**
+     * Set a request status as fulfilled in Request table by request id API method
+     *
+     * @param request_id current request id
+     * @return request met the requirement
+     */
   @ApiMethod (name = "fulfillRequest")
   public RequestBean fulfillRequest (@Named ("request_id") int request_id) {
 
@@ -149,12 +160,12 @@ public class MyEndpoint {
   }
 
 
-  //@ApiMethod (name = "getUser")
-  //public UserBean getUserDetails (@Named ("userName") String userName) {
-  //  UserBean ub = getUser (userName);
-  //  return ub;
-  //}
-
+    /**
+     * Get a user record from User table by user id API method
+     *
+     * @param userID current user id
+     * @return user met the requirement
+     */
   @ApiMethod (name = "getUserByID")
   public UserBean getUserByID (@Named ("userID") int userID) {
     List<UserBean> users = queryUser ("user_id=" + userID);
@@ -201,10 +212,22 @@ public class MyEndpoint {
     return null;
   }
 
+    /**
+     * Get a passenger record from User table by user id
+     *
+     * @param userId current user id
+     * @return user met the requirement
+     */
   private UserBean getPassenger (String userId) {
     return getUser (userId);
   }
 
+    /**
+     * Get a user record from User table by user id
+     *
+     * @param userId current user id
+     * @return user met the requirement
+     */
   private UserBean getUser (String userId) {
     UserBean user = new UserBean ();
     List<UserBean> users = queryUser ("user_name='" + userId + "'");
@@ -214,6 +237,12 @@ public class MyEndpoint {
     return user;
   }
 
+    /**
+     * Get a user record from User table
+     *
+     * @param where the pre-condition of the query
+     * @return user met the requirement
+     */
   private List<UserBean> queryUser (String where) {
     ArrayList<UserBean> al = new ArrayList<> ();
     try {
@@ -245,6 +274,12 @@ public class MyEndpoint {
     return al;
   }
 
+    /**
+     * Get a trip record from Trip table API method
+     *
+     * @param driverId the driverid for the current trip
+     * @return trip met the requirement
+     */
   @ApiMethod (name = "getTrip")
   public TripBean getTrip (@Named ("driverId") int driverId) {
     TripBean trip = new TripBean ();
@@ -255,6 +290,14 @@ public class MyEndpoint {
     return null;
   }
 
+    /**
+     * Perform taxi searching business logic, insert a trip request, then
+     * change the request status as fulfilled
+     *
+     * @param request_id current request id has been fulfilled
+     * @param minDriverID driver assigned for the request
+     * @param numOfRiders number of riders in the current request
+     */
   @ApiMethod (name = "taxiSearching")
   public void taxiSearching (@Named ("request_id") int request_id,
                              @Named ("minDriverID") int minDriverID,
@@ -276,6 +319,11 @@ public class MyEndpoint {
     }
   }
 
+    /**
+     * Set driver's availability upon change
+     *
+     * @param driverId driver's id
+     */
   @ApiMethod (name = "endTrip")
   public void endTrip (@Named ("driverId") int driverId) {
     TripBean tb = getTrip (driverId);
@@ -284,6 +332,12 @@ public class MyEndpoint {
     updateTrip (tb);
   }
 
+    /**
+     * Get a trip record from Trip table
+     *
+     * @param where the pre-condition of the query
+     * @return trip met the requirement
+     */
   private List<TripBean> queryTrip (String where) {
     ArrayList<TripBean> al = new ArrayList<> ();
     try {
@@ -310,7 +364,12 @@ public class MyEndpoint {
     return al;
   }
 
-
+    /**
+     * Get a request record from Request table API method
+     *
+     * @param request_id request id info
+     * @return request met the requirement
+     */
   @ApiMethod (name = "getRequest")
   public RequestBean getRequest (@Named ("request_id") int request_id) {
     List<RequestBean> requests = queryRequest ("request_id=" + request_id);
@@ -356,6 +415,12 @@ public class MyEndpoint {
         return null;
     }
 
+    /**
+     * Get a request record from Request table
+     *
+     * @param where the pre-condition of the query
+     * @return request met the requirement
+     */
   private List<RequestBean> queryRequest (String where) {
     ArrayList<RequestBean> al = new ArrayList<> ();
     try {
@@ -395,6 +460,12 @@ public class MyEndpoint {
     return al;
   }
 
+    /**
+     * Get a tripreuqest record from TripRequest table
+     *
+     * @param where the pre-condition of the query
+     * @return triprequest met the requirement
+     */
   private List<TripRequestBean> queryTripRequest (String where) {
     ArrayList<TripRequestBean> al = new ArrayList<> ();
     try {
@@ -418,6 +489,12 @@ public class MyEndpoint {
     return al;
   }
 
+    /**
+     * Get a unread row from Message table for certain user
+     *
+     * @param where the pre-condition of the query
+     * @return message to be read
+     */
   private List<MessageBean> queryMessage (String where) {
     ArrayList<MessageBean> al = new ArrayList<> ();
     try {
@@ -444,7 +521,12 @@ public class MyEndpoint {
     return al;
   }
 
-
+    /**
+     * Insert or update a row in User table
+     *
+     * @param ub current UserBean
+     * @return record successful or not indicator
+     */
   private int updateUser (UserBean ub) {
     int result = -1;
     try {
@@ -469,6 +551,12 @@ public class MyEndpoint {
     return result;
   }
 
+    /**
+     * Insert or update a row in Request table
+     *
+     * @param rb current RequestBean
+     * @return record successful or not indicator
+     */
   private int updateRequest (RequestBean rb) {
     int result = -1;
     try {
@@ -502,7 +590,9 @@ public class MyEndpoint {
     return result;
   }
 
-
+    /**
+     * Insert or update a row in Trip table API method
+     */
   @ApiMethod (name = "updateTrip")
   public TripBean updateTrip (@Named ("driverId") int driverId, @Named ("numOfRiders") int numOfRiders) {
     TripBean tb = getTrip(driverId);
@@ -513,6 +603,12 @@ public class MyEndpoint {
     return tb;
   }
 
+    /**
+     * Insert or update a row in Trip table
+     *
+     * @param tb current TripBean
+     * @return record successful or not indicator
+     */
   private int updateTrip (TripBean tb) {
     int result = -1;
     try {
@@ -532,7 +628,9 @@ public class MyEndpoint {
     return result;
   }
 
-
+    /**
+     * Insert a row into TripRequest table API method
+     */
   @ApiMethod (name = "updateTripRequest")
   public TripRequestBean updateTripRequest (@Named ("tripId") int tripId, @Named ("requestId") int requestId) {
     TripRequestBean trb = new TripRequestBean (tripId, requestId);
@@ -556,6 +654,12 @@ public class MyEndpoint {
         return result;
     }
 
+    /**
+     * Insert a row into TripRequest table
+     *
+     * @param trb current TripRequestBean
+     * @return record successful or not indicator
+     */
   private int updateTripRequest (TripRequestBean trb) {
     int result = -1;
     try {
