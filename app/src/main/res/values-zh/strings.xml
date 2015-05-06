@@ -19,7 +19,7 @@
     <string name="wait_message">请稍后...</string>
     <string name="estimated_fare">预计车费：</string>
     <string name="accumulated_fare">当前共计费用：</string>
-    <string name="max_time">预计到达时间：</string>
+    <string name="max_time">预计车程用时：</string>
     <string name="current_location">您目前的位置是</string>
     <string name="current_text">这儿！</string>
     <string name="destination_text">请输入您的目的地</string>
@@ -58,6 +58,7 @@
     <string name="actual_fare">本次车程花费：</string>
     <string name="actual_distance">本次实际车程：</string>
     <string name="miles"> 英里</string>
+    <string name="estimated_distance">预计车程：</string>
 
 
 </resources>

@@ -247,7 +247,7 @@ public class DriverMapFragment extends Fragment {
       @Override
       protected void onPostExecute (Void v) {
 
-        /** Once the trip is initiated, poll for possible requests */
+        /** Once the trip is initiated, o for possible requests */
         pollForMessages ();
       }
     }.execute (mContext.getUserID (), numOfRiders);

@@ -53,26 +53,76 @@ import edu.cmu.andrew.utilities.PricingAlgorithm;
 
 public class PassengerMapFragment extends Fragment {
 
+    /**
+     * The Google Map object
+     */
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
-    private static ShareARideApi myApiService = null;
+    /**
+     * The passenger's latitude info when request
+     */
     private double latitude;
+    /**
+     * The passenger's longitude info when request
+     */
     private double longitude;
+    /**
+     * The passenger's request id to be sent to driver
+     */
     int request_id = 0;
+    /**
+     * The passenger's destination latitude info
+     */
     private double dest_latitude = 0;
+    /**
+     * The passenger's destination longitude info
+     */
     private double dest_longitude = 0;
+    /**
+     * This fragment's layout
+     */
     private RelativeLayout mLayout;
+    /**
+     * The format for fare
+     */
     DecimalFormat df = new DecimalFormat("'$'0.00");
     DecimalFormat df1 = new DecimalFormat("#.##");
+    /**
+     * The main activity
+     */
     private SARActivity mContext;
+    /**
+     * The number of riders from the passenger's request
+     */
     private int numOfRiders;
+    /**
+     * The estimated distance of the passenger's ride
+     */
     double estimatedDistance = 0.0;
+    /**
+     * The estimated duration of the passenger's ride
+     */
     double estimatedDuration = 0.0;
+    /**
+     * The estimated fare of the passenger's ride
+     */
     double estimatedFare = 0.0;
+    /**
+     * The route of the passenger's ride
+     */
     private List<LatLng> directions;
+    /**
+     * The main TextView of this fragment
+     */
     private TextView mMapText;
+    /**
+     * The secondary TextView upon change of this fragment
+     */
     private TextView mMapSecondaryText;
     private long startTime;
     private long endTime;
+    /**
+     * The handle for polling operations
+     */
     public final Handler handler = new Handler();
 
     @Override
@@ -85,12 +135,22 @@ public class PassengerMapFragment extends Fragment {
         mMapSecondaryText = (TextView) mLayout.findViewById(R.id.pass_map_secondary_text);
         latitude = mContext.getLatitude();
         longitude = mContext.getLongitude();
+
+        /** Initiates the map */
         setUpMapIfNeeded();
+
+        /** Get request info and initiates the taxi searching algorithm */
         selectDriver();
+
+        /** Poll for detailed info for passenger's current trip segment */
         pollForMessages();
+
         return mLayout;
     }
 
+    /**
+     * Poll for the distance, duration and fare info for passenger's current trip segment
+     */
     private void pollForMessages() {
 
         Sync sync = new Sync(call, 10 * 1000);
@@ -127,12 +187,12 @@ public class PassengerMapFragment extends Fragment {
                 mb = EndPointManager.getEndpointInstance().pollMessage(params[0]).execute();
 
                 if (mb != null && mb.getMessage().equalsIgnoreCase("End Request")) {
-                    //update end time
-                    myApiService.updateEndTime(mb.getRequestId()).execute();
-                    //get request row -
-                    rb = myApiService.getRequest(mb.getRequestId()).execute();
+                    /** Update end time for the passenger's ride*/
+                    EndPointManager.getEndpointInstance ().updateEndTime(mb.getRequestId()).execute();
+                    /** Get passenger's request row info */
+                    rb = EndPointManager.getEndpointInstance ().getRequest(mb.getRequestId()).execute();
                 } else {
-                    rb = myApiService.getRequest(request_id).execute();
+                    rb = EndPointManager.getEndpointInstance ().getRequest(request_id).execute();
                 }
 
 
@@ -141,7 +201,7 @@ public class PassengerMapFragment extends Fragment {
             }
             return rb;
         }
-
+        /** Get the distance, duration and fare info from database for passenger's current trip segment*/
         protected void onPostExecute(RequestBean rb) {
 
             StringBuilder sb = new StringBuilder();
@@ -163,6 +223,10 @@ public class PassengerMapFragment extends Fragment {
 
     }
 
+
+    /**
+     * The fragment's onResume method
+     */
     @Override
     public void onResume() {
         super.onResume();
@@ -207,11 +271,15 @@ public class PassengerMapFragment extends Fragment {
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 13));
     }
 
+    /**
+     * Place a marker where the destination of the passenger
+     *
+     * @param dest_latitude the latitude of a passenger's destination
+     * @param dest_longitude the longitude of a passenger's destination
+     * @param destination the address of a passenger's destination
+     */
     private void setUpDestination(double dest_latitude, double dest_longitude, String destination) {
-        Log.i("add marker", "method executed");
         if (mMap != null) {
-            Log.i("map not null", "method executed");
-            System.out.println("In setUpDestionation" + dest_latitude + dest_longitude);
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(dest_latitude, dest_longitude), 13));
             Marker marker_destination = mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(dest_latitude, dest_longitude))
@@ -219,8 +287,13 @@ public class PassengerMapFragment extends Fragment {
         }
     }
 
+    /**
+     * Clears the map and draws the polyline and markers from passenger's current location
+     * to the destination
+     *
+     *
+     */
     private void setUpDirection() {
-        Log.i("add polyline", "method executed");
         if (mMap != null) {
             mMap.clear();
             mMap.addPolyline(new PolylineOptions()
@@ -230,11 +303,15 @@ public class PassengerMapFragment extends Fragment {
         }
     }
 
+    /**
+     * Place a marker where the driver to pick up the passenger is
+     *
+     * @param driver_latitude the latitude of the driver's destination
+     * @param driver_longitude the longitude of the driver's destination
+     * @param minDurTxt the time taken from driver's location to passenger's location
+     */
     private void setUpDriverLocation(double driver_latitude, double driver_longitude, String minDurTxt) {
-        Log.i("add marker", "method executed");
         if (mMap != null) {
-            Log.i("map not null", "method executed");
-            System.out.println("In setUpDriverLocation" + driver_latitude + driver_longitude);
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(driver_latitude, driver_longitude), 13));
             Marker marker_destination = mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(driver_latitude, driver_longitude))
@@ -243,42 +320,31 @@ public class PassengerMapFragment extends Fragment {
         }
     }
 
-
+    /**
+     * Get passenger's request input and find a driver for the request
+     *
+     */
     public void selectDriver() {
         String pickUpLocation = mContext.getLocationName();
         String destinationTxt = mContext.getDestination();
         numOfRiders = mContext.getNumOfRiders();
 
-        System.out.println(pickUpLocation + " pickUpLocation");
-        System.out.println(destinationTxt + " destinationTxt");
-
-        //cannot make http request in main thread, has to create a asyn helper thread
-        //calculatePriceAndTime(destinationTxt);
-
+        /** Search for the location info based on user's input text */
         new AsyncGooglePlaceSearch().execute(pickUpLocation, destinationTxt);
 
 
-        //aditi code for inserting request in request table
+        /** Inserting request in request table */
         Intent myIntent = mContext.getIntent(); // gets the previously created intent
         String userName = mContext.getUsername();
 
-        System.out.println(userName + " username");
-        try {
-
-            if (myApiService == null)
-                myApiService = EndPointManager.getEndpointInstance();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         new EndpointsAsyncTask().execute(pickUpLocation, userName);
 
-        //Intent intent = new Intent(this,DriverSelected.class);
-        //startActivity(intent);
 
     }
 
-
+    /**
+     * The AsyncTask that performs the estimation of distance, duration and fare of the request
+     */
     private class AsyncGooglePlaceSearch extends
             AsyncTask<String, Void, String[]> {
 
@@ -286,6 +352,13 @@ public class PassengerMapFragment extends Fragment {
         private String pickUpLocation;
         private List<LatLng> latlngRoute = new ArrayList<>();
 
+        /**
+         * Get the passenger's input from UI and start estimating the distance,
+         * duration, fare of the request
+         *
+         * @param urls user's input from UI
+         * @return estimated duration, distance and fare of the current request
+         */
         @Override
         protected String[] doInBackground(String... urls) {
             pickUpLocation = urls[0];
@@ -293,6 +366,11 @@ public class PassengerMapFragment extends Fragment {
             return calculatePriceAndTime(pickUpLocation, destination);
         }
 
+        /**
+         * Show passenger the estimated duration, distance and fare on the UI
+         *
+         * @param estimates estimated duration, distance and fare of the current request
+         */
         @Override
         protected void onPostExecute(String[] estimates) {
             setUpDirection();
@@ -306,6 +384,13 @@ public class PassengerMapFragment extends Fragment {
                     + "\n" + getString(R.string.max_time) + " " + df1.format(estimatedDuration) + " " + getString(R.string.minutes));
         }
 
+        /**
+         * Calculate the estimated distance, duration and fare of passenger's current request
+         *
+         * @param originTxt passenger's current location
+         * @param destinationTxt the passenger's destination of the ride
+         * @return the estimated info
+         */
         private String[] calculatePriceAndTime(String originTxt, String destinationTxt) {
 
             String[] estimates = new String[3];
@@ -357,6 +442,11 @@ public class PassengerMapFragment extends Fragment {
 
         }
 
+        /**
+         * Get the passenger's destination details
+         *
+         * @param destinationTxt the passenger's destination of the ride
+         */
         private void getLocation(String destinationTxt) {
 
             String url = mContext.GEOCODE_BASE_URL + destinationTxt.replaceAll(" ", "+") + "&key=" + getString(R.string.google_maps_places_key);
@@ -374,7 +464,11 @@ public class PassengerMapFragment extends Fragment {
 
         }
 
-
+        /**
+         * Get the route info for the current request
+         *
+         * @param destinationTxt the passenger's destination of the ride
+         */
         private void getDirection(String destinationTxt) {
             String url = mContext.DIRECTION_BASE_URL + "origin=" + mContext.getLatitude() + "," + mContext.getLongitude() + "&destination=" + destinationTxt.replaceAll(" ", "+") + "&key=" + getString(R.string.google_maps_places_key);
 
@@ -396,9 +490,13 @@ public class PassengerMapFragment extends Fragment {
 
         }
 
-
+        /**
+         * Parse the xml response from google API
+         *
+         * @param url request url
+         * @return parsed DOM containing xml response
+         */
         private Document getRemoteXML(String url) {
-            //Log.i("******", url);
             try {
                 DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
                 DocumentBuilder db = dbf.newDocumentBuilder();
@@ -413,13 +511,18 @@ public class PassengerMapFragment extends Fragment {
 
     }
 
-
+    /**
+     * Get passenger's input from the UI and search for a driver to fulfill the request
+     *
+     */
     class EndpointsAsyncTask extends AsyncTask<String, Void, String[]> {
 
         private String pickUpLocation;
         private String userName;
 
-
+        /**
+         * Get passenger's input from the UI and search for a driver
+         */
         @Override
         protected String[] doInBackground(String... urls) {
             String[] taxiSearchingResult = new String[4];
@@ -427,20 +530,16 @@ public class PassengerMapFragment extends Fragment {
             pickUpLocation = urls[0];
             userName = urls[1];
             try {
-                myApiService = EndPointManager.getEndpointInstance();
-                Log.i("end point created: ", myApiService.toString());
-                MessageBean mb = myApiService.createNewRequest(userName, longitude, latitude, dest_longitude, dest_latitude, numOfRiders, estimatedDistance, estimatedDuration, estimatedFare).execute();
+                /** Record the transaction in the backend database */
+                MessageBean mb = EndPointManager.getEndpointInstance ().createNewRequest(userName, longitude, latitude, dest_longitude, dest_latitude, numOfRiders, estimatedDistance, estimatedDuration, estimatedFare).execute();
                 request_id = mb.getRequestId();
 
-                //change the 0 to slider
                 UserBeanCollection taxis = queryTaxi(numOfRiders);
-                Log.i("Taxi list: ", taxis.toString());
 
-                System.out.println("number of riders " + numOfRiders);
                 taxiSearchingResult = taxiSearching(taxis, request_id, numOfRiders);
 
-                myApiService.createMessage(Integer.parseInt(taxiSearchingResult[3]), mb.getMessage(), request_id).execute();
-                System.out.println(taxiSearchingResult + " taxiSearchingResult");
+                /** Create message in the backend database for passenger to poll from*/
+                EndPointManager.getEndpointInstance ().createMessage(Integer.parseInt(taxiSearchingResult[3]), mb.getMessage(), request_id).execute();
             } catch (IOException ioe) {
                 Log.i("Hit the IO error: ", ioe.toString());
             }
@@ -448,28 +547,40 @@ public class PassengerMapFragment extends Fragment {
 
         }
 
+        /** Once the driver is selected, show to the passenger on map */
         @Override
         protected void onPostExecute(String[] result) {
-            //Toast.makeText(context, result, Toast.LENGTH_LONG).show();
             setUpDriverLocation(Double.parseDouble(result[0]), Double.parseDouble(result[1]), result[2]);
         }
 
+        /**
+         * Get the taxis which still have the capacity for the current request
+         *
+         * @param numOfRiders the number of riders to be picked up
+         * @return all the taxis which can meet the demand
+         */
         private UserBeanCollection queryTaxi(int numOfRiders) {
 
             try {
-                Log.i("In queryTaxi : ", " executed");
-                UserBeanCollection usc = myApiService.getAvailableDrivers(numOfRiders).execute();
-                Log.i("Query result : ", usc.toString());
+                UserBeanCollection usc = EndPointManager.getEndpointInstance ().getAvailableDrivers(numOfRiders).execute();
                 return usc;
 
             } catch (IOException e) {
-                Log.i("Query result error: ", e.getMessage().toString());
                 return new UserBeanCollection();
             }
 
 
         }
 
+        /**
+         * Perform taxi searching algorithm to find a driver for a request
+         *
+         * @param taxis taxis which have capacity for the request
+         * @param request_id request id of the current request to fulfill
+         * @param numOfRiders number of riders of the current request
+         * @return the selected taxi's location info and driver id
+         * @throws IOException
+         */
         private String[] taxiSearching(UserBeanCollection taxis, int request_id, int numOfRiders) throws IOException {
             double taxiLatitude = 0;
             double taxiLongitude = 0;
@@ -482,7 +593,10 @@ public class PassengerMapFragment extends Fragment {
             int durationVal = 0;
             int maxNumOfRider = 0;
 
+
             if (taxis.getItems() != null) {
+
+                /** Select best driver candidate from all potential drivers*/
                 for (UserBean taxi : taxis.getItems()) {
                     taxiLatitude = taxi.getLatitude();
                     taxiLongitude = taxi.getLongitude();
@@ -522,13 +636,14 @@ public class PassengerMapFragment extends Fragment {
 
                     }
 
+                    /** further select the driver based on user's mood*/
                     int moodType = mContext.moodType;
 
                     String strMoodType = moodType == 0 ? "Save Money" : "Others";
 
                     if (strMoodType.equals("Others")) {
 
-                        TripBean tb = myApiService.getTrip(driverID).execute();
+                        TripBean tb = EndPointManager.getEndpointInstance ().getTrip(driverID).execute();
                         int currNumOfRider = tb.getNumOfRiders();
 
                         if (currNumOfRider > maxNumOfRider) {
@@ -551,8 +666,8 @@ public class PassengerMapFragment extends Fragment {
                 }
             }
 
-            //Perform taxi searching duties on backend
-            myApiService.taxiSearching(request_id, minDriverID, numOfRiders).execute();
+            /** Perform taxi searching duties on backend database */
+            EndPointManager.getEndpointInstance ().taxiSearching(request_id, minDriverID, numOfRiders).execute();
             return new String[]{String.valueOf(minTaxiLatitude), String.valueOf(minTaxiLongitude), String.valueOf(durationVal / 60), String.valueOf(minDriverID)};
 
 
