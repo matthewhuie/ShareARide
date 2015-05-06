@@ -21,16 +21,23 @@ import java.util.logging.Logger;
 
 import javax.inject.Named;
 
+/**
+ * MyEndpoint class contains all the API methods to interact with
+ * MySql instance on Google cloud
+ */
 @Api (name = "shareARideApi", version = "v1", namespace = @ApiNamespace (
     ownerDomain = "backend.sharearide.andrew.cmu.edu",
     ownerName = "backend.sharearide.andrew.cmu.edu",
     packagePath = ""))
 public class MyEndpoint {
 
-
-
   private static final Logger log = Logger.getLogger (MyEndpoint.class.getName ());
   private static final Calendar calendar = Calendar.getInstance ();
+
+    /**
+     * the reset method resets the users in the User table
+     * and ends all old trips
+     */
 
   @ApiMethod (name = "reset")
   public void reset () {
@@ -49,6 +56,15 @@ public class MyEndpoint {
       updateMessage (mb);
     }
   }
+
+    /**
+     * updates the longitude and latitude of the user
+     * in the User table
+     * @param userID  user whose location needs to be updated
+     * @param latitude new latitude
+     * @param longitude new longitude
+     * @return
+     */
 
   @ApiMethod (name = "updateLocation")
   public UserBean updateLocation (@Named ("userID") int userID, @Named ("latitude") double latitude, @Named ("longitude") double longitude) {
@@ -91,15 +107,28 @@ public class MyEndpoint {
     return validDrivers;
   }
 
+    /**
+     * creates a new message for the user
+     * @param userID user for whom the message is intended
+     * @param message   message text
+     * @param request_id  the request id for which the message is created
+     */
     @ApiMethod (name = "createMessage")
-    public void createMessage (@Named ("driverName") int driverId,@Named("message") String message,@Named("requestId") int request_id) {
+    public void createMessage (@Named ("userID") int userID,@Named("message") String message,@Named("requestId") int request_id) {
         MessageBean mb = new MessageBean();
         mb.setMessage(message);
         mb.setRequest_id(request_id);
-        mb.setUser_name(driverId);
+        mb.setUser_name(userID);
         mb.setIs_read(0);
         updateMessage(mb);
     }
+
+    /**
+     * checks if the userID has any messages for
+     * it to act upon
+     * @param userID User for which to check for messages
+     * @return
+     */
 
   @ApiMethod (name = "pollMessage")
   public MessageBean pollMessage (@Named ("userID") int userID) {
@@ -175,6 +204,18 @@ public class MyEndpoint {
     return null;
   }
 
+    /**
+     * checks if user exists in the user table
+     * against user and password and if exists sets the user type
+     * and current location
+     * @param username
+     * @param secret
+     * @param latitude
+     * @param longitude
+     * @param userType
+     * @return
+     */
+
   @ApiMethod (name = "userLogin")
   public UserBean userLogin (
       @Named ("username") String username,
@@ -194,12 +235,25 @@ public class MyEndpoint {
     return null;
   }
 
+    /**
+     *
+     * @param driverUsername
+     * @return
+     */
+
   @ApiMethod (name = "startTrip")
   public TripBean startTrip (@Named ("driver_username") String driverUsername) {
     return null;
   }
 
-  private MessageBean getMessage (int userID) {
+    /**
+     * gets the message from the user
+     * and marks it as read
+     * @param userID
+     * @return
+     */
+
+    private MessageBean getMessage (int userID) {
     List<MessageBean> al = new ArrayList<> ();
     al = queryMessage ("user_name=" + userID + " AND is_read=0");
 
@@ -307,6 +361,12 @@ public class MyEndpoint {
     fulfillRequest(request_id);
   }
 
+    /**
+     * ends all trips by marking them
+     * as ended and not active
+     * @param driverId
+     */
+
   @ApiMethod (name = "endPreviousTrips")
   public void endPreviousTrips (@Named ("driverId") int driverId) {
     List<TripBean> trips = queryTrip ("driver_user_id='" + driverId + "' AND is_ended=0");
@@ -379,6 +439,14 @@ public class MyEndpoint {
     return null;
   }
 
+    /**
+     * adds updated fare to the old fare
+     * to store cumulative
+     * @param requestID
+     * @param fareToAdd
+     * @return
+     */
+
   @ApiMethod (name = "updateFare")
   public RequestBean updateFare (@Named ("request_id") int requestID, @Named ("fareToAdd") double fareToAdd) {
     RequestBean rb = getRequest (requestID);
@@ -389,6 +457,16 @@ public class MyEndpoint {
     }
     return null;
   }
+
+    /**
+     * adds new distance to
+     * original distance and new time to original
+     * time
+     * @param requestID
+     * @param distanceToAdd
+     * @param timeToAdd
+     * @return
+     */
 
   @ApiMethod (name = "updateDistanceTime")
   public RequestBean updateDistanceTime (@Named ("request_id") int requestID,
@@ -404,6 +482,12 @@ public class MyEndpoint {
     return null;
   }
 
+
+    /**
+     * updates the request with the end time as current time
+     * @param requestID
+     * @return
+     */
     @ApiMethod (name = "updateEndTime")
     public RequestBean updateEndTime (@Named ("request_id") int requestID) {
         RequestBean rb = getRequest (requestID);
@@ -677,6 +761,13 @@ public class MyEndpoint {
     return result;
   }
 
+
+    /**
+     * updates the message table with values
+     * that need to be updated
+     * @param mb
+     * @return
+     */
   private int updateMessage (MessageBean mb) {
     int result = -1;
     try {
@@ -698,6 +789,13 @@ public class MyEndpoint {
     return result;
   }
 
+    /**
+     * helper method to connect to the MySql instance
+     * on Google cloud
+     * @return
+     * @throws ClassNotFoundException
+     * @throws SQLException
+     */
 
 
   private Connection connect () throws ClassNotFoundException, SQLException {
