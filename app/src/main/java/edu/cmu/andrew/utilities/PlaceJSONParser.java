@@ -9,7 +9,10 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Created by Aditi on 3/22/2015.
+ * Created by Aditi on 3/22/2015
+ * this is a utility class which take a json object and
+ * returns a list of maps which is used by the custom
+ * autocomplete tag in the application
  */
 public class PlaceJSONParser {
     public List<HashMap<String,String>> parse(JSONObject jObject){
@@ -26,6 +29,13 @@ public class PlaceJSONParser {
          */
         return getPlaces(jPlaces);
     }
+
+    /**
+     * method takes a JSONArray and creates a list
+     * of hashmaps
+     * @param jPlaces
+     * @return
+     */
 
     private List<HashMap<String, String>> getPlaces(JSONArray jPlaces){
         int placesCount = jPlaces.length();
@@ -47,7 +57,12 @@ public class PlaceJSONParser {
         return placesList;
     }
 
-    /** Parsing the Place JSON object */
+    /**
+     * creates each hashmap to put in the places list
+     * every map instance would consist of a description,id and reference
+     * @param jPlace
+     * @return
+     */
     private HashMap<String, String> getPlace(JSONObject jPlace){
 
         HashMap<String, String> place = new HashMap<String, String>();
