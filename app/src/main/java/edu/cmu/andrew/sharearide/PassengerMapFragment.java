@@ -156,7 +156,9 @@ public class PassengerMapFragment extends Fragment {
         Sync sync = new Sync(call, 10 * 1000);
     }
 
-
+    /**
+     * instansiation of runnable which executes the Async poll method to poll for messages
+     */
     final private Runnable call = new Runnable() {
         public void run() {
             //This is where my sync code will be, but for testing purposes I only have a Log statement
@@ -166,6 +168,9 @@ public class PassengerMapFragment extends Fragment {
         }
     };
 
+    /**
+     * class Sync which uses the runnable task
+     */
     public class Sync {
         Runnable task;
 
@@ -175,6 +180,11 @@ public class PassengerMapFragment extends Fragment {
             handler.postDelayed(task, time);
         }
     }
+
+    /**
+     * Async poll task which queries the message table for
+     * messages for the user in context
+     */
 
     private class AsyncPoll extends AsyncTask<Integer, Void, RequestBean> {
 
