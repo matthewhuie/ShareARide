@@ -1,5 +1,10 @@
 package edu.cmu.andrew.sharearide.backend;
 
+/**
+ * this class corresponds to the Trip_Request
+ * table in the MySql instance in Google Cloud SQL
+ */
+
 public class TripRequestBean {
 
     private int tripId;

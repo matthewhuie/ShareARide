@@ -9,10 +9,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.SimpleAdapter;
@@ -35,6 +33,10 @@ import java.util.List;
 import edu.cmu.andrew.utilities.CustomAutoCompleteTextView;
 import edu.cmu.andrew.utilities.PlaceJSONParser;
 
+/**
+ * The class takes care of all the activities that need to
+ * happen on the passenger input screen
+ */
 
 public class PassengerInputFragment extends Fragment {
 
@@ -45,8 +47,17 @@ public class PassengerInputFragment extends Fragment {
   private Button mNext;
   private TextView mLocation;
 
+    // the custom auto-complete tag which uses the places API
   AutoCompleteTextView atvPlaces;
 
+    /**
+     * this method contains all activities that need to
+     * happen when the fragment loads
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
   @Override
   public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mContext = (SARActivity) super.getActivity ();
@@ -57,12 +68,15 @@ public class PassengerInputFragment extends Fragment {
     mRidersOutput.setText ("1");
 
     mLocation = ((TextView) mLayout.findViewById (R.id.currentLocationText));
+    //set the current location in a text view
     mLocation.setText (mContext.getLocationName ());
 
     mContext.moodType = (((Spinner) mLayout.findViewById(R.id.moodInput)).getSelectedItemPosition());
 
+      //build the custom autocomplete tag and loads it with values
     buildAutoComplete ();
 
+    //add listener to the seek bar where user can select the number of riders
     mRiders.setOnSeekBarChangeListener (new SeekBar.OnSeekBarChangeListener () {
       @Override
       public void onProgressChanged (SeekBar seekBar, int progress, boolean fromUser) {
@@ -79,12 +93,12 @@ public class PassengerInputFragment extends Fragment {
     });
 
     mNext = (Button) mLayout.findViewById (R.id.passInputNext);
+      //add listener for the Request a ride button
     mNext.setOnClickListener (new View.OnClickListener () {
       @Override
       public void onClick (View v) {
 
-        // *** NEED TO VERIFY INPUT FIELD HERE
-        mContext.setDestination (atvPlaces.getText ().toString ());
+         mContext.setDestination (atvPlaces.getText ().toString ());
           mContext.setNumOfRiders(mRiders.getProgress() + 1);
             mContext.nextFragment ();
       }
@@ -93,18 +107,18 @@ public class PassengerInputFragment extends Fragment {
     return mLayout;
   }
 
-
+    /**
+     * builds the custom auto-complete tag
+     */
   private void buildAutoComplete () {
-    System.out.println ("in buildauto");
     atvPlaces = (CustomAutoCompleteTextView) mLayout.findViewById (R.id.whereToGoInput);
     //atvPlaces.setThreshold (1);
 
     atvPlaces.addTextChangedListener (new TextWatcher () {
-
+        //execute the PlacesTask when the text is changed in the text box
       @Override
       public void onTextChanged (CharSequence s, int start, int before, int count) {
-        System.out.println ("on text changed" + s);
-        new PlacesTask ().execute (s.toString ());
+          new PlacesTask ().execute (s.toString ());
       }
 
       @Override
@@ -121,7 +135,7 @@ public class PassengerInputFragment extends Fragment {
   }
 
   /**
-   * A class to parse the Google Places in JSON format
+   *  class to parse the Google Places in JSON format
    */
   private class ParserTask extends AsyncTask<String, Integer, List<HashMap<String, String>>> {
 
@@ -139,7 +153,7 @@ public class PassengerInputFragment extends Fragment {
 
         // Getting the parsed data as a List construct
         places = placeJsonParser.parse (jObject);
-        System.out.println ("places" + places.size ());
+
       } catch (Exception e) {
         Log.d ("Exception", e.toString ());
       }
@@ -168,12 +182,11 @@ public class PassengerInputFragment extends Fragment {
     protected String doInBackground (String... place) {
       // For storing data from web service
       String data = "";
-      System.out.println (place[0] + " place");
       String input = "";
 
       try {
         input = "input=" + URLEncoder.encode (place[0], "utf-8");
-        System.out.println ("do in background input" + input);
+
       } catch (UnsupportedEncodingException e1) {
         e1.printStackTrace ();
       }
@@ -192,7 +205,7 @@ public class PassengerInputFragment extends Fragment {
 
       // Building the url to the web service
       String url = mContext.GOOGLE_AUTOCOMPLETE_URL + output + "?" + parameters;
-      System.out.println (url + " url");
+
       try {
         // Fetching the data from we service
         data = downloadUrl (url);
@@ -241,7 +254,7 @@ public class PassengerInputFragment extends Fragment {
       }
 
       data = sb.toString ();
-      System.out.println ("json" + sb);
+
       br.close ();
 
     } catch (Exception e) {
